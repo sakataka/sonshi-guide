@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="孫子兵法の十三篇を、軍師の進言・名句・原文・書き下し文で読む。"
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <title>孫子兵法 十三篇</title>
+    <link rel="icon" href="./card.png" type="image/png" />
+    <link rel="apple-touch-icon" href="./card.png" />
+    <link rel="stylesheet" href="./styles.css?v=20260812-13" />
+    <script src="./chapters.js?v=20260812-13" defer></script>
+    <script src="./full-texts.js?v=20260812-13" defer></script>
+    <script src="./app.js?v=20260812-13" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#reading">本文へ移動</a>
+    <header class="site-header">
+      <a class="brand" href="#chapter-1" aria-label="孫子兵法 十三篇、第一篇へ">
+        <span class="seal" aria-hidden="true"><span>孫子</span><span>兵法</span></span>
+        <span class="brand-title">孫子兵法 <span>十三篇</span></span>
+      </a>
+      <div class="progress" aria-label="現在の篇">
+        <span><strong id="progress-current">1</strong> / 13</span>
+        <span class="progress-track" aria-hidden="true"><span id="progress-bar"></span></span>
+      </div>
+    </header>
+
+    <div class="app-shell">
+      <aside class="chapter-sidebar" aria-label="十三篇から選ぶ">
+        <p class="nav-label">篇を選ぶ</p>
+        <nav id="desktop-nav" class="chapter-nav"></nav>
+        <p class="keyboard-hint"><kbd>↑</kbd><kbd>↓</kbd> で移動　<kbd>Enter</kbd> で開く</p>
+      </aside>
+
+      <nav class="mobile-chapter-strip" aria-label="十三篇から選ぶ">
+        <div id="mobile-nav" class="mobile-nav-inner"></div>
+      </nav>
+
+      <main id="reading" class="reading" tabindex="-1">
+        <article id="chapter-content" aria-live="polite"></article>
+      </main>
+    </div>
+
+    <noscript>
+      <p class="noscript">このページで篇を切り替えるには JavaScript を有効にしてください。</p>
+    </noscript>
+  </body>
+</html>
