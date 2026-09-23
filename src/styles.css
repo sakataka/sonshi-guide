@@ -318,6 +318,417 @@ kbd {
   color: var(--vermilion);
 }
 
+.section-note {
+  margin: -10px 0 28px;
+  color: var(--muted);
+  font: 14px/1.8 var(--sans);
+}
+
+.lessons {
+  display: grid;
+  gap: 32px;
+}
+
+.lesson {
+  scroll-margin-top: calc(var(--header-height) + 28px);
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+
+.lesson:focus {
+  outline: 2px solid color-mix(in srgb, var(--vermilion) 38%, transparent);
+  outline-offset: 5px;
+}
+
+.lesson-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.lesson-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  margin: 0;
+  color: var(--vermilion);
+  font: 700 13px/1.5 var(--sans);
+  letter-spacing: 0.12em;
+}
+
+.lesson-kicker span {
+  color: var(--muted);
+  font: 500 14px/1.5 "Songti SC", "SimSun", var(--serif);
+  letter-spacing: 0.1em;
+}
+
+.lesson-title,
+.note-title {
+  margin: 12px 0 0;
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  line-height: 1.6;
+}
+
+.lesson-label {
+  margin: 18px 0 5px;
+  color: var(--indigo);
+  font: 700 12px/1.4 var(--sans);
+  letter-spacing: 0.12em;
+}
+
+.lesson-scene {
+  margin: 0;
+  color: #33343a;
+  font-size: 16px;
+  line-height: 1.95;
+}
+
+.lesson-question {
+  margin: 20px 0 0;
+  padding: 14px 18px;
+  border-left: 3px solid var(--vermilion);
+  background: var(--vermilion-soft);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.8;
+}
+
+.lesson-question span {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--vermilion);
+  font: 700 12px/1.4 var(--sans);
+  letter-spacing: 0.12em;
+}
+
+.mark-button,
+.draw-button {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 6px 14px;
+  border: 1px solid var(--line-dark);
+  border-radius: 2px;
+  color: var(--indigo);
+  background: var(--white);
+  font: 600 13px/1.4 var(--sans);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.mark-button::before {
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  margin-right: 7px;
+  border: 1.5px solid currentColor;
+  vertical-align: -0.08em;
+  content: "";
+}
+
+.mark-button[aria-pressed="true"] {
+  border-color: var(--vermilion);
+  color: var(--vermilion);
+  background: var(--vermilion-soft);
+}
+
+.mark-button[aria-pressed="true"]::before {
+  background: currentColor;
+}
+
+.mark-button:hover,
+.draw-button:hover {
+  border-color: var(--indigo);
+}
+
+.mark-button:focus-visible,
+.draw-button:focus-visible,
+.notes-link:focus-visible,
+.scene summary:focus-visible,
+.note-source a:focus-visible,
+.scene-lessons a:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+}
+
+.today {
+  padding: 26px 28px 24px;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--vermilion);
+}
+
+.today .note-title {
+  font-size: 26px;
+}
+
+.today .lesson-scene {
+  margin-top: 14px;
+}
+
+.today-actions,
+.note-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.note-source {
+  margin: 0;
+  font: 600 13px/1.5 var(--sans);
+  letter-spacing: 0.06em;
+}
+
+.note-source a {
+  color: var(--indigo);
+  text-underline-offset: 0.25em;
+}
+
+.note-source a:hover,
+.scene-lessons a:hover .scene-lesson-title {
+  color: var(--vermilion);
+}
+
+.scenes {
+  border-top: 1px solid var(--line);
+}
+
+.scene {
+  border-bottom: 1px solid var(--line);
+}
+
+.scene summary {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 16px;
+  align-items: center;
+  padding: 16px 4px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.scene summary::-webkit-details-marker {
+  display: none;
+}
+
+.scene summary::after {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  color: var(--vermilion);
+  font: 400 22px/1 var(--sans);
+  content: "+";
+}
+
+.scene[open] summary::after {
+  content: "−";
+}
+
+.scene-name {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.scene-note {
+  color: var(--muted);
+  font: 13px/1.7 var(--sans);
+}
+
+.scene-lessons {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 18px;
+  padding: 0;
+  list-style: none;
+}
+
+.scene-lessons a {
+  display: grid;
+  gap: 2px;
+  padding: 10px 14px;
+  border-left: 2px solid var(--line);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.scene-lessons a:hover {
+  border-left-color: var(--vermilion);
+  background: #f7f8fa;
+}
+
+.scene-lesson-source {
+  color: var(--indigo);
+  font: 600 12px/1.5 var(--sans);
+  letter-spacing: 0.06em;
+}
+
+.scene-lesson-title {
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.marked {
+  display: grid;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.marked .note-card {
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.marked .note-title {
+  font-size: 20px;
+}
+
+.empty-note {
+  margin: 0 0 20px;
+  padding: 20px;
+  border: 1px dashed var(--line-dark);
+  color: var(--muted);
+  font: 14px/1.8 var(--sans);
+}
+
+.aside-title {
+  margin: 0 0 22px;
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  line-height: 1.6;
+}
+
+.aside-layers {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aside-layers li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 148px minmax(0, 1fr);
+  gap: 20px;
+  padding: 0 0 24px;
+}
+
+.aside-layers li::before {
+  position: absolute;
+  top: 0.7em;
+  bottom: -0.3em;
+  left: 158px;
+  width: 1px;
+  background: var(--line);
+  content: "";
+}
+
+.aside-layers li:last-child::before {
+  display: none;
+}
+
+.aside-era {
+  position: relative;
+  margin: 0;
+  padding-top: 3px;
+  color: var(--indigo);
+  font: 700 13px/1.6 var(--sans);
+  letter-spacing: 0.06em;
+  text-align: right;
+}
+
+.aside-era::after {
+  position: absolute;
+  top: 0.62em;
+  right: -13px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--vermilion);
+  content: "";
+}
+
+.aside-text {
+  margin: 0;
+  color: #33343a;
+  font-size: 16px;
+  line-height: 1.95;
+}
+
+.aside-takeaway {
+  margin: 4px 0 0;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--line);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: 1.8;
+}
+
+.aside-sources {
+  margin: 14px 0 0;
+  font: 13px/1.7 var(--sans);
+}
+
+.aside-sources a {
+  color: var(--indigo);
+  text-underline-offset: 3px;
+}
+
+.aside-sources a:hover {
+  color: var(--vermilion);
+}
+
+.notes-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 28px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.notes-link:hover {
+  background: #f7f8fa;
+}
+
+.notes-link[aria-current="page"] {
+  border-color: var(--vermilion);
+  background: var(--vermilion-soft);
+}
+
+.notes-mark {
+  display: grid;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid var(--vermilion);
+  color: var(--vermilion);
+  font: 700 17px/1 var(--serif);
+  place-content: center;
+}
+
+.notes-name {
+  display: block;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.notes-sub {
+  display: block;
+  color: var(--muted);
+  font: 12px/1.6 var(--sans);
+}
+
+.progress.is-hidden {
+  visibility: hidden;
+}
+
 .original-note {
   margin: -10px 0 28px;
   color: var(--muted);
@@ -611,8 +1022,62 @@ kbd {
     font-size: 27px;
   }
 
-  .quote-entry {
+  .quote-entry,
+  .lesson {
     scroll-margin-top: calc(var(--header-height) + 94px);
+  }
+
+  .lesson-title,
+  .note-title {
+    font-size: 21px;
+  }
+
+  .today {
+    padding: 22px 18px 20px;
+  }
+
+  .today .note-title {
+    font-size: 23px;
+  }
+
+  .lesson-question {
+    padding: 12px 14px;
+    font-size: 16px;
+  }
+
+  .aside-title {
+    font-size: 21px;
+  }
+
+  .aside-layers li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+    padding-left: 20px;
+  }
+
+  .aside-layers li::before {
+    top: 0.9em;
+    bottom: -0.9em;
+    left: 3px;
+  }
+
+  .aside-era {
+    text-align: left;
+  }
+
+  .aside-era::after {
+    top: 0.72em;
+    right: auto;
+    left: -20px;
+  }
+
+  .aside-takeaway {
+    font-size: 17px;
+  }
+
+  .mobile-notes-link {
+    color: var(--vermilion);
+    text-decoration: none;
   }
 }
 
@@ -659,7 +1124,9 @@ kbd {
   .site-header,
   .chapter-sidebar,
   .mobile-chapter-strip,
-  .next-row {
+  .next-row,
+  .mark-button,
+  .draw-button {
     display: none;
   }
 

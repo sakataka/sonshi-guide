@@ -3,11 +3,34 @@
 
   const chapters = window.SONSHI_CHAPTERS;
   const fullTexts = window.SONSHI_FULL_TEXTS;
+  const lessons = window.SONSHI_LESSONS;
+  const scenes = window.SONSHI_SCENES;
+  const asides = window.SONSHI_ASIDES;
   const desktopNav = document.querySelector("#desktop-nav");
   const mobileNav = document.querySelector("#mobile-nav");
   const content = document.querySelector("#chapter-content");
   const progressCurrent = document.querySelector("#progress-current");
   const progressBar = document.querySelector("#progress-bar");
+  const progress = document.querySelector(".progress");
+  const lessonNumbers = ["一", "二", "三"];
+  const lessonIds = chapters.flatMap((chapter) => lessons[chapter.id - 1].map((_, index) => `${chapter.id}-${index + 1}`));
+
+  const loadSet = (key) => {
+    try {
+      return new Set(JSON.parse(localStorage.getItem(key) ?? "[]"));
+    } catch {
+      return new Set();
+    }
+  };
+  const saveSet = (key, set) => {
+    try {
+      localStorage.setItem(key, JSON.stringify([...set]));
+    } catch {
+      // 保存できない環境でも、表示中の状態だけは保つ
+    }
+  };
+  const marksKey = "sonshi-guide:marks";
+  const marks = loadSet(marksKey);
 
   const escapeHtml = (value) =>
     String(value)
@@ -142,6 +165,28 @@
     [],
   ];
 
+  const lessonById = (id) => {
+    const [chapterId, number] = id.split("-").map(Number);
+    const lesson = lessons[chapterId - 1]?.[number - 1];
+    return lesson ? { ...lesson, id, number, chapter: chapters[chapterId - 1] } : null;
+  };
+
+  const lessonLabel = (lesson) => `第${lesson.chapter.idKanji}篇 ${lesson.chapter.name}・其の${lessonNumbers[lesson.number - 1]}`;
+
+  const markButton = (id) => {
+    const marked = marks.has(id);
+    return `<button class="mark-button" type="button" data-mark="${id}" aria-pressed="${marked}">${marked ? "印を付けた" : "印を付ける"}</button>`;
+  };
+
+  const scrollToTarget = (target) => {
+    if (!target) return;
+    target.focus({ preventScroll: true });
+    const headerOffset = document.querySelector(".site-header")?.offsetHeight ?? 0;
+    const stripOffset = document.querySelector(".mobile-chapter-strip")?.offsetHeight ?? 0;
+    const targetTop = target.getBoundingClientRect().top + window.scrollY - headerOffset - stripOffset - 24;
+    window.scrollTo(0, targetTop);
+  };
+
   const chapterFromHash = () => {
     const match = window.location.hash.match(/^#chapter-(\d{1,2})$/);
     const number = match ? Number(match[1]) : 1;
@@ -210,6 +255,44 @@
       <p class="quote-source"><a href="${escapeHtml(quote.source.url)}" target="_blank" rel="noreferrer">${escapeHtml(quote.source.label)}</a></p>
     </section>`;
 
+  const lessonTemplate = (lesson, index, chapterId) => {
+    const id = `${chapterId}-${index + 1}`;
+    return `
+    <section id="lesson-${id}" class="lesson" tabindex="-1">
+      <div class="lesson-head">
+        <p class="lesson-kicker">其の${lessonNumbers[index]}<span lang="zh-Hant">${escapeHtml(lesson.basis)}</span></p>
+        ${markButton(id)}
+      </div>
+      <h3 class="lesson-title">${escapeHtml(lesson.title)}</h3>
+      <p class="lesson-label">今の場面では</p>
+      <p class="lesson-scene">${escapeHtml(lesson.scene)}</p>
+      <p class="lesson-question"><span>自らに問う</span>${escapeHtml(lesson.question)}</p>
+    </section>`;
+  };
+
+  const asideTemplate = (aside) => `
+    <section class="section" aria-labelledby="aside-title">
+      <h2 id="aside-title" class="section-title">余話</h2>
+      <p class="section-note">この篇が、後の時代や今の世でどう読まれ、使われてきたか。</p>
+      <div class="aside">
+        <h3 class="aside-title">${escapeHtml(aside.title)}</h3>
+        <ol class="aside-layers">
+          ${aside.layers
+            .map(
+              (layer) => `<li>
+            <p class="aside-era">${escapeHtml(layer.era)}</p>
+            <p class="aside-text">${escapeHtml(layer.text)}</p>
+          </li>`,
+            )
+            .join("")}
+        </ol>
+        <p class="aside-takeaway">${escapeHtml(aside.takeaway)}</p>
+        <p class="aside-sources">${aside.sources
+          .map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.label)}</a>`)
+          .join(" ／ ")}</p>
+      </div>
+    </section>`;
+
   const renderChapter = (chapter) => {
     const next = chapters[chapter.id % chapters.length];
     const fullText = fullTexts[chapter.id - 1];
@@ -236,7 +319,15 @@
         </div>
       </section>
 
+      <section class="section" aria-labelledby="lessons-title">
+        <h2 id="lessons-title" class="section-title">今に活かす心得</h2>
+        <p class="section-note">進言を、いまの仕事や暮らしの場面へ置き換えた三つの心得です。迷ったときは、問いだけでも読み返してください。</p>
+        <div class="lessons">${lessons[chapter.id - 1].map((lesson, index) => lessonTemplate(lesson, index, chapter.id)).join("")}</div>
+      </section>
+
       ${sayingsSection}
+
+      ${asideTemplate(asides[chapter.id - 1])}
 
       <section class="section supplement" aria-labelledby="supplement-title">
         <h2 id="supplement-title" class="section-title">補足資料</h2>
@@ -270,11 +361,7 @@
     content.querySelectorAll(".term-link").forEach((link) => {
       link.addEventListener("click", (event) => {
         event.preventDefault();
-        const target = content.querySelector(link.getAttribute("href"));
-        target.focus({ preventScroll: true });
-        const headerOffset = document.querySelector(".site-header")?.offsetHeight ?? 0;
-        const targetTop = target.getBoundingClientRect().top + window.scrollY - headerOffset - 24;
-        window.scrollTo(0, targetTop);
+        scrollToTarget(content.querySelector(link.getAttribute("href")));
       });
     });
 
@@ -283,6 +370,118 @@
     });
   };
 
+  const dayNumber = () => {
+    const now = new Date();
+    return Math.floor((now.getTime() - now.getTimezoneOffset() * 60000) / 86400000);
+  };
+  const todayLessonId = lessonIds[(dayNumber() * 7) % lessonIds.length];
+  let drawnLessonId = todayLessonId;
+
+  const noteCardTemplate = (lesson, { withScene = false, removable = false } = {}) => `
+    <article class="note-card">
+      <p class="note-source"><a href="#lesson-${lesson.id}">${escapeHtml(lessonLabel(lesson))}</a></p>
+      <h3 class="note-title">${escapeHtml(lesson.title)}</h3>
+      ${withScene ? `<p class="lesson-scene">${escapeHtml(lesson.scene)}</p>` : ""}
+      <p class="lesson-question"><span>自らに問う</span>${escapeHtml(lesson.question)}</p>
+      ${removable ? `<div class="note-actions">${markButton(lesson.id)}</div>` : ""}
+    </article>`;
+
+  const renderNotes = () => {
+    const drawn = lessonById(drawnLessonId);
+    const marked = lessonIds.filter((id) => marks.has(id)).map(lessonById);
+    document.title = "陣中覚書｜孫子兵法 十三篇";
+    content.innerHTML = `
+      <header class="chapter-header">
+        <h1 class="chapter-title">陣中覚書</h1>
+        <p class="chapter-subtitle">迷ったときに、開く帳面</p>
+        <p class="chapter-lead">十三篇から引いた三十九の心得を、日ごとに一つ、場面ごとに数篇ずつ読み返せるようにまとめております。</p>
+      </header>
+
+      <section class="section" aria-labelledby="today-title">
+        <h2 id="today-title" class="section-title">${drawnLessonId === todayLessonId ? "今日の心得" : "引いた心得"}</h2>
+        <div class="today">
+          ${noteCardTemplate(drawn, { withScene: true })}
+          <div class="today-actions">
+            ${markButton(drawn.id)}
+            <button class="draw-button" type="button">別の心得を引く</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="scenes-title">
+        <h2 id="scenes-title" class="section-title">場面から引く</h2>
+        <p class="section-note">いま置かれている場面を開くと、効きそうな心得を篇をまたいで並べます。</p>
+        <div class="scenes">
+          ${scenes
+            .map(
+              (scene) => `
+            <details class="scene">
+              <summary><span class="scene-name">${escapeHtml(scene.name)}</span><span class="scene-note">${escapeHtml(scene.note)}</span></summary>
+              <ul class="scene-lessons">
+                ${scene.lessons
+                  .map(lessonById)
+                  .map(
+                    (lesson) => `<li><a href="#lesson-${lesson.id}"><span class="scene-lesson-source">${escapeHtml(lessonLabel(lesson))}</span><span class="scene-lesson-title">${escapeHtml(lesson.title)}</span></a></li>`,
+                  )
+                  .join("")}
+              </ul>
+            </details>`,
+            )
+            .join("")}
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="marked-title">
+        <h2 id="marked-title" class="section-title" tabindex="-1">印を付けた心得</h2>
+        ${
+          marked.length
+            ? `<div class="marked">${marked.map((lesson) => noteCardTemplate(lesson, { removable: true })).join("")}</div>`
+            : `<p class="empty-note">各篇の「今に活かす心得」で「印を付ける」を押すと、読み返したい心得がここに集まります。</p>`
+        }
+        <p class="section-note">印の記録は、このブラウザの中にだけ残ります。</p>
+      </section>`;
+
+    content.querySelector(".draw-button").addEventListener("click", () => {
+      const others = lessonIds.filter((id) => id !== drawnLessonId);
+      drawnLessonId = others[Math.floor(Math.random() * others.length)];
+      renderNotes();
+      content.querySelector(".draw-button").focus();
+    });
+  };
+
+  const showNotes = () => {
+    renderNotes();
+    document.querySelectorAll(".chapter-button, [data-notes]").forEach((button) => {
+      const selected = button.hasAttribute("data-notes");
+      if (selected) button.setAttribute("aria-current", "page");
+      else button.removeAttribute("aria-current");
+    });
+    progress.classList.add("is-hidden");
+    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+    window.scrollTo({ top: 0, behavior });
+    document.querySelector("#reading").focus({ preventScroll: true });
+  };
+
+  content.addEventListener("click", (event) => {
+    const button = event.target.closest(".mark-button");
+    if (!button) return;
+    const id = button.dataset.mark;
+    if (marks.has(id)) marks.delete(id);
+    else marks.add(id);
+    saveSet(marksKey, marks);
+    if (window.location.hash === "#notes") {
+      const focusSelector = button.closest(".marked") ? "#marked-title" : ".today .mark-button";
+      const scroll = window.scrollY;
+      renderNotes();
+      content.querySelector(focusSelector).focus({ preventScroll: true });
+      window.scrollTo(0, scroll);
+      return;
+    }
+    const marked = marks.has(id);
+    button.setAttribute("aria-pressed", String(marked));
+    button.textContent = marked ? "印を付けた" : "印を付ける";
+  });
+
   function selectChapter(id, updateHash = false) {
     const chapter = chapters[id - 1] || chapters[0];
     if (updateHash && window.location.hash !== `#chapter-${chapter.id}`) {
@@ -290,6 +489,8 @@
     }
 
     renderChapter(chapter);
+    progress.classList.remove("is-hidden");
+    document.querySelectorAll("[data-notes]").forEach((link) => link.removeAttribute("aria-current"));
     document.querySelectorAll(".chapter-button").forEach((button) => {
       const selected = Number(button.dataset.chapter) === chapter.id;
       button.toggleAttribute("aria-current", selected);
@@ -313,16 +514,26 @@
     }
   }
 
+  const route = () => {
+    const hash = window.location.hash;
+    if (hash === "#notes") {
+      showNotes();
+      return;
+    }
+    const lessonMatch = hash.match(/^#lesson-(\d{1,2})-(\d)$/);
+    if (lessonMatch && lessonById(`${Number(lessonMatch[1])}-${lessonMatch[2]}`)) {
+      selectChapter(Number(lessonMatch[1]));
+      scrollToTarget(content.querySelector(hash));
+      return;
+    }
+    if (!hash || /^#chapter-\d{1,2}$/.test(hash)) selectChapter(chapterFromHash());
+  };
+
   chapters.forEach((chapter) => {
     desktopNav.append(createNavButton(chapter));
     mobileNav.append(createNavButton(chapter, true));
   });
 
-  window.addEventListener("hashchange", () => {
-    if (/^#chapter-\d{1,2}$/.test(window.location.hash)) selectChapter(chapterFromHash());
-  });
-  window.addEventListener("popstate", () => {
-    if (/^#chapter-\d{1,2}$/.test(window.location.hash)) selectChapter(chapterFromHash());
-  });
-  selectChapter(chapterFromHash());
+  window.addEventListener("hashchange", route);
+  route();
 })();
