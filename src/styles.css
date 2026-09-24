@@ -71,10 +71,6 @@
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
   min-width: 0;
   margin: 0;
@@ -265,7 +261,6 @@ a {
   height: 16px;
   background: var(--line-2);
   content: "";
-  transition: height 160ms ease, background-color 160ms ease;
 }
 
 .tick:hover::before {
@@ -396,14 +391,12 @@ a {
   letter-spacing: 0;
 }
 
-.side-chapter[aria-current="page"],
-.side-chapter.is-reading {
+.side-chapter[aria-current="page"] {
   color: var(--shu);
   background: var(--shu-wash);
 }
 
-.side-chapter[aria-current="page"] .side-number,
-.side-chapter.is-reading .side-number {
+.side-chapter[aria-current="page"] .side-number {
   color: var(--shu);
 }
 
@@ -444,8 +437,7 @@ a {
 }
 
 .side-layers .glyph,
-.chapter-map .glyph,
-.mode-switch .glyph {
+.chapter-map .glyph {
   width: 20px;
   height: 20px;
   border-width: 1px;
@@ -610,7 +602,7 @@ a {
 
 .part-head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 22px;
   margin-bottom: 48px;
 }
@@ -630,12 +622,6 @@ a {
   letter-spacing: 0.3em;
 }
 
-.part-note {
-  max-width: 36em;
-  margin: 10px 0 0;
-  color: var(--muted);
-  font: 14px/1.8 var(--sans);
-}
 
 .layer {
   margin-bottom: 72px;
@@ -647,7 +633,7 @@ a {
 
 .layer-head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 14px;
   margin-bottom: 28px;
   padding-bottom: 14px;
@@ -659,7 +645,7 @@ a {
   flex-wrap: wrap;
   align-items: baseline;
   gap: 4px 14px;
-  margin: 2px 0 0;
+  margin: 0;
   font-size: 22px;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -671,11 +657,6 @@ a {
   letter-spacing: 0.16em;
 }
 
-.layer-note {
-  margin: 8px 0 0;
-  color: var(--muted);
-  font: 13.5px/1.75 var(--sans);
-}
 
 /* 壱　語る ---- 軍師の進言 */
 
@@ -690,14 +671,7 @@ a {
   letter-spacing: 0.02em;
 }
 
-.layer--counsel .counsel > p:first-child {
-  font-size: 20px;
-  line-height: 1.95;
-}
 
-.layer--counsel .counsel > p:first-child::first-letter {
-  color: var(--shu);
-}
 
 .term-link {
   color: var(--shu);
@@ -953,8 +927,7 @@ a {
   place-items: center;
 }
 
-.kundoku-yoko p,
-.kundoku-flow p {
+.kundoku-yoko p {
   margin: 0;
   font-size: 19px;
   line-height: 2.1;
@@ -965,8 +938,7 @@ a {
   display: block;
 }
 
-.kundoku-yoko .ku + .ku,
-.kundoku-flow .ku + .ku {
+.kundoku-yoko .ku + .ku {
   margin-top: 0.5em;
 }
 
@@ -1143,7 +1115,6 @@ a {
   border: 1px solid var(--line-2);
   border-radius: 4px;
   text-decoration: none;
-  transition: border-color 160ms ease, background-color 160ms ease;
 }
 
 .pager-link--next {
@@ -1220,8 +1191,9 @@ a {
   margin-top: 30px;
 }
 
-.action-primary,
-.action-secondary {
+.action-primary {
+  color: var(--paper);
+  background: var(--ink);
   display: inline-flex;
   align-items: center;
   min-height: 46px;
@@ -1233,20 +1205,12 @@ a {
   text-decoration: none;
 }
 
-.action-primary {
-  color: var(--paper);
-  background: var(--ink);
-}
 
 .action-primary:hover {
   border-color: var(--shu);
   background: var(--shu);
 }
 
-.action-secondary:hover {
-  color: var(--shu);
-  border-color: var(--shu);
-}
 
 .overview-scroll {
   display: flex;
@@ -1413,12 +1377,10 @@ a {
   border-radius: 4px;
   background: var(--card);
   text-decoration: none;
-  transition: border-color 160ms ease, transform 160ms ease;
 }
 
 .volume:hover {
   border-color: var(--shu);
-  transform: translateY(-2px);
 }
 
 .volume-number {
@@ -1540,106 +1502,6 @@ a {
   color: var(--shu);
   text-decoration: underline;
   text-underline-offset: 4px;
-}
-
-/* ---- 通読 ---- */
-
-.tsudoku-hero {
-  padding: 72px 0 24px;
-}
-
-.tsudoku-title {
-  margin: 0 0 20px;
-  font-size: clamp(44px, 6vw, 60px);
-  font-weight: 600;
-  letter-spacing: 0.4em;
-}
-
-.mode-switch {
-  position: sticky;
-  z-index: 5;
-  top: calc(var(--header-h) + var(--strip-h) + 12px);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  width: fit-content;
-  max-width: 100%;
-  margin-top: 8px;
-  padding: 4px;
-  border: 1px solid var(--line-2);
-  border-radius: 6px;
-  background: var(--header-bg);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-}
-
-.mode-switch a {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 38px;
-  padding: 0 14px;
-  border-radius: 4px;
-  color: var(--ink-2);
-  font: 14px/1 var(--sans);
-  text-decoration: none;
-}
-
-.mode-switch a:hover {
-  background: var(--paper-2);
-}
-
-.mode-switch a[aria-current="page"] {
-  color: var(--ink);
-  font-weight: 600;
-  background: var(--paper-3);
-}
-
-.tsudoku-chapter {
-  padding: 56px 0 8px;
-}
-
-.tsudoku-chapter-title {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 6px 18px;
-  margin: 0 0 26px;
-  padding-bottom: 14px;
-  border-bottom: 3px double var(--line-2);
-  font-size: 28px;
-  font-weight: 600;
-  letter-spacing: 0.26em;
-}
-
-.tsudoku-number {
-  color: var(--shu);
-  font-size: 15px;
-  letter-spacing: 0.24em;
-}
-
-.tsudoku-open {
-  margin-left: auto;
-  color: var(--muted);
-  font: 12.5px/1 var(--sans);
-  letter-spacing: 0.08em;
-  text-underline-offset: 4px;
-}
-
-.tsudoku-open:hover {
-  color: var(--shu);
-}
-
-.kundoku-flow {
-  max-width: var(--measure);
-}
-
-.kundoku-flow p + p {
-  margin-top: 1.4em;
-}
-
-.tsudoku .tate {
-  height: clamp(320px, 56vh, 540px);
 }
 
 .noscript {
@@ -1835,9 +1697,6 @@ a {
     line-height: 2;
   }
 
-  .layer--counsel .counsel > p:first-child {
-    font-size: 18.5px;
-  }
 
   .tate {
     height: clamp(300px, 58vh, 520px);
@@ -1876,8 +1735,7 @@ a {
     padding-left: 36px;
   }
 
-  .kundoku-yoko p,
-  .kundoku-flow p {
+  .kundoku-yoko p {
     font-size: 17.5px;
     line-height: 2.1;
   }
@@ -1949,13 +1807,7 @@ a {
     font-size: 24px;
   }
 
-  .tsudoku-hero {
-    padding-top: 44px;
-  }
 
-  .tsudoku-chapter-title {
-    font-size: 24px;
-  }
 }
 
 @media (max-width: 400px) {
@@ -1965,18 +1817,6 @@ a {
 
   .volumes {
     grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
-    transition: none !important;
   }
 }
 

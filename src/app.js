@@ -14,7 +14,6 @@
   const headerPlace = document.querySelector("#header-place");
   const headerTicks = document.querySelector("#header-ticks");
   const lessonNumbers = ["一", "二", "三"];
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   // 一つの篇を、性格の異なる三つの層に分けて読む
   const parts = [
@@ -37,12 +36,6 @@
     { name: "地", note: "地を読み、置かれた場の人の心を読む", ids: [10, 11] },
     { name: "火と間", note: "強い手段の自制と、先に知ること", ids: [12, 13] },
   ];
-  const readModes = [
-    { key: "kundoku", hash: "#tsudoku", label: "書き下し文" },
-    { key: "original", hash: "#tsudoku-genbun", label: "原文" },
-    { key: "counsel", hash: "#tsudoku-shingen", label: "軍師の進言" },
-  ];
-
   const escapeHtml = (value) =>
     String(value)
       .replaceAll("&", "&amp;")
@@ -72,20 +65,14 @@
     return `
       <header class="layer-head">
         ${glyph(key)}
-        <div>
-          <h3 id="${id}-title" class="layer-title">${escapeHtml(layer.name)}<span class="layer-kind">${escapeHtml(layer.kind)}</span></h3>
-          <p class="layer-note">${escapeHtml(layer.note)}</p>
-        </div>
+        <h3 id="${id}-title" class="layer-title">${escapeHtml(layer.name)}<span class="layer-kind">${escapeHtml(layer.kind)}</span></h3>
       </header>`;
   };
 
   const partHead = (part) => `
     <header class="part-head">
       <span class="part-numeral" aria-hidden="true">${part.numeral}</span>
-      <div>
-        <h2 class="part-title">${escapeHtml(part.name)}</h2>
-        <p class="part-note">${escapeHtml(part.note)}</p>
-      </div>
+      <h2 class="part-title">${escapeHtml(part.name)}</h2>
     </header>`;
 
   const chapterLayers = (chapter) =>
@@ -322,7 +309,6 @@
           <p class="overview-lead">ここでは各篇を「語る」「原典」「読み継ぐ」の三つの層に分けて並べています。どこから読んでも構いません。</p>
           <div class="overview-actions">
             <a class="action-primary" href="#chapter-1">第一篇 始計から読む</a>
-            <a class="action-secondary" href="#tsudoku">十三篇を通して読む</a>
           </div>
         </div>
         <div class="overview-scroll" lang="zh-Hant" aria-label="第一篇の書き出し（原文）">
@@ -368,57 +354,10 @@
       </section>`;
   };
 
-  const renderTsudoku = (mode) => {
-    const current = readModes.find((item) => item.key === mode);
-    document.title = `通読・${current.label}｜孫子兵法 十三篇`;
-    const body = (chapter) => {
-      if (mode === "original") {
-        return tatePanel(fullTexts[chapter.id - 1].original, { className: "tate-frame--sumi", label: `第${chapter.id}篇 原文`, lang: "zh-Hant" });
-      }
-      if (mode === "counsel") {
-        return `<div class="counsel">${chapter.counsel
-          .map(plainCounsel)
-          .filter(Boolean)
-          .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
-          .join("")}</div>`;
-      }
-      return `<div class="kundoku-flow">${fullTexts[chapter.id - 1].kundoku.map((paragraph) => `<p>${kuHtml(paragraph)}</p>`).join("")}</div>`;
-    };
-    content.innerHTML = `
-      <header class="tsudoku-hero">
-        <p class="overview-kicker">十三篇を、一つの層で通して読む</p>
-        <h1 class="tsudoku-title">通読</h1>
-        <p class="overview-lead">解説や心得を外し、一つの層だけを第一篇から第十三篇まで続けて並べます。</p>
-      </header>
-      <nav class="mode-switch" aria-label="読む層">
-          ${readModes
-            .map(
-              (item) =>
-                `<a href="${item.hash}" ${item.key === mode ? 'aria-current="page"' : ""}>${glyph(item.key)}<span>${item.label}</span></a>`,
-            )
-            .join("")}
-      </nav>
-      <div class="tsudoku tsudoku--${mode}">
-        ${chapters
-          .map(
-            (chapter) => `
-          <section id="tsudoku-${chapter.id}" class="tsudoku-chapter" data-spy="tsudoku-${chapter.id}" aria-labelledby="tsudoku-${chapter.id}-title">
-            <h2 id="tsudoku-${chapter.id}-title" class="tsudoku-chapter-title">
-              <span class="tsudoku-number">第${chapter.idKanji}篇</span>${escapeHtml(chapter.name)}
-              <a class="tsudoku-open" href="#chapter-${chapter.id}">この篇を開く</a>
-            </h2>
-            ${body(chapter)}
-          </section>`,
-          )
-          .join("")}
-      </div>`;
-  };
-
   // ---- ナビゲーション ----
 
   const sidebarTemplate = () => `
     <a class="side-top" href="#overview" data-view="overview"><span class="side-glyph" aria-hidden="true">覧</span><span><span class="side-name">総覧</span><span class="side-sub">十三篇を見渡す</span></span></a>
-    <a class="side-top" href="#tsudoku" data-view="tsudoku"><span class="side-glyph" aria-hidden="true">通</span><span><span class="side-name">通読</span><span class="side-sub">一つの層で通して読む</span></span></a>
     ${groups
       .map(
         (group) => `
@@ -443,7 +382,6 @@
 
   const mobileTemplate = () => `
     <a class="strip-link strip-link--view" href="#overview" data-view="overview">総覧</a>
-    <a class="strip-link strip-link--view" href="#tsudoku" data-view="tsudoku">通読</a>
     ${chapters
       .map(
         (chapter) =>
@@ -474,19 +412,17 @@
     });
     const chapter = chapters[chapterId - 1];
     headerPlace.textContent =
-      view === "chapter" ? `第${chapter.idKanji}篇　${chapter.name}` : view === "tsudoku" ? "通読" : "総覧";
+      view === "chapter" ? `第${chapter.idKanji}篇　${chapter.name}` : "総覧";
 
     const current = mobileNav.querySelector('[aria-current="page"]');
     if (current) {
       const left = current.offsetLeft - (mobileNav.clientWidth - current.offsetWidth) / 2;
-      mobileNav.scrollTo({ left: Math.max(0, left), behavior: reduceMotion.matches ? "auto" : "smooth" });
+      mobileNav.scrollTo({ left: Math.max(0, left) });
     }
   };
 
   // 読んでいる層を、側面の目次に示す
   let spyObserver;
-  let readingChapter = 0;
-  let currentView = "";
   const watchSections = () => {
     spyObserver?.disconnect();
     const targets = content.querySelectorAll("[data-spy]");
@@ -504,10 +440,6 @@
           if (link.dataset.layer === active) link.setAttribute("aria-current", "true");
           else link.removeAttribute("aria-current");
         });
-        document.querySelectorAll(".side-chapter").forEach((link) => {
-          link.classList.toggle("is-reading", active === `tsudoku-${link.dataset.chapter}`);
-        });
-        readingChapter = active.startsWith("tsudoku-") ? Number(active.slice(8)) : 0;
       },
       { rootMargin: "-20% 0px -60% 0px" },
     );
@@ -516,7 +448,7 @@
 
   const jumpTo = (target) => {
     if (!target) return;
-    target.scrollIntoView({ behavior: reduceMotion.matches ? "auto" : "smooth", block: "start" });
+    target.scrollIntoView({ block: "start" });
     target.focus({ preventScroll: true });
   };
 
@@ -555,11 +487,7 @@
   );
 
   const show = (view, chapterId, target) => {
-    // 通読で層を切り替えたときは、読んでいた篇から続ける
-    const resumeChapter = view === "tsudoku" && currentView === "tsudoku" ? readingChapter : 0;
-    currentView = view;
     if (view === "chapter") renderChapter(chapters[chapterId - 1]);
-    else if (view === "tsudoku") renderTsudoku(target);
     else renderOverview();
     updateNav(view, chapterId);
     watchSections();
@@ -567,12 +495,7 @@
       jumpTo(content.querySelector(target));
       return;
     }
-    if (resumeChapter > 1) {
-      content.querySelector(`#tsudoku-${resumeChapter}`).scrollIntoView({ behavior: "instant", block: "start" });
-      document.querySelector("#reading").focus({ preventScroll: true });
-      return;
-    }
-    window.scrollTo({ top: 0, behavior: "instant" });
+    window.scrollTo(0, 0);
     document.querySelector("#reading").focus({ preventScroll: true });
   };
 
@@ -580,10 +503,8 @@
     const hash = window.location.hash;
     const chapterMatch = hash.match(/^#chapter-(\d{1,2})$/);
     const lessonMatch = hash.match(/^#lesson-(\d{1,2})-([1-3])$/);
-    const mode = readModes.find((item) => item.hash === hash);
     if (chapterMatch && chapters[Number(chapterMatch[1]) - 1]) show("chapter", Number(chapterMatch[1]));
     else if (lessonMatch && chapters[Number(lessonMatch[1]) - 1]) show("chapter", Number(lessonMatch[1]), hash);
-    else if (mode) show("tsudoku", 0, mode.key);
     else show("overview", 0);
   };
 
