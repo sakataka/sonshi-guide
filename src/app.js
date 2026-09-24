@@ -6,31 +6,42 @@
   const lessons = window.SONSHI_LESSONS;
   const scenes = window.SONSHI_SCENES;
   const asides = window.SONSHI_ASIDES;
-  const desktopNav = document.querySelector("#desktop-nav");
-  const mobileNav = document.querySelector("#mobile-nav");
+  const sayings = window.SONSHI_SAYINGS;
+  const highlights = window.SONSHI_HIGHLIGHTS;
   const content = document.querySelector("#chapter-content");
-  const progressCurrent = document.querySelector("#progress-current");
-  const progressBar = document.querySelector("#progress-bar");
-  const progress = document.querySelector(".progress");
+  const sidebarNav = document.querySelector("#sidebar-nav");
+  const mobileNav = document.querySelector("#mobile-nav");
+  const headerPlace = document.querySelector("#header-place");
+  const headerTicks = document.querySelector("#header-ticks");
   const lessonNumbers = ["一", "二", "三"];
-  const lessonIds = chapters.flatMap((chapter) => lessons[chapter.id - 1].map((_, index) => `${chapter.id}-${index + 1}`));
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-  const loadSet = (key) => {
-    try {
-      return new Set(JSON.parse(localStorage.getItem(key) ?? "[]"));
-    } catch {
-      return new Set();
-    }
+  // 一つの篇を、性格の異なる三つの層に分けて読む
+  const parts = [
+    { key: "kataru", numeral: "壱", name: "語る", note: "孫子の教えを、主君への進言として今の日本語で語り直した本文です。" },
+    { key: "genten", numeral: "弐", name: "原典", note: "二千年以上書き写されてきた漢文と、それを日本語の語順で読み下した文です。" },
+    { key: "yomitsugu", numeral: "参", name: "読み継ぐ", note: "後の時代の読まれ方と、今の暮らしに引き寄せた読み方。どれも数ある読みの一つです。" },
+  ];
+  const layers = {
+    counsel: { part: "kataru", glyph: "言", name: "軍師の進言", kind: "意訳", note: "孫子が主君に語りかける形で、篇の内容を今の日本語に移したもの。" },
+    sayings: { part: "genten", glyph: "句", name: "現代に残る言葉", kind: "名句", note: "この篇から生まれ、今も使われる言葉。原文・書き下し・来歴の順に。" },
+    original: { part: "genten", glyph: "文", name: "原文", kind: "白文", note: "伝わる漢文。後世に補われた句読点を除き、縦に組んでいます。" },
+    kundoku: { part: "genten", glyph: "訓", name: "書き下し文", kind: "訓読", note: "漢文を日本語の語順で読み下した文。1935年刊『武経七書』所収本文によります。" },
+    aside: { part: "yomitsugu", glyph: "話", name: "余話", kind: "後世", note: "この篇が、後の時代や今の世でどう読まれ、使われてきたか。" },
+    lessons: { part: "yomitsugu", glyph: "心", name: "今に活かす心得", kind: "読みの一例", note: "今の仕事や暮らしの場面に引き寄せた、ひとつの読み方。答えではなく、読み返すための手がかりとして。" },
   };
-  const saveSet = (key, set) => {
-    try {
-      localStorage.setItem(key, JSON.stringify([...set]));
-    } catch {
-      // 保存できない環境でも、表示中の状態だけは保つ
-    }
-  };
-  const marksKey = "sonshi-guide:marks";
-  const marks = loadSet(marksKey);
+  const groups = [
+    { name: "計る", note: "戦う前に量り、損なわずに勝つ", ids: [1, 2, 3] },
+    { name: "形と勢", note: "負けぬ形を作り、勢いを生み、虚を撃つ", ids: [4, 5, 6] },
+    { name: "動く", note: "先を争い、変に応じ、兆しを読む", ids: [7, 8, 9] },
+    { name: "地", note: "地を読み、置かれた場の人の心を読む", ids: [10, 11] },
+    { name: "火と間", note: "強い手段の自制と、先に知ること", ids: [12, 13] },
+  ];
+  const readModes = [
+    { key: "kundoku", hash: "#tsudoku", label: "書き下し文" },
+    { key: "original", hash: "#tsudoku-genbun", label: "原文" },
+    { key: "counsel", hash: "#tsudoku-shingen", label: "軍師の進言" },
+  ];
 
   const escapeHtml = (value) =>
     String(value)
@@ -43,497 +54,542 @@
   const stripOriginalPunctuation = (value) =>
     String(value).replace(/[，。；：！？、,.!?;:“”‘’「」『』（）()《》〈〉—…·﹁﹂\s]/g, "");
 
-  const modernSayings = [
-    [
-      {
-        original: "兵者詭道也",
-        kundoku: "兵は詭道なり。",
-        story: "この一節は「兵は詭道なり」という短い名句になりました。直後には、できてもできないように見せるなどの対句が続きます。名は、ここから残りました。「詭道」の二字で孫子の情報戦を言い表せるため、戦略論の入口として今も引かれます。",
-        source: { label: "Web漢文大系「兵は詭道なり」", url: "https://kanbun.info/koji/heiwakido.html" },
-      },
-    ],
-    [
-      {
-        original: "故兵聞拙速未睹巧之久也",
-        kundoku: "故に兵は拙速を聞くも、いまだ巧の久しきを睹ざるなり。",
-        story: "よく知られる「兵は拙速を尊ぶ」は、原文をそのまま抜いた句ではありません。原文は、拙くても速く終えた戦は聞くが、巧みな長期戦は見たことがない、と説きます。その警告が後世に短い格言へ縮まり、仕事の速さを説く場面にも広がりました。",
-        source: { label: "Web漢文大系「兵は拙速を尊ぶ」", url: "https://kanbun.info/koji/heiwasesso.html" },
-      },
-    ],
-    [
-      {
-        original: "百戰百勝非善之善者也不戰而屈人之兵善之善者也",
-        kundoku: "百戦百勝は善の善なる者にあらず。戦わずして人の兵を屈するは、善の善なる者なり。",
-        story: "「百戦百勝」より「戦わずして屈する」を上に置く逆説が、孫子を代表する考えとして繰り返し紹介されてきました。勝った回数だけを褒めません。損失を出さず目的を達することを勝利とするため、外交や経営にも読み替えられています。",
-        source: { label: "Web漢文大系「孫子・謀攻篇」", url: "https://kanbun.info/shibu02/sonshi03.html" },
-      },
-      {
-        original: "知彼知己者百戰不殆",
-        kundoku: "彼を知り己を知れば、百戦殆うからず。",
-        story: "この後には「自分だけを知れば一勝一敗」と続きます。どちらも知らなければ、戦うたびに危うい。相手と自分を対にした三段論法が、自己分析と相手理解の格言として戦争の外にも残りました。",
-        source: { label: "Web漢文大系「彼を知り己を知れば百戦殆からず」", url: "https://kanbun.info/koji/karewoshiri.html" },
-      },
-    ],
-    [],
-    [],
-    [
-      {
-        original: "水因地而制流兵因敵而制勝故兵無常勢水無常形",
-        kundoku: "水は地に因りて流れを制し、兵は敵に因りて勝ちを制す。故に兵に常勢なく、水に常形なし。",
-        story: "水が地形に従って姿を変えるという像は、固定した必勝法がないことを一目で伝え、変化への適応を説明する比喩として軍事の外へ持ち出しやすかったため、「兵に常勢無し」の形で故事名言に残りました。",
-        source: { label: "Web漢文大系「兵に常勢無し」", url: "https://kanbun.info/koji/heinijosei.html" },
-      },
-    ],
-    [
-      {
-        original: "軍爭之難者以迂爲直以患爲利故迂其途而誘之以利後人發先人至此知迂直之計者也",
-        kundoku: "軍争の難きは、迂を以て直と為し、患を以て利と為す。故にその途を迂にして、これを誘うに利を以てし、人に後れて発し、人に先んじて至る。これ迂直の計を知る者なり。",
-        story: "遠回りをしながら相手を別方向へ誘う。結果は逆です。こちらが先着します。この逆転に「迂直の計」という名が付いたため、戦略的な回り道を表す言葉として残りました。",
-        source: { label: "Web漢文大系「迂直の計」", url: "https://kanbun.info/koji/uchoku.html" },
-      },
-      {
-        original: "故其疾如風其徐如林侵掠如火不動如山難知如陰動如雷震",
-        kundoku: "故にその疾きこと風の如く、その徐かなること林の如く、侵掠すること火の如く、動かざること山の如く、知り難きこと陰の如く、動くこと雷震の如し。",
-        story: "原文は、風・林・火・山で終わりません。まだ続きます。「陰」と「雷」です。その前半四句を記した「孫子の旗」が武田信玄の軍旗として知られ、日本では四字の「風林火山」がとりわけ有名になりました。",
-        source: { label: "甲府市「風林火山には続きがある!?」", url: "https://www.city.kofu.yamanashi.jp/senior/kamejii/035.html" },
-      },
-      {
-        original: "以近待遠以佚待勞以飽待饑此治力者也",
-        kundoku: "近きを以て遠きを待ち、佚を以て労を待ち、飽を以て飢を待つ。これ力を治むる者なり。",
-        story: "自軍は近くで休み、食べた状態を保ち、遠来して疲れ、飢えた敵を待つという、対になる三組の言葉が戦う前に力の差を作る発想を簡潔に示すため、「佚を以て労を待つ」が独立した名句になりました。",
-        source: { label: "Web漢文大系「佚を以て労を待つ」", url: "https://kanbun.info/koji/itsuworo.html" },
-      },
-      {
-        original: "無邀正正之旗勿擊堂堂之陳",
-        kundoku: "正々の旗を邀うることなく、堂々の陣を撃つことなかれ。",
-        story: "現在の「正々堂々」は、公明正大に振る舞う意味で使われます。しかし原文は、旗列の整った「正々」の軍と、陣容の盛んな「堂々」の敵を攻めるなという戒めでした。二つの形容が結び付き、意味を広げながら四字熟語として定着しました。",
-        source: { label: "Web漢文大系「正正堂堂」", url: "https://kanbun.info/koji/seiseidodo.html" },
-      },
-    ],
-    [],
-    [],
-    [],
-    [
-      {
-        original: "夫吳人與越人相惡也當其同舟而濟遇風其相救也如左右手",
-        kundoku: "夫れ呉人と越人とは相悪むも、その舟を同じくして済り、風に遇うに当たりては、その相救うや左右の手の如し。",
-        story: "呉と越は、敵国同士でした。ところが、同じ舟で暴風に遭う。すると左右の手のように助け合います。この小さな物語が「呉越同舟」という故事成語になり、仲の悪い者も共通の危機では協力するという意味で残りました。",
-        source: { label: "Science Portal China「呉越同舟」", url: "https://spap.jst.go.jp/china/enjoy/kotowaza/kotowaza_006.html" },
-      },
-      {
-        original: "故善用兵者譬如率然率然者常山之蛇也擊其首則尾至擊其尾則首至擊其中則首尾俱至",
-        kundoku: "故に善く兵を用うる者は、譬えば率然の如し。率然とは常山の蛇なり。その首を撃てば尾至り、その尾を撃てば首至り、その中を撃てば首尾ともに至る。",
-        story: "常山に住む蛇「率然」は、頭を攻めれば尾が、尾を攻めれば頭が、胴を攻めれば両方が助けに来るとされました。どこにも隙がなく互いに救援する陣形を一匹の蛇で描いた物語が、「常山の蛇勢」という言葉を残しました。",
-        source: { label: "Web漢文大系「常山の蛇勢」", url: "https://kanbun.info/koji/jozan.html" },
-      },
-      {
-        original: "是故始如處女敵人開戶後如脫兔敵不及拒",
-        kundoku: "是の故に始めは処女の如く、敵人戸を開き、後には脱兎の如くして、敵拒ぐに及ばず。",
-        story: "初めはおとなしく見せて相手に隙を作らせ、その瞬間には罠を逃れた兎のように動く。静と動の落差が鮮やかなため長い句のまま伝わり、後半からは「脱兎の勢い」という言い回しも生まれました。",
-        source: { label: "Web漢文大系「始めは処女の如く、後は脱兎の如し」", url: "https://kanbun.info/koji/hajimewasho.html" },
-      },
-    ],
-    [],
-    [],
-  ];
+  const plainCounsel = (paragraph) =>
+    paragraph.replaceAll("<strong>", "").replaceAll("</strong>", "").replace(/^孫子は申し上げる。\s*/, "");
 
-  const counselHighlights = [
-    [{ phrase: "戦とは、欺きの道。", quoteIndex: 0 }],
-    [{ phrase: "兵は、拙速を聞くも、巧久を見ず。", quoteIndex: 0 }],
-    [
-      { phrase: "一度も戦わずして百の敵を屈服させた者の方がよい。戦わずして人の兵を屈する。", quoteIndex: 0 },
-      { phrase: "彼を知り、己を知れば、百戦して殆うからず。", quoteIndex: 1 },
-    ],
-    [],
-    [],
-    [{ phrase: "兵の形は、水に似ております。水は高きを避け、低きへ流れる。兵は敵の実を避け、虚を撃つ。", quoteIndex: 0 }],
-    [
-      { phrase: "遠回りを近道に変え、不利を利益へ変えること。", quoteIndex: 0 },
-      { phrase: "速く動くときは風のように。静かに構えるときは林のように。攻め奪うときは火のように。動かぬときは山のように。", quoteIndex: 1 },
-      { phrase: "近くで遠来の敵を待ち、休んで疲れた敵を待ち、食べて飢えた敵を待つ。", quoteIndex: 2 },
-      { phrase: "敵の旗が整い、陣が堂々としているなら、無理に当たってはなりません。", quoteIndex: 3 },
-    ],
-    [],
-    [],
-    [],
-    [
-      { phrase: "呉と越の者は仇同士でも、同じ舟で嵐に遭えば、左右の手のように助け合う。", quoteIndex: 0 },
-      { phrase: "頭を撃たれれば尾が救い、尾を撃たれれば頭が救い、中央を撃たれれば頭尾が共に応ずる。", quoteIndex: 1 },
-      { phrase: "初めはおとなしく動きを隠し、敵に戸を開かせる。戸が開いたなら、逃げる兎のような速さで一気に入る。", quoteIndex: 2 },
-    ],
-    [],
-    [],
-  ];
-
-  const lessonById = (id) => {
-    const [chapterId, number] = id.split("-").map(Number);
-    const lesson = lessons[chapterId - 1]?.[number - 1];
-    return lesson ? { ...lesson, id, number, chapter: chapters[chapterId - 1] } : null;
+  const glyph = (key) => {
+    const layer = layers[key];
+    return `<span class="glyph glyph--${layer.part}" aria-hidden="true">${layer.glyph}</span>`;
   };
 
-  const lessonLabel = (lesson) => `第${lesson.chapter.idKanji}篇 ${lesson.chapter.name}・其の${lessonNumbers[lesson.number - 1]}`;
+  const sourceLinks = (sources) =>
+    sources
+      .map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.label)}</a>`)
+      .join(" ／ ");
 
-  const markButton = (id) => {
-    const marked = marks.has(id);
-    return `<button class="mark-button" type="button" data-mark="${id}" aria-pressed="${marked}">${marked ? "印を付けた" : "印を付ける"}</button>`;
-  };
-
-  const scrollToTarget = (target) => {
-    if (!target) return;
-    target.focus({ preventScroll: true });
-    const headerOffset = document.querySelector(".site-header")?.offsetHeight ?? 0;
-    const stripOffset = document.querySelector(".mobile-chapter-strip")?.offsetHeight ?? 0;
-    const targetTop = target.getBoundingClientRect().top + window.scrollY - headerOffset - stripOffset - 24;
-    window.scrollTo(0, targetTop);
-  };
-
-  const chapterFromHash = () => {
-    const match = window.location.hash.match(/^#chapter-(\d{1,2})$/);
-    const number = match ? Number(match[1]) : 1;
-    return Math.min(13, Math.max(1, number));
-  };
-
-  const createNavButton = (chapter, mobile = false) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "chapter-button";
-    button.dataset.chapter = String(chapter.id);
-    button.setAttribute("aria-label", `第${chapter.id}篇 ${chapter.name}を開く`);
-    button.innerHTML = `<span class="chapter-number">${String(chapter.id).padStart(2, "0")}</span><span class="chapter-name">${escapeHtml(chapter.name)}</span>`;
-    button.addEventListener("click", () => selectChapter(chapter.id, true));
-    if (!mobile) {
-      button.addEventListener("keydown", handleNavKeydown);
-    }
-    return button;
-  };
-
-  const handleNavKeydown = (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      selectChapter(Number(event.currentTarget.dataset.chapter), true);
-      return;
-    }
-    if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
-    event.preventDefault();
-    const buttons = [...desktopNav.querySelectorAll("button")];
-    const currentIndex = buttons.indexOf(event.currentTarget);
-    let nextIndex = currentIndex;
-    if (event.key === "ArrowDown") nextIndex = (currentIndex + 1) % buttons.length;
-    if (event.key === "ArrowUp") nextIndex = (currentIndex - 1 + buttons.length) % buttons.length;
-    if (event.key === "Home") nextIndex = 0;
-    if (event.key === "End") nextIndex = buttons.length - 1;
-    buttons[nextIndex].focus();
-  };
-
-  const counselParagraphTemplate = (paragraph, index, chapter) => {
-    const highlights = counselHighlights[chapter.id - 1];
-    const plainParagraph = paragraph
-      .replaceAll("<strong>", "")
-      .replaceAll("</strong>", "")
-      .replace(/^孫子は申し上げる。\s*/, "");
-    if (!plainParagraph) return "";
-    let paragraphHtml = escapeHtml(plainParagraph);
-    highlights.forEach((highlight) => {
-      if (!plainParagraph.includes(highlight.phrase)) return;
-      const escapedPhrase = escapeHtml(highlight.phrase);
-      paragraphHtml = paragraphHtml.replace(
-        escapedPhrase,
-        `<a class="term-link" href="#quote-${chapter.id}-${highlight.quoteIndex + 1}">${escapedPhrase}</a>`,
-      );
-    });
-    return `<p>${paragraphHtml}</p>`;
-  };
-
-  const quoteTemplate = (quote, index, chapterId) => `
-    <section id="quote-${chapterId}-${index + 1}" class="quote-entry" tabindex="-1">
-      <p class="quote-kicker">名句 ${String(index + 1).padStart(2, "0")}</p>
-      <blockquote class="quote-original" lang="zh-Hant">${escapeHtml(stripOriginalPunctuation(quote.original))}</blockquote>
-      <p class="kundoku-label">書き下し</p>
-      <p class="quote-kundoku">${escapeHtml(quote.kundoku)}</p>
-      <p class="story-label">この言葉の来歴</p>
-      <p class="quote-story">${escapeHtml(quote.story)}</p>
-      <p class="quote-source"><a href="${escapeHtml(quote.source.url)}" target="_blank" rel="noreferrer">${escapeHtml(quote.source.label)}</a></p>
-    </section>`;
-
-  const lessonTemplate = (lesson, index, chapterId) => {
-    const id = `${chapterId}-${index + 1}`;
+  const layerHead = (key, id) => {
+    const layer = layers[key];
     return `
-    <section id="lesson-${id}" class="lesson" tabindex="-1">
-      <div class="lesson-head">
-        <p class="lesson-kicker">其の${lessonNumbers[index]}<span lang="zh-Hant">${escapeHtml(lesson.basis)}</span></p>
-        ${markButton(id)}
-      </div>
-      <h3 class="lesson-title">${escapeHtml(lesson.title)}</h3>
-      <p class="lesson-label">今の場面では</p>
-      <p class="lesson-scene">${escapeHtml(lesson.scene)}</p>
-      <p class="lesson-question"><span>自らに問う</span>${escapeHtml(lesson.question)}</p>
-    </section>`;
+      <header class="layer-head">
+        ${glyph(key)}
+        <div>
+          <h3 id="${id}-title" class="layer-title">${escapeHtml(layer.name)}<span class="layer-kind">${escapeHtml(layer.kind)}</span></h3>
+          <p class="layer-note">${escapeHtml(layer.note)}</p>
+        </div>
+      </header>`;
   };
+
+  const partHead = (part) => `
+    <header class="part-head">
+      <span class="part-numeral" aria-hidden="true">${part.numeral}</span>
+      <div>
+        <h2 class="part-title">${escapeHtml(part.name)}</h2>
+        <p class="part-note">${escapeHtml(part.note)}</p>
+      </div>
+    </header>`;
+
+  const chapterLayers = (chapter) =>
+    ["counsel", "sayings", "original", "kundoku", "aside", "lessons"].filter(
+      (key) => key !== "sayings" || sayings[chapter.id - 1].length,
+    );
+
+  // 書き下し文は句点ごとに行を改め、一文ずつ読めるようにする
+  const kuHtml = (paragraph) =>
+    paragraph
+      .split(/(?<=。)/)
+      .map((sentence) => `<span class="ku">${escapeHtml(sentence)}</span>`)
+      .join("");
+
+  // 縦組みの本文。右から左へ読み進める
+  const tatePanel = (paragraphs, { className = "", label, lang = "", ku = false }) => `
+    <div class="tate-frame ${className}">
+      <div class="tate"${lang ? ` lang="${lang}"` : ""} tabindex="0" role="region" aria-label="${escapeHtml(label)}（縦書き・横にスクロール）">
+        ${paragraphs.map((paragraph) => `<p>${ku ? kuHtml(paragraph) : escapeHtml(paragraph)}</p>`).join("")}
+      </div>
+      <p class="tate-hint" aria-hidden="true"><span>右から左へ</span></p>
+    </div>`;
+
+  const counselTemplate = (chapter) => {
+    const marks = highlights[chapter.id - 1];
+    return chapter.counsel
+      .map(plainCounsel)
+      .filter(Boolean)
+      .map((paragraph) => {
+        let html = escapeHtml(paragraph);
+        marks.forEach((mark) => {
+          if (!paragraph.includes(mark.phrase)) return;
+          const phrase = escapeHtml(mark.phrase);
+          html = html.replace(
+            phrase,
+            `<a class="term-link" href="#quote-${chapter.id}-${mark.quoteIndex + 1}" data-jump>${phrase}<span class="term-glyph" aria-label="（名句へ）">句</span></a>`,
+          );
+        });
+        return `<p>${html}</p>`;
+      })
+      .join("");
+  };
+
+  // 掛け軸のように、どの列もほぼ同じ字数で折り返す
+  const balancedRows = (text, maxRows = 9) => {
+    const columns = Math.ceil(text.length / maxRows);
+    return Math.ceil(text.length / columns);
+  };
+
+  const sayingTemplate = (saying, index, chapterId) => {
+    const original = stripOriginalPunctuation(saying.original);
+    return `
+    <article id="quote-${chapterId}-${index + 1}" class="saying" tabindex="-1">
+      <div class="saying-scroll">
+        <p class="saying-original" lang="zh-Hant" style="--rows: ${balancedRows(original)}">${escapeHtml(original)}</p>
+      </div>
+      <div class="saying-body">
+        <h4 class="saying-name">${escapeHtml(saying.name)}</h4>
+        <p class="saying-kundoku">${escapeHtml(saying.kundoku)}</p>
+        <p class="saying-story"><span class="inline-label">来歴</span>${escapeHtml(saying.story)}</p>
+        <p class="saying-source"><a href="${escapeHtml(saying.source.url)}" target="_blank" rel="noreferrer">${escapeHtml(saying.source.label)}</a></p>
+      </div>
+    </article>`;
+  };
+
+  const lessonTemplate = (lesson, index, chapterId) => `
+    <article id="lesson-${chapterId}-${index + 1}" class="lesson" tabindex="-1">
+      <p class="lesson-kicker">其の${lessonNumbers[index]}<span lang="zh-Hant">${escapeHtml(lesson.basis)}</span></p>
+      <h4 class="lesson-title">${escapeHtml(lesson.title)}</h4>
+      <p class="lesson-scene">${escapeHtml(lesson.scene)}</p>
+      <p class="lesson-question"><span class="inline-label">問い</span>${escapeHtml(lesson.question)}</p>
+    </article>`;
 
   const asideTemplate = (aside) => `
-    <section class="section" aria-labelledby="aside-title">
-      <h2 id="aside-title" class="section-title">余話</h2>
-      <p class="section-note">この篇が、後の時代や今の世でどう読まれ、使われてきたか。</p>
-      <div class="aside">
-        <h3 class="aside-title">${escapeHtml(aside.title)}</h3>
-        <ol class="aside-layers">
-          ${aside.layers
-            .map(
-              (layer) => `<li>
-            <p class="aside-era">${escapeHtml(layer.era)}</p>
-            <p class="aside-text">${escapeHtml(layer.text)}</p>
-          </li>`,
-            )
-            .join("")}
-        </ol>
-        <p class="aside-takeaway">${escapeHtml(aside.takeaway)}</p>
-        <p class="aside-sources">${aside.sources
-          .map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.label)}</a>`)
-          .join(" ／ ")}</p>
-      </div>
-    </section>`;
+    <div class="aside">
+      <h4 class="aside-title">${escapeHtml(aside.title)}</h4>
+      <ol class="aside-layers">
+        ${aside.layers
+          .map((layer) => `<li><p class="aside-era">${escapeHtml(layer.era)}</p><p class="aside-text">${escapeHtml(layer.text)}</p></li>`)
+          .join("")}
+      </ol>
+      <p class="aside-takeaway">${escapeHtml(aside.takeaway)}</p>
+      <p class="fine-sources">${sourceLinks(aside.sources)}</p>
+    </div>`;
+
+  const kundokuTemplate = (paragraphs) => `
+    <div class="kundoku-switch" role="group" aria-label="書き下し文の組み方">
+      <button type="button" data-writing="yoko" aria-pressed="true">横書き</button>
+      <button type="button" data-writing="tate" aria-pressed="false">縦書き</button>
+    </div>
+    <div class="kundoku" data-writing="yoko">
+      <ol class="kundoku-yoko">
+        ${paragraphs.map((paragraph, index) => `<li><span class="dan" aria-hidden="true">${"一二三四五六七八九"[index]}</span><p>${kuHtml(paragraph)}</p></li>`).join("")}
+      </ol>
+      ${tatePanel(paragraphs, { className: "tate-frame--paper", label: "書き下し文", ku: true })}
+    </div>`;
+
+  const chapterMap = (chapter) => `
+    <nav class="chapter-map" aria-label="この篇の構成">
+      ${parts
+        .map(
+          (part) => `
+        <div class="map-part">
+          <span class="map-numeral" aria-hidden="true">${part.numeral}</span>
+          <span class="map-part-name">${part.name}</span>
+          <span class="map-links">${chapterLayers(chapter)
+            .filter((key) => layers[key].part === part.key)
+            .map((key) => `<a href="#sec-${key}" data-jump>${glyph(key)}<span>${layers[key].name}</span></a>`)
+            .join("")}</span>
+        </div>`,
+        )
+        .join("")}
+    </nav>`;
+
+  const pagerTemplate = (chapter) => {
+    const prev = chapters[chapter.id - 2];
+    const next = chapters[chapter.id];
+    const card = (target, direction) =>
+      target
+        ? `<a class="pager-link pager-link--${direction}" href="#chapter-${target.id}">
+            <span class="pager-direction">${direction === "prev" ? "前の篇" : "次の篇"}</span>
+            <span class="pager-name">第${target.idKanji}篇　${escapeHtml(target.name)}</span>
+            <span class="pager-sub">${escapeHtml(target.subtitle)}</span>
+          </a>`
+        : `<a class="pager-link pager-link--${direction}" href="#overview">
+            <span class="pager-direction">${direction === "prev" ? "はじめに" : "読み終えたら"}</span>
+            <span class="pager-name">総覧へ戻る</span>
+            <span class="pager-sub">十三篇を見渡す</span>
+          </a>`;
+    return `<nav class="pager" aria-label="篇の移動">${card(prev, "prev")}${card(next, "next")}</nav>`;
+  };
 
   const renderChapter = (chapter) => {
-    const next = chapters[chapter.id % chapters.length];
     const fullText = fullTexts[chapter.id - 1];
-    const sayings = modernSayings[chapter.id - 1];
-    const sayingsSection = sayings.length
-      ? `<section class="section" aria-labelledby="quotes-title">
-          <h2 id="quotes-title" class="section-title">現代に残る言葉</h2>
-          <p class="original-note">原文には、後世に補われた句読点を表示していません。</p>
-          <div class="quotes">${sayings.map((quote, index) => quoteTemplate(quote, index, chapter.id)).join("")}</div>
-        </section>`
-      : "";
+    const chapterSayings = sayings[chapter.id - 1];
+    const section = (key, body) => `
+      <section id="sec-${key}" class="layer layer--${key}" data-spy="${key}" tabindex="-1" aria-labelledby="sec-${key}-title">
+        ${layerHead(key, `sec-${key}`)}
+        ${body}
+      </section>`;
+
     document.title = `第${chapter.id}篇 ${chapter.name}｜孫子兵法 十三篇`;
     content.innerHTML = `
-      <header class="chapter-header">
-        <h1 class="chapter-title">第${chapter.idKanji}篇　${escapeHtml(chapter.name)}</h1>
+      <header class="chapter-hero">
+        <span class="hero-watermark" aria-hidden="true">${chapter.idKanji}</span>
+        <p class="chapter-number"><span class="seal-mini" aria-hidden="true">篇</span>第${chapter.idKanji}篇</p>
+        <h1 class="chapter-title">${escapeHtml(chapter.name)}</h1>
         <p class="chapter-subtitle">${escapeHtml(chapter.subtitle)}</p>
         <p class="chapter-lead">${escapeHtml(chapter.lead)}</p>
+        ${chapterMap(chapter)}
       </header>
 
-      <section class="section" aria-labelledby="counsel-title">
-        <h2 id="counsel-title" class="section-title">軍師の進言</h2>
-        <div class="counsel">
-          ${chapter.counsel.map((paragraph, index) => counselParagraphTemplate(paragraph, index, chapter)).join("")}
-        </div>
-      </section>
+      <div class="part part--kataru">
+        ${partHead(parts[0])}
+        ${section("counsel", `<div class="counsel">${counselTemplate(chapter)}</div>`)}
+      </div>
 
-      <section class="section" aria-labelledby="lessons-title">
-        <h2 id="lessons-title" class="section-title">今に活かす心得</h2>
-        <p class="section-note">進言を、いまの仕事や暮らしの場面へ置き換えた三つの心得です。迷ったときは、問いだけでも読み返してください。</p>
-        <div class="lessons">${lessons[chapter.id - 1].map((lesson, index) => lessonTemplate(lesson, index, chapter.id)).join("")}</div>
-      </section>
+      <div class="part part--genten">
+        ${partHead(parts[1])}
+        ${
+          chapterSayings.length
+            ? section(
+                "sayings",
+                `<div class="sayings">${chapterSayings.map((saying, index) => sayingTemplate(saying, index, chapter.id)).join("")}</div>`,
+              )
+            : ""
+        }
+        ${section("original", tatePanel(fullText.original, { className: "tate-frame--sumi", label: "原文", lang: "zh-Hant" }))}
+        ${section("kundoku", kundokuTemplate(fullText.kundoku))}
+      </div>
 
-      ${sayingsSection}
-
-      ${asideTemplate(asides[chapter.id - 1])}
-
-      <section class="section supplement" aria-labelledby="supplement-title">
-        <h2 id="supplement-title" class="section-title">補足資料</h2>
-        <section class="full-text-block" aria-labelledby="full-original-title">
-          <h3 id="full-original-title">原文</h3>
-          <div class="full-text full-original" lang="zh-Hant">
-            ${fullText.original.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
-          </div>
-        </section>
-        <section class="full-text-block" aria-labelledby="full-kundoku-title">
-          <h3 id="full-kundoku-title">書き下し文</h3>
-          <div class="full-text full-kundoku">
-            ${fullText.kundoku.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
-          </div>
-        </section>
-      </section>
+      <div class="part part--yomitsugu">
+        ${partHead(parts[2])}
+        ${section("aside", asideTemplate(asides[chapter.id - 1]))}
+        ${section("lessons", `<div class="lessons">${lessons[chapter.id - 1].map((lesson, index) => lessonTemplate(lesson, index, chapter.id)).join("")}</div>`)}
+      </div>
 
       <aside class="source-note">
         原文は『孫子兵法』通行本を参照し、原文表示から現代的な句読点を除いています。書き下し文は1935年刊『武経七書』所収本文によります。篇や伝本によって異字があります。<br />
         全文：<a href="https://zh.wikisource.org/zh-hant/%E5%AD%AB%E5%AD%90%E5%85%B5%E6%B3%95" target="_blank" rel="noreferrer">中国語版Wikisource『孫子兵法』</a> ／ <a href="https://ja.wikisource.org/wiki/%E5%AD%AB%E5%AD%90_(%E6%AD%A6%E7%B6%93%E4%B8%83%E6%9B%B8)" target="_blank" rel="noreferrer">日本語版Wikisource『孫子（武経七書）』</a><br />
-        参照：${chapter.sources.map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.label)}</a>`).join(" ／ ")}
+        参照：${sourceLinks(chapter.sources)}
       </aside>
 
-      <div class="next-row">
-        <button class="next-button" type="button" data-next="${next.id}">
-          次の篇　${escapeHtml(next.name)}
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-      </div>`;
-
-    content.querySelectorAll(".term-link").forEach((link) => {
-      link.addEventListener("click", (event) => {
-        event.preventDefault();
-        scrollToTarget(content.querySelector(link.getAttribute("href")));
-      });
-    });
-
-    content.querySelector(".next-button").addEventListener("click", (event) => {
-      selectChapter(Number(event.currentTarget.dataset.next), true);
-    });
+      ${pagerTemplate(chapter)}`;
   };
 
-  const dayNumber = () => {
-    const now = new Date();
-    return Math.floor((now.getTime() - now.getTimezoneOffset() * 60000) / 86400000);
+  const legendTemplate = () => `
+    <div class="legend">
+      ${parts
+        .map(
+          (part) => `
+        <section class="legend-part legend-part--${part.key}">
+          <p class="legend-numeral" aria-hidden="true">${part.numeral}</p>
+          <h3 class="legend-title">${part.name}</h3>
+          <p class="legend-note">${escapeHtml(part.note)}</p>
+          <ul class="legend-layers">
+            ${Object.entries(layers)
+              .filter(([, layer]) => layer.part === part.key)
+              .map(([key, layer]) => `<li>${glyph(key)}<span><strong>${layer.name}</strong>${escapeHtml(layer.note)}</span></li>`)
+              .join("")}
+          </ul>
+        </section>`,
+        )
+        .join("")}
+    </div>`;
+
+  const overviewCard = (chapter) => {
+    const names = sayings[chapter.id - 1].map((saying) => saying.name);
+    return `
+      <a class="volume" href="#chapter-${chapter.id}">
+        <span class="volume-number">第${chapter.idKanji}篇</span>
+        <span class="volume-name">${escapeHtml(chapter.name)}</span>
+        <span class="volume-sub">${escapeHtml(chapter.subtitle)}</span>
+        <span class="volume-lead">${escapeHtml(chapter.lead)}</span>
+        ${names.length ? `<span class="volume-sayings">${names.map((name) => `<span>${escapeHtml(name)}</span>`).join("")}</span>` : ""}
+      </a>`;
   };
-  const todayLessonId = lessonIds[(dayNumber() * 7) % lessonIds.length];
-  let drawnLessonId = todayLessonId;
 
-  const noteCardTemplate = (lesson, { withScene = false, removable = false } = {}) => `
-    <article class="note-card">
-      <p class="note-source"><a href="#lesson-${lesson.id}">${escapeHtml(lessonLabel(lesson))}</a></p>
-      <h3 class="note-title">${escapeHtml(lesson.title)}</h3>
-      ${withScene ? `<p class="lesson-scene">${escapeHtml(lesson.scene)}</p>` : ""}
-      <p class="lesson-question"><span>自らに問う</span>${escapeHtml(lesson.question)}</p>
-      ${removable ? `<div class="note-actions">${markButton(lesson.id)}</div>` : ""}
-    </article>`;
+  const lessonLink = (id) => {
+    const [chapterId, number] = id.split("-").map(Number);
+    const chapter = chapters[chapterId - 1];
+    const lesson = lessons[chapterId - 1][number - 1];
+    return `<li><a href="#lesson-${id}"><span class="scene-lesson-source">第${chapter.idKanji}篇 ${escapeHtml(chapter.name)}・其の${lessonNumbers[number - 1]}</span><span class="scene-lesson-title">${escapeHtml(lesson.title)}</span></a></li>`;
+  };
 
-  const renderNotes = () => {
-    const drawn = lessonById(drawnLessonId);
-    const marked = lessonIds.filter((id) => marks.has(id)).map(lessonById);
-    document.title = "陣中覚書｜孫子兵法 十三篇";
+  const renderOverview = () => {
+    document.title = "孫子兵法 十三篇";
     content.innerHTML = `
-      <header class="chapter-header">
-        <h1 class="chapter-title">陣中覚書</h1>
-        <p class="chapter-subtitle">迷ったときに、開く帳面</p>
-        <p class="chapter-lead">十三篇から引いた三十九の心得を、日ごとに一つ、場面ごとに数篇ずつ読み返せるようにまとめております。</p>
+      <header class="overview-hero">
+        <div class="overview-intro">
+          <p class="overview-kicker">春秋の兵法書を、いくつもの層で読む</p>
+          <h1 class="overview-title">孫子兵法<span>十三篇</span></h1>
+          <p class="overview-lead">十三篇、およそ六千字。戦のための書として書かれ、二千年以上にわたって武将に、学者に、経営者に読み継がれてきました。読む人と時代が変われば、同じ一句から引き出されるものも変わります。</p>
+          <p class="overview-lead">ここでは各篇を「語る」「原典」「読み継ぐ」の三つの層に分けて並べています。どこから読んでも構いません。</p>
+          <div class="overview-actions">
+            <a class="action-primary" href="#chapter-1">第一篇 始計から読む</a>
+            <a class="action-secondary" href="#tsudoku">十三篇を通して読む</a>
+          </div>
+        </div>
+        <div class="overview-scroll" lang="zh-Hant" aria-label="第一篇の書き出し（原文）">
+          <p>兵者國之大事</p><p>死生之地</p><p>存亡之道</p><p>不可不察也</p>
+        </div>
       </header>
 
-      <section class="section" aria-labelledby="today-title">
-        <h2 id="today-title" class="section-title">${drawnLessonId === todayLessonId ? "今日の心得" : "引いた心得"}</h2>
-        <div class="today">
-          ${noteCardTemplate(drawn, { withScene: true })}
-          <div class="today-actions">
-            ${markButton(drawn.id)}
-            <button class="draw-button" type="button">別の心得を引く</button>
-          </div>
+      <section class="overview-section" aria-labelledby="legend-title">
+        <h2 id="legend-title" class="overview-heading"><span>一篇の読み方</span></h2>
+        ${legendTemplate()}
+      </section>
+
+      <section class="overview-section" aria-labelledby="volumes-title">
+        <h2 id="volumes-title" class="overview-heading"><span>十三篇の見取り図</span></h2>
+        <p class="overview-note">篇の区切りは伝本のとおり。まとまりの名は、見渡すための目安として付けたものです。</p>
+        <div class="volume-groups">
+          ${groups
+            .map(
+              (group) => `
+            <section class="volume-group">
+              <h3 class="group-title"><span class="group-name">${group.name}</span><span class="group-note">${group.note}</span></h3>
+              <div class="volumes">${group.ids.map((id) => overviewCard(chapters[id - 1])).join("")}</div>
+            </section>`,
+            )
+            .join("")}
         </div>
       </section>
 
-      <section class="section" aria-labelledby="scenes-title">
-        <h2 id="scenes-title" class="section-title">場面から引く</h2>
-        <p class="section-note">いま置かれている場面を開くと、効きそうな心得を篇をまたいで並べます。</p>
+      <section class="overview-section" aria-labelledby="scenes-title">
+        <h2 id="scenes-title" class="overview-heading"><span>場面から読む</span></h2>
+        <p class="overview-note">いま置かれている場面から、篇をまたいで「今に活かす心得」を引く索引です。</p>
         <div class="scenes">
           ${scenes
             .map(
               (scene) => `
             <details class="scene">
               <summary><span class="scene-name">${escapeHtml(scene.name)}</span><span class="scene-note">${escapeHtml(scene.note)}</span></summary>
-              <ul class="scene-lessons">
-                ${scene.lessons
-                  .map(lessonById)
-                  .map(
-                    (lesson) => `<li><a href="#lesson-${lesson.id}"><span class="scene-lesson-source">${escapeHtml(lessonLabel(lesson))}</span><span class="scene-lesson-title">${escapeHtml(lesson.title)}</span></a></li>`,
-                  )
-                  .join("")}
-              </ul>
+              <ul class="scene-lessons">${scene.lessons.map(lessonLink).join("")}</ul>
             </details>`,
             )
             .join("")}
         </div>
-      </section>
-
-      <section class="section" aria-labelledby="marked-title">
-        <h2 id="marked-title" class="section-title" tabindex="-1">印を付けた心得</h2>
-        ${
-          marked.length
-            ? `<div class="marked">${marked.map((lesson) => noteCardTemplate(lesson, { removable: true })).join("")}</div>`
-            : `<p class="empty-note">各篇の「今に活かす心得」で「印を付ける」を押すと、読み返したい心得がここに集まります。</p>`
-        }
-        <p class="section-note">印の記録は、このブラウザの中にだけ残ります。</p>
       </section>`;
-
-    content.querySelector(".draw-button").addEventListener("click", () => {
-      const others = lessonIds.filter((id) => id !== drawnLessonId);
-      drawnLessonId = others[Math.floor(Math.random() * others.length)];
-      renderNotes();
-      content.querySelector(".draw-button").focus();
-    });
   };
 
-  const showNotes = () => {
-    renderNotes();
-    document.querySelectorAll(".chapter-button, [data-notes]").forEach((button) => {
-      const selected = button.hasAttribute("data-notes");
-      if (selected) button.setAttribute("aria-current", "page");
-      else button.removeAttribute("aria-current");
+  const renderTsudoku = (mode) => {
+    const current = readModes.find((item) => item.key === mode);
+    document.title = `通読・${current.label}｜孫子兵法 十三篇`;
+    const body = (chapter) => {
+      if (mode === "original") {
+        return tatePanel(fullTexts[chapter.id - 1].original, { className: "tate-frame--sumi", label: `第${chapter.id}篇 原文`, lang: "zh-Hant" });
+      }
+      if (mode === "counsel") {
+        return `<div class="counsel">${chapter.counsel
+          .map(plainCounsel)
+          .filter(Boolean)
+          .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
+          .join("")}</div>`;
+      }
+      return `<div class="kundoku-flow">${fullTexts[chapter.id - 1].kundoku.map((paragraph) => `<p>${kuHtml(paragraph)}</p>`).join("")}</div>`;
+    };
+    content.innerHTML = `
+      <header class="tsudoku-hero">
+        <p class="overview-kicker">十三篇を、一つの層で通して読む</p>
+        <h1 class="tsudoku-title">通読</h1>
+        <p class="overview-lead">解説や心得を外し、一つの層だけを第一篇から第十三篇まで続けて並べます。</p>
+      </header>
+      <nav class="mode-switch" aria-label="読む層">
+          ${readModes
+            .map(
+              (item) =>
+                `<a href="${item.hash}" ${item.key === mode ? 'aria-current="page"' : ""}>${glyph(item.key)}<span>${item.label}</span></a>`,
+            )
+            .join("")}
+      </nav>
+      <div class="tsudoku tsudoku--${mode}">
+        ${chapters
+          .map(
+            (chapter) => `
+          <section id="tsudoku-${chapter.id}" class="tsudoku-chapter" data-spy="tsudoku-${chapter.id}" aria-labelledby="tsudoku-${chapter.id}-title">
+            <h2 id="tsudoku-${chapter.id}-title" class="tsudoku-chapter-title">
+              <span class="tsudoku-number">第${chapter.idKanji}篇</span>${escapeHtml(chapter.name)}
+              <a class="tsudoku-open" href="#chapter-${chapter.id}">この篇を開く</a>
+            </h2>
+            ${body(chapter)}
+          </section>`,
+          )
+          .join("")}
+      </div>`;
+  };
+
+  // ---- ナビゲーション ----
+
+  const sidebarTemplate = () => `
+    <a class="side-top" href="#overview" data-view="overview"><span class="side-glyph" aria-hidden="true">覧</span><span><span class="side-name">総覧</span><span class="side-sub">十三篇を見渡す</span></span></a>
+    <a class="side-top" href="#tsudoku" data-view="tsudoku"><span class="side-glyph" aria-hidden="true">通</span><span><span class="side-name">通読</span><span class="side-sub">一つの層で通して読む</span></span></a>
+    ${groups
+      .map(
+        (group) => `
+      <p class="side-group">${group.name}</p>
+      <ul class="side-chapters">
+        ${group.ids
+          .map((id) => {
+            const chapter = chapters[id - 1];
+            return `<li>
+              <a class="side-chapter" href="#chapter-${id}" data-chapter="${id}"><span class="side-number">${chapter.idKanji}</span><span class="side-chapter-name">${escapeHtml(chapter.name)}</span></a>
+              <ul class="side-layers" data-layers="${id}" hidden>
+                ${chapterLayers(chapter)
+                  .map((key) => `<li><a href="#sec-${key}" data-jump data-layer="${key}">${glyph(key)}<span>${layers[key].name}</span></a></li>`)
+                  .join("")}
+              </ul>
+            </li>`;
+          })
+          .join("")}
+      </ul>`,
+      )
+      .join("")}`;
+
+  const mobileTemplate = () => `
+    <a class="strip-link strip-link--view" href="#overview" data-view="overview">総覧</a>
+    <a class="strip-link strip-link--view" href="#tsudoku" data-view="tsudoku">通読</a>
+    ${chapters
+      .map(
+        (chapter) =>
+          `<a class="strip-link" href="#chapter-${chapter.id}" data-chapter="${chapter.id}"><span class="strip-number">${chapter.idKanji}</span>${escapeHtml(chapter.name)}</a>`,
+      )
+      .join("")}`;
+
+  const ticksTemplate = () =>
+    chapters
+      .map(
+        (chapter) =>
+          `<a class="tick" href="#chapter-${chapter.id}" data-chapter="${chapter.id}" aria-label="第${chapter.id}篇 ${escapeHtml(chapter.name)}" title="第${chapter.idKanji}篇 ${escapeHtml(chapter.name)}"></a>`,
+      )
+      .join("");
+
+  const updateNav = (view, chapterId) => {
+    document.querySelectorAll("[data-chapter]").forEach((link) => {
+      const selected = view === "chapter" && Number(link.dataset.chapter) === chapterId;
+      if (selected) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
     });
-    progress.classList.add("is-hidden");
-    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
-    window.scrollTo({ top: 0, behavior });
+    document.querySelectorAll("[data-view]").forEach((link) => {
+      if (link.dataset.view === view) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+    });
+    document.querySelectorAll("[data-layers]").forEach((list) => {
+      list.hidden = !(view === "chapter" && Number(list.dataset.layers) === chapterId);
+    });
+    const chapter = chapters[chapterId - 1];
+    headerPlace.textContent =
+      view === "chapter" ? `第${chapter.idKanji}篇　${chapter.name}` : view === "tsudoku" ? "通読" : "総覧";
+
+    const current = mobileNav.querySelector('[aria-current="page"]');
+    if (current) {
+      const left = current.offsetLeft - (mobileNav.clientWidth - current.offsetWidth) / 2;
+      mobileNav.scrollTo({ left: Math.max(0, left), behavior: reduceMotion.matches ? "auto" : "smooth" });
+    }
+  };
+
+  // 読んでいる層を、側面の目次に示す
+  let spyObserver;
+  let readingChapter = 0;
+  let currentView = "";
+  const watchSections = () => {
+    spyObserver?.disconnect();
+    const targets = content.querySelectorAll("[data-spy]");
+    if (!targets.length || !("IntersectionObserver" in window)) return;
+    const visible = new Map();
+    spyObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) visible.set(entry.target.dataset.spy, entry.target.offsetTop);
+          else visible.delete(entry.target.dataset.spy);
+        });
+        const [active] = [...visible.entries()].sort((a, b) => a[1] - b[1]).map(([key]) => key);
+        if (!active) return;
+        document.querySelectorAll(".side-layers a").forEach((link) => {
+          if (link.dataset.layer === active) link.setAttribute("aria-current", "true");
+          else link.removeAttribute("aria-current");
+        });
+        document.querySelectorAll(".side-chapter").forEach((link) => {
+          link.classList.toggle("is-reading", active === `tsudoku-${link.dataset.chapter}`);
+        });
+        readingChapter = active.startsWith("tsudoku-") ? Number(active.slice(8)) : 0;
+      },
+      { rootMargin: "-20% 0px -60% 0px" },
+    );
+    targets.forEach((target) => spyObserver.observe(target));
+  };
+
+  const jumpTo = (target) => {
+    if (!target) return;
+    target.scrollIntoView({ behavior: reduceMotion.matches ? "auto" : "smooth", block: "start" });
+    target.focus({ preventScroll: true });
+  };
+
+  document.addEventListener("click", (event) => {
+    const jump = event.target.closest("a[data-jump]");
+    if (jump) {
+      event.preventDefault();
+      jumpTo(content.querySelector(jump.getAttribute("href")));
+      return;
+    }
+    const writing = event.target.closest("[data-writing]");
+    if (writing && writing.tagName === "BUTTON") {
+      const container = writing.closest(".layer").querySelector(".kundoku");
+      container.dataset.writing = writing.dataset.writing;
+      writing.parentElement.querySelectorAll("button").forEach((button) => {
+        button.setAttribute("aria-pressed", String(button === writing));
+      });
+    }
+  });
+
+  // 縦組みの欄では、縦方向のホイールを読み進める向き（左）へ送る
+  content.addEventListener(
+    "wheel",
+    (event) => {
+      const panel = event.target.closest(".tate");
+      if (!panel || Math.abs(event.deltaX) >= Math.abs(event.deltaY)) return;
+      const maxScroll = panel.scrollWidth - panel.clientWidth;
+      if (maxScroll <= 0) return;
+      const position = Math.abs(panel.scrollLeft);
+      const forward = event.deltaY > 0;
+      if ((forward && position >= maxScroll - 1) || (!forward && position <= 0)) return;
+      event.preventDefault();
+      panel.scrollLeft -= event.deltaY;
+    },
+    { passive: false },
+  );
+
+  const show = (view, chapterId, target) => {
+    // 通読で層を切り替えたときは、読んでいた篇から続ける
+    const resumeChapter = view === "tsudoku" && currentView === "tsudoku" ? readingChapter : 0;
+    currentView = view;
+    if (view === "chapter") renderChapter(chapters[chapterId - 1]);
+    else if (view === "tsudoku") renderTsudoku(target);
+    else renderOverview();
+    updateNav(view, chapterId);
+    watchSections();
+    if (view === "chapter" && target) {
+      jumpTo(content.querySelector(target));
+      return;
+    }
+    if (resumeChapter > 1) {
+      content.querySelector(`#tsudoku-${resumeChapter}`).scrollIntoView({ behavior: "instant", block: "start" });
+      document.querySelector("#reading").focus({ preventScroll: true });
+      return;
+    }
+    window.scrollTo({ top: 0, behavior: "instant" });
     document.querySelector("#reading").focus({ preventScroll: true });
   };
 
-  content.addEventListener("click", (event) => {
-    const button = event.target.closest(".mark-button");
-    if (!button) return;
-    const id = button.dataset.mark;
-    if (marks.has(id)) marks.delete(id);
-    else marks.add(id);
-    saveSet(marksKey, marks);
-    if (window.location.hash === "#notes") {
-      const focusSelector = button.closest(".marked") ? "#marked-title" : ".today .mark-button";
-      const scroll = window.scrollY;
-      renderNotes();
-      content.querySelector(focusSelector).focus({ preventScroll: true });
-      window.scrollTo(0, scroll);
-      return;
-    }
-    const marked = marks.has(id);
-    button.setAttribute("aria-pressed", String(marked));
-    button.textContent = marked ? "印を付けた" : "印を付ける";
-  });
-
-  function selectChapter(id, updateHash = false) {
-    const chapter = chapters[id - 1] || chapters[0];
-    if (updateHash && window.location.hash !== `#chapter-${chapter.id}`) {
-      history.pushState(null, "", `#chapter-${chapter.id}`);
-    }
-
-    renderChapter(chapter);
-    progress.classList.remove("is-hidden");
-    document.querySelectorAll("[data-notes]").forEach((link) => link.removeAttribute("aria-current"));
-    document.querySelectorAll(".chapter-button").forEach((button) => {
-      const selected = Number(button.dataset.chapter) === chapter.id;
-      button.toggleAttribute("aria-current", selected);
-      if (selected) {
-        button.setAttribute("aria-current", "page");
-        if (button.closest("#mobile-nav")) {
-          const nav = button.closest("#mobile-nav");
-          const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
-          const left = button.offsetLeft - (nav.clientWidth - button.offsetWidth) / 2;
-          nav.scrollTo({ left: Math.max(0, left), behavior });
-        }
-      }
-    });
-    progressCurrent.textContent = String(chapter.id);
-    progressBar.style.width = `${(chapter.id / 13) * 100}%`;
-
-    if (updateHash) {
-      const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
-      window.scrollTo({ top: 0, behavior });
-      document.querySelector("#reading").focus({ preventScroll: true });
-    }
-  }
-
   const route = () => {
     const hash = window.location.hash;
-    if (hash === "#notes") {
-      showNotes();
-      return;
-    }
-    const lessonMatch = hash.match(/^#lesson-(\d{1,2})-(\d)$/);
-    if (lessonMatch && lessonById(`${Number(lessonMatch[1])}-${lessonMatch[2]}`)) {
-      selectChapter(Number(lessonMatch[1]));
-      scrollToTarget(content.querySelector(hash));
-      return;
-    }
-    if (!hash || /^#chapter-\d{1,2}$/.test(hash)) selectChapter(chapterFromHash());
+    const chapterMatch = hash.match(/^#chapter-(\d{1,2})$/);
+    const lessonMatch = hash.match(/^#lesson-(\d{1,2})-([1-3])$/);
+    const mode = readModes.find((item) => item.hash === hash);
+    if (chapterMatch && chapters[Number(chapterMatch[1]) - 1]) show("chapter", Number(chapterMatch[1]));
+    else if (lessonMatch && chapters[Number(lessonMatch[1]) - 1]) show("chapter", Number(lessonMatch[1]), hash);
+    else if (mode) show("tsudoku", 0, mode.key);
+    else show("overview", 0);
   };
 
-  chapters.forEach((chapter) => {
-    desktopNav.append(createNavButton(chapter));
-    mobileNav.append(createNavButton(chapter, true));
-  });
-
+  sidebarNav.innerHTML = sidebarTemplate();
+  mobileNav.innerHTML = mobileTemplate();
+  headerTicks.innerHTML = ticksTemplate();
   window.addEventListener("hashchange", route);
   route();
 })();
