@@ -14,12 +14,12 @@
 
   // 一つの篇を、性格の異なる三つの層に分けて読む
   const parts = [
-    { key: "kataru", numeral: "壱", name: "語る", note: "孫子の教えを、主君への進言として今の日本語で語り直した本文です。" },
+    { key: "kataru", numeral: "壱", name: "語る", note: "孫子が王に語りかける形で、各篇の原文を順に今の日本語へ移した本文です。" },
     { key: "genten", numeral: "弐", name: "原典", note: "二千年以上書き写されてきた漢文と、それを日本語の語順で読み下した文です。" },
     { key: "yomitsugu", numeral: "参", name: "読み継ぐ", note: "後の時代にどう読まれ、どこで引かれてきたか。どれも数ある読みの一つです。" },
   ];
   const layers = {
-    counsel: { part: "kataru", glyph: "言", name: "軍師の進言", kind: "意訳", note: "孫子が主君に語りかける形で、篇の内容を今の日本語に移したもの。" },
+    counsel: { part: "kataru", glyph: "言", name: "軍師の進言", kind: "意訳", note: "孫子が王に語りかける形で、原文の流れに沿って今の日本語に移したもの。" },
     sayings: { part: "genten", glyph: "句", name: "現代に残る言葉", kind: "名句", note: "この篇から生まれ、今も使われる言葉。原文・書き下し・来歴の順に。" },
     original: { part: "genten", glyph: "文", name: "原文", kind: "白文", note: "伝わる漢文。後世に補われた句読点を除き、縦に組んでいます。" },
     kundoku: { part: "genten", glyph: "訓", name: "書き下し文", kind: "訓読", note: "漢文を日本語の語順で読み下した文。1935年刊『武経七書』所収本文によります。" },
