@@ -43,9 +43,6 @@
   const stripOriginalPunctuation = (value) =>
     String(value).replace(/[，。；：！？、,.!?;:“”‘’「」『』（）()《》〈〉—…·﹁﹂\s]/g, "");
 
-  const plainCounsel = (paragraph) =>
-    paragraph.replaceAll("<strong>", "").replaceAll("</strong>", "").replace(/^孫子は申し上げる。\s*/, "");
-
   const glyph = (key) => {
     const layer = layers[key];
     return `<span class="glyph glyph--${layer.part}" aria-hidden="true">${layer.glyph}</span>`;
@@ -95,8 +92,6 @@
   const counselTemplate = (chapter) => {
     const marks = highlights[chapter.id - 1];
     return chapter.counsel
-      .map(plainCounsel)
-      .filter(Boolean)
       .map((paragraph) => {
         let html = escapeHtml(paragraph);
         marks.forEach((mark) => {
