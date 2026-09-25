@@ -12,9 +12,21 @@ window.SONSHI_ASIDES = [
       },
     ],
     takeaway: "二千年を隔てて引き継がれたのは、奇策ではなく、戦う前の点検表でした。",
+    mentions: [
+      {
+        where: "北宋 武経七書の筆頭に",
+        text: "神宗の時代、武官を選ぶ試験のために七つの兵法書が「武経七書」と定められ、孫子はその最初に置かれました。日本でも慶長十一年（1606年）、徳川家康の命で刊行された伏見版に収められ、江戸の兵学の土台になります。",
+      },
+      {
+        where: "2001年 米ドラマ『ザ・ソプラノズ』",
+        text: "マフィアのボス、トニー・ソプラノが、精神科医に勧められた孫子を読んで役に立っていると語る場面が放送されると、英訳本が急に売れ始めました。ある出版社では、ふだん週に数百部の本が四月末までに一万四千部売れたといいます。",
+      },
+    ],
     sources: [
       { label: "Wikipedia「孫子 (書物)」", url: "https://ja.wikipedia.org/wiki/%E5%AD%AB%E5%AD%90_(%E6%9B%B8%E7%89%A9)" },
       { label: "ダイヤモンド・オンライン「孫の2乗の兵法」", url: "https://diamond.jp/articles/-/257022" },
+      { label: "Wikipedia「武経七書」", url: "https://ja.wikipedia.org/wiki/%E6%AD%A6%E7%B5%8C%E4%B8%83%E6%9B%B8" },
+      { label: "The Baltimore Sun「Hey, if Tony's reading it, it's got to be good」", url: "https://www.baltimoresun.com/news/bs-xpm-2001-05-13-0105130365-story.html" },
     ],
   },
   {
@@ -34,9 +46,16 @@ window.SONSHI_ASIDES = [
       },
     ],
     takeaway: "「拙速」という言葉に出会ったら、何と比べての話なのかを確かめてください。",
+    mentions: [
+      {
+        where: "三国時代 郭嘉の献策",
+        text: "曹操が遠く烏桓を討とうとしたとき、参謀の郭嘉は「兵は神速を貴ぶ」と説き、重い荷を残して軽装の兵で急がせるよう進言しました。作戦篇の「兵は勝つことを貴んで、久しきを貴ばず」と響き合う言葉です。進言を受けたのは、孫子に注を付けた曹操その人でした。",
+      },
+    ],
     sources: [
       { label: "Web漢文大系「兵は拙速を尊ぶ」", url: "https://kanbun.info/koji/heiwasesso.html" },
       { label: "故事ことわざ辞典「巧遅は拙速に如かず」", url: "https://kotowaza-dictionary.jp/k0858/" },
+      { label: "Wikipedia「郭嘉」", url: "https://ja.wikipedia.org/wiki/%E9%83%AD%E5%98%89" },
     ],
   },
   {
@@ -56,9 +75,16 @@ window.SONSHI_ASIDES = [
       },
     ],
     takeaway: "この句が教えるのは必勝法ではなく、負けを遠ざける条件です。",
+    mentions: [
+      {
+        where: "1987年 米ドラマ『新スタートレック』",
+        text: "第一シーズンの一話「The Last Outpost」で、副長ライカーが孫子を引きます。戦うべき時と戦うべきでない時を知る者が勝つ。謀攻篇で「勝を知るに五あり」の最初に挙がる一句が、二十四世紀の宇宙船の上でも語られていました。",
+      },
+    ],
     sources: [
       { label: "毛沢東「中国革命戦争の戦略問題」（中国語）", url: "https://www.marxists.org/chinese/maozedong/marxist.org-chinese-mao-193612.htm" },
       { label: "Web漢文大系「彼を知り己を知れば百戦殆からず」", url: "https://kanbun.info/koji/karewoshiri.html" },
+      { label: "IMDb「The Last Outpost」Quotes", url: "https://www.imdb.com/title/tt0708804/quotes/" },
     ],
   },
   {
@@ -78,10 +104,17 @@ window.SONSHI_ASIDES = [
       },
     ],
     takeaway: "どちらの読みでも、攻めるか守るかは気分ではなく、力の量で決めるという芯は同じです。",
+    mentions: [
+      {
+        where: "1987年 映画『ウォール街』",
+        text: "投資家ゴードン・ゲッコーは若い部下に、自分は確実な勝負にしか賭けないと言い、孫子を読め、どの戦いも戦う前に勝負はついている、と続けます。軍形篇の「勝兵は先づ勝つて後ちに戰を求む」を、金融の世界へ持ち込んだ台詞です。",
+      },
+    ],
     sources: [
       { label: "熊征「『孫子』形篇の攻守観について」（北海道大学）", url: "https://eprints.lib.hokudai.ac.jp/dspace/bitstream/2115/79796/1/09_rjgshhs_19_p157-188_l.pdf" },
       { label: "Wikipedia「銀雀山漢簡」", url: "https://ja.wikipedia.org/wiki/%E9%8A%80%E9%9B%80%E5%B1%B1%E6%BC%A2%E7%B0%A1" },
       { label: "U.S. Marine Corps「MCDP 1」", url: "https://www.marines.mil/News/Publications/MCPEL/Electronic-Library-Display/Article/899837/mcdp-1/" },
+      { label: "IMDb『ウォール街』Quotes", url: "https://www.imdb.com/title/tt0094291/quotes/" },
     ],
   },
   {
@@ -101,8 +134,20 @@ window.SONSHI_ASIDES = [
       },
     ],
     takeaway: "大陸と二千年を隔て、別の名前で語り直されても残る考えこそ、身につける価値があります。",
+    mentions: [
+      {
+        where: "唐『李衛公問対』",
+        text: "唐の太宗と名将・李靖の問答をまとめた書で、その多くが孫子の奇正や虚実の読み解きにあてられています。見せ方しだいで奇は正に、正は奇に変わる、と踏み込んだこの書も、のちに孫子と並んで武経七書に数えられました。",
+      },
+      {
+        where: "1905年 東京",
+        text: "孫子を初めて英語に訳したのは、日本に駐在していた英国の砲兵将校カルスロップでした。書名は日本語読みの「SONSHI」。二人の日本人の助けを借りた訳で、のちに中国学者ジャイルズから厳しく批判され、1910年にはジャイルズ自身の英訳が出ています。",
+      },
+    ],
     sources: [
       { label: "Wikipedia「The Art of War」（英語）", url: "https://en.wikipedia.org/wiki/The_Art_of_War" },
+      { label: "Wikisource『李衛公問対』", url: "https://ja.wikisource.org/wiki/%E6%9D%8E%E8%A1%9B%E5%85%AC%E5%95%8F%E5%AF%BE" },
+      { label: "Project Gutenberg『Sun Tzŭ on The Art of War』（ジャイルズ訳の序文）", url: "https://www.gutenberg.org/files/132/132-h/132-h.htm" },
     ],
   },
   {
@@ -122,9 +167,16 @@ window.SONSHI_ASIDES = [
       },
     ],
     takeaway: "柔らかくあることは、流されることとは違います。",
+    mentions: [
+      {
+        where: "江戸時代の浄瑠璃",
+        text: "「虚々実々の駆け引き」と言うときの「虚々実々」は、虚実篇の虚と実を重ねた言葉です。『日本国語大辞典』が早い用例に挙げるのは、近松門左衛門の浄瑠璃『信州川中島合戦』（1721年）。謙信と信玄が秘術を尽くして斬り結ぶ場面で、信玄は孫子の心を練る、と語られます。",
+      },
+    ],
     sources: [
       { label: "U.S. Marine Corps「MCDP 1」", url: "https://www.marines.mil/News/Publications/MCPEL/Electronic-Library-Display/Article/899837/mcdp-1/" },
       { label: "Marine Corps University「Warfighting Cliff Notes」", url: "https://www.usmcu.edu/Portals/218/mcdp1%20warfighting%20lab.pdf" },
+      { label: "コトバンク「虚虚実実」", url: "https://kotobank.jp/word/%E8%99%9A%E8%99%9A%E5%AE%9F%E5%AE%9F-479281" },
     ],
   },
   {
@@ -144,10 +196,18 @@ window.SONSHI_ASIDES = [
       },
     ],
     takeaway: "原文は風・林・火・山のあと、陰と雷へ続きます。隠れる時と動く時まで含めて、ひと揃いの心得です。",
+    mentions: [
+      {
+        where: "山梨県甲州市 雲峰寺",
+        text: "信玄の軍旗と伝わる「孫子の旗」が、今もこの寺に残っています。金泥で大書された「疾如風 徐如林 侵掠如火 不動如山」の十四字。恵林寺の快川紹喜に書かせたと伝えられ、日本最古とされる日の丸の御旗とともに宝物殿に並んでいます。",
+      },
+    ],
     sources: [
       { label: "Wikipedia「風林火山」", url: "https://ja.wikipedia.org/wiki/%E9%A2%A8%E6%9E%97%E7%81%AB%E5%B1%B1" },
       { label: "Wikipedia「風林火山 (NHK大河ドラマ)」", url: "https://ja.wikipedia.org/wiki/%E9%A2%A8%E6%9E%97%E7%81%AB%E5%B1%B1_(NHK%E5%A4%A7%E6%B2%B3%E3%83%89%E3%83%A9%E3%83%9E)" },
       { label: "ダイヤモンド・オンライン「孫の2乗の兵法」", url: "https://diamond.jp/articles/-/257022" },
+      { label: "山梨市「孫子の旗」", url: "https://www.city.yamanashi.yamanashi.jp/site/cultural-assets/1658.html" },
+      { label: "富士の国やまなし観光ネット「風林火山史跡巡り」", url: "https://www.yamanashi-kankou.jp/history/shingen/forest.html" },
     ],
   },
   {
@@ -167,8 +227,15 @@ window.SONSHI_ASIDES = [
       },
     ],
     takeaway: "決まりを外れる判断が許されるのは、決まりを誰よりも重く扱う者だけです。",
+    mentions: [
+      {
+        where: "前漢 細柳の陣",
+        text: "匈奴に備えて細柳に陣を敷いた周亜夫のもとへ、文帝が自ら慰問に訪れました。門の兵は「軍中では将軍の令を聞き、天子の詔は聞かない」と答えて通さず、文帝は使者を立ててから、ようやく馬をゆっくり進めて入りました。帰り道、文帝は、これこそ真の将軍だと称えたといいます。",
+      },
+    ],
     sources: [
       { label: "Wikisource『史記』孫子呉起列伝（中国語）", url: "https://zh.wikisource.org/wiki/%E5%8F%B2%E8%A8%98/%E5%8D%B7065" },
+      { label: "Wikisource『史記』絳侯周勃世家（中国語）", url: "https://zh.wikisource.org/wiki/%E5%8F%B2%E8%A8%98/%E5%8D%B7057" },
     ],
   },
   {
@@ -271,9 +338,21 @@ window.SONSHI_ASIDES = [
       },
     ],
     takeaway: "情報で勝つ者は、相手の心の隙間を知っています。守る側なら、味方同士の小さな疑いを放っておかないことです。",
+    mentions: [
+      {
+        where: "江戸中期 荻生徂徠『孫子国字解』",
+        text: "儒学者の荻生徂徠は、孫子を漢文ではなく仮名交じりの日本語で読み解く注釈を書きました。初学者向けの体裁ながら、優れた孫子注として今も読まれています。",
+      },
+      {
+        where: "幕末の長州 松下村塾",
+        text: "長州藩の兵学師範だった吉田松陰は、最晩年に松下村塾で孫子を講じ、『孫子評註』を遺しました。江戸の孫子研究を集大成しつつ、欧米列強が迫る時勢に引き寄せて読んだもので、高杉晋作や久坂玄瑞ら門下生の戦略の源になったとも言われます。",
+      },
+    ],
     sources: [
       { label: "Wikisource『史記』田単列伝（中国語）", url: "https://zh.wikisource.org/wiki/%E5%8F%B2%E8%A8%98/%E5%8D%B7082" },
       { label: "Wikipedia「三十六計」", url: "https://ja.wikipedia.org/wiki/%E4%B8%89%E5%8D%81%E5%85%AD%E8%A8%88" },
+      { label: "河出書房新社『荻生徂徠全集8 孫子國字解 他』", url: "https://www.kawade.co.jp/np/isbn/9784309605586/" },
+      { label: "PHP研究所『吉田松陰『孫子評註』を読む』", url: "https://www.php.co.jp/books/detail.php?isbn=978-4-569-84192-2" },
     ],
   },
 ];

@@ -3,8 +3,6 @@
 
   const chapters = window.SONSHI_CHAPTERS;
   const fullTexts = window.SONSHI_FULL_TEXTS;
-  const lessons = window.SONSHI_LESSONS;
-  const scenes = window.SONSHI_SCENES;
   const asides = window.SONSHI_ASIDES;
   const sayings = window.SONSHI_SAYINGS;
   const highlights = window.SONSHI_HIGHLIGHTS;
@@ -13,21 +11,19 @@
   const mobileNav = document.querySelector("#mobile-nav");
   const headerPlace = document.querySelector("#header-place");
   const headerTicks = document.querySelector("#header-ticks");
-  const lessonNumbers = ["一", "二", "三"];
 
   // 一つの篇を、性格の異なる三つの層に分けて読む
   const parts = [
     { key: "kataru", numeral: "壱", name: "語る", note: "孫子の教えを、主君への進言として今の日本語で語り直した本文です。" },
     { key: "genten", numeral: "弐", name: "原典", note: "二千年以上書き写されてきた漢文と、それを日本語の語順で読み下した文です。" },
-    { key: "yomitsugu", numeral: "参", name: "読み継ぐ", note: "後の時代の読まれ方と、今の暮らしに引き寄せた読み方。どれも数ある読みの一つです。" },
+    { key: "yomitsugu", numeral: "参", name: "読み継ぐ", note: "後の時代にどう読まれ、どこで引かれてきたか。どれも数ある読みの一つです。" },
   ];
   const layers = {
     counsel: { part: "kataru", glyph: "言", name: "軍師の進言", kind: "意訳", note: "孫子が主君に語りかける形で、篇の内容を今の日本語に移したもの。" },
     sayings: { part: "genten", glyph: "句", name: "現代に残る言葉", kind: "名句", note: "この篇から生まれ、今も使われる言葉。原文・書き下し・来歴の順に。" },
     original: { part: "genten", glyph: "文", name: "原文", kind: "白文", note: "伝わる漢文。後世に補われた句読点を除き、縦に組んでいます。" },
     kundoku: { part: "genten", glyph: "訓", name: "書き下し文", kind: "訓読", note: "漢文を日本語の語順で読み下した文。1935年刊『武経七書』所収本文によります。" },
-    aside: { part: "yomitsugu", glyph: "話", name: "余話", kind: "後世", note: "この篇が、後の時代や今の世でどう読まれ、使われてきたか。" },
-    lessons: { part: "yomitsugu", glyph: "心", name: "今に活かす心得", kind: "読みの一例", note: "今の仕事や暮らしの場面に引き寄せた、ひとつの読み方。答えではなく、読み返すための手がかりとして。" },
+    aside: { part: "yomitsugu", glyph: "話", name: "余話", kind: "後世", note: "この篇が後の時代にどう読まれ、史書や物語、映画やドラマのどこで引かれてきたか。" },
   };
   const groups = [
     { name: "計る", note: "戦う前に量り、損なわずに勝つ", ids: [1, 2, 3] },
@@ -76,7 +72,7 @@
     </header>`;
 
   const chapterLayers = (chapter) =>
-    ["counsel", "sayings", "original", "kundoku", "aside", "lessons"].filter(
+    ["counsel", "sayings", "original", "kundoku", "aside"].filter(
       (key) => key !== "sayings" || sayings[chapter.id - 1].length,
     );
 
@@ -108,7 +104,7 @@
           const phrase = escapeHtml(mark.phrase);
           html = html.replace(
             phrase,
-            `<a class="term-link" href="#quote-${chapter.id}-${mark.quoteIndex + 1}" data-jump>${phrase}<span class="term-glyph" aria-label="（名句へ）">句</span></a>`,
+            `<a class="term-link" href="#quote-${chapter.id}-${mark.quoteIndex + 1}" data-jump>${phrase}</a>`,
           );
         });
         return `<p>${html}</p>`;
@@ -138,14 +134,6 @@
     </article>`;
   };
 
-  const lessonTemplate = (lesson, index, chapterId) => `
-    <article id="lesson-${chapterId}-${index + 1}" class="lesson" tabindex="-1">
-      <p class="lesson-kicker">其の${lessonNumbers[index]}<span lang="zh-Hant">${escapeHtml(lesson.basis)}</span></p>
-      <h4 class="lesson-title">${escapeHtml(lesson.title)}</h4>
-      <p class="lesson-scene">${escapeHtml(lesson.scene)}</p>
-      <p class="lesson-question"><span class="inline-label">問い</span>${escapeHtml(lesson.question)}</p>
-    </article>`;
-
   const asideTemplate = (aside) => `
     <div class="aside">
       <h4 class="aside-title">${escapeHtml(aside.title)}</h4>
@@ -155,6 +143,16 @@
           .join("")}
       </ol>
       <p class="aside-takeaway">${escapeHtml(aside.takeaway)}</p>
+      ${
+        aside.mentions?.length
+          ? `<section class="aside-mentions" aria-label="こんなところにも">
+              <h5 class="aside-mentions-title">こんなところにも</h5>
+              <ul>${aside.mentions
+                .map((mention) => `<li><p class="aside-where">${escapeHtml(mention.where)}</p><p class="aside-text">${escapeHtml(mention.text)}</p></li>`)
+                .join("")}</ul>
+            </section>`
+          : ""
+      }
       <p class="fine-sources">${sourceLinks(aside.sources)}</p>
     </div>`;
 
@@ -169,23 +167,6 @@
       </ol>
       ${tatePanel(paragraphs, { className: "tate-frame--paper", label: "書き下し文", ku: true })}
     </div>`;
-
-  const chapterMap = (chapter) => `
-    <nav class="chapter-map" aria-label="この篇の構成">
-      ${parts
-        .map(
-          (part) => `
-        <div class="map-part">
-          <span class="map-numeral" aria-hidden="true">${part.numeral}</span>
-          <span class="map-part-name">${part.name}</span>
-          <span class="map-links">${chapterLayers(chapter)
-            .filter((key) => layers[key].part === part.key)
-            .map((key) => `<a href="#sec-${key}" data-jump>${glyph(key)}<span>${layers[key].name}</span></a>`)
-            .join("")}</span>
-        </div>`,
-        )
-        .join("")}
-    </nav>`;
 
   const pagerTemplate = (chapter) => {
     const prev = chapters[chapter.id - 2];
@@ -222,7 +203,6 @@
         <h1 class="chapter-title">${escapeHtml(chapter.name)}</h1>
         <p class="chapter-subtitle">${escapeHtml(chapter.subtitle)}</p>
         <p class="chapter-lead">${escapeHtml(chapter.lead)}</p>
-        ${chapterMap(chapter)}
       </header>
 
       <div class="part part--kataru">
@@ -247,7 +227,6 @@
       <div class="part part--yomitsugu">
         ${partHead(parts[2])}
         ${section("aside", asideTemplate(asides[chapter.id - 1]))}
-        ${section("lessons", `<div class="lessons">${lessons[chapter.id - 1].map((lesson, index) => lessonTemplate(lesson, index, chapter.id)).join("")}</div>`)}
       </div>
 
       <aside class="source-note">
@@ -291,13 +270,6 @@
       </a>`;
   };
 
-  const lessonLink = (id) => {
-    const [chapterId, number] = id.split("-").map(Number);
-    const chapter = chapters[chapterId - 1];
-    const lesson = lessons[chapterId - 1][number - 1];
-    return `<li><a href="#lesson-${id}"><span class="scene-lesson-source">第${chapter.idKanji}篇 ${escapeHtml(chapter.name)}・其の${lessonNumbers[number - 1]}</span><span class="scene-lesson-title">${escapeHtml(lesson.title)}</span></a></li>`;
-  };
-
   const renderOverview = () => {
     document.title = "孫子兵法 十三篇";
     content.innerHTML = `
@@ -332,22 +304,6 @@
               <h3 class="group-title"><span class="group-name">${group.name}</span><span class="group-note">${group.note}</span></h3>
               <div class="volumes">${group.ids.map((id) => overviewCard(chapters[id - 1])).join("")}</div>
             </section>`,
-            )
-            .join("")}
-        </div>
-      </section>
-
-      <section class="overview-section" aria-labelledby="scenes-title">
-        <h2 id="scenes-title" class="overview-heading"><span>場面から読む</span></h2>
-        <p class="overview-note">いま置かれている場面から、篇をまたいで「今に活かす心得」を引く索引です。</p>
-        <div class="scenes">
-          ${scenes
-            .map(
-              (scene) => `
-            <details class="scene">
-              <summary><span class="scene-name">${escapeHtml(scene.name)}</span><span class="scene-note">${escapeHtml(scene.note)}</span></summary>
-              <ul class="scene-lessons">${scene.lessons.map(lessonLink).join("")}</ul>
-            </details>`,
             )
             .join("")}
         </div>
@@ -486,15 +442,11 @@
     { passive: false },
   );
 
-  const show = (view, chapterId, target) => {
+  const show = (view, chapterId) => {
     if (view === "chapter") renderChapter(chapters[chapterId - 1]);
     else renderOverview();
     updateNav(view, chapterId);
     watchSections();
-    if (view === "chapter" && target) {
-      jumpTo(content.querySelector(target));
-      return;
-    }
     window.scrollTo(0, 0);
     document.querySelector("#reading").focus({ preventScroll: true });
   };
@@ -502,9 +454,7 @@
   const route = () => {
     const hash = window.location.hash;
     const chapterMatch = hash.match(/^#chapter-(\d{1,2})$/);
-    const lessonMatch = hash.match(/^#lesson-(\d{1,2})-([1-3])$/);
     if (chapterMatch && chapters[Number(chapterMatch[1]) - 1]) show("chapter", Number(chapterMatch[1]));
-    else if (lessonMatch && chapters[Number(lessonMatch[1]) - 1]) show("chapter", Number(lessonMatch[1]), hash);
     else show("overview", 0);
   };
 

@@ -436,8 +436,7 @@ a {
   background: var(--paper-2);
 }
 
-.side-layers .glyph,
-.chapter-map .glyph {
+.side-layers .glyph {
   width: 20px;
   height: 20px;
   border-width: 1px;
@@ -531,58 +530,6 @@ a {
   color: var(--ink-2);
   font-size: 16px;
   line-height: 1.95;
-}
-
-.chapter-map {
-  display: grid;
-  gap: 0;
-  margin-top: 44px;
-  border-top: 3px double var(--line-2);
-  border-bottom: 1px solid var(--line-2);
-}
-
-.map-part {
-  display: grid;
-  grid-template-columns: 2em 5.5em 1fr;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 4px;
-}
-
-.map-part + .map-part {
-  border-top: 1px dashed var(--line);
-}
-
-.map-numeral {
-  color: var(--shu);
-  font-size: 18px;
-}
-
-.map-part-name {
-  font-size: 15px;
-  letter-spacing: 0.2em;
-}
-
-.map-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 18px;
-}
-
-.map-links a {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 32px;
-  color: var(--ink-2);
-  font: 14px/1.3 var(--sans);
-  text-decoration: none;
-}
-
-.map-links a:hover span:last-child {
-  color: var(--shu);
-  text-decoration: underline;
-  text-underline-offset: 4px;
 }
 
 /* ---- 三つの部 ---- */
@@ -684,20 +631,6 @@ a {
 
 .term-link:hover {
   text-decoration-color: var(--shu);
-}
-
-.term-glyph {
-  display: inline-grid;
-  width: 1.2em;
-  height: 1.2em;
-  margin-left: 0.3em;
-  border-radius: 2px;
-  color: var(--shu-ink);
-  background: var(--shu);
-  font-size: 0.62em;
-  font-weight: 700;
-  place-items: center;
-  vertical-align: 0.35em;
 }
 
 /* 弐　原典 ---- 縦組み */
@@ -1023,72 +956,51 @@ a {
   line-height: 1.9;
 }
 
+.aside-mentions {
+  margin: 36px 0 0;
+}
+
+.aside-mentions-title {
+  margin: 0 0 6px;
+  color: var(--shu);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+}
+
+.aside-mentions ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.aside-mentions li {
+  padding: 14px 0;
+  border-bottom: 1px dashed var(--line-2);
+}
+
+.aside-mentions li:last-child {
+  border-bottom: 0;
+}
+
+.aside-where {
+  margin: 0;
+  color: var(--ink);
+  font-size: 15.5px;
+  font-weight: 600;
+  line-height: 1.7;
+  letter-spacing: 0.04em;
+}
+
+.aside-mentions .aside-text {
+  margin-top: 4px;
+  padding-left: 0;
+}
+
 .fine-sources {
   margin: 14px 0 0;
   color: var(--muted);
   font: 12px/1.7 var(--sans);
-}
-
-/* 心得 */
-
-.lessons {
-  display: grid;
-  gap: 18px;
-  max-width: var(--measure);
-}
-
-.lesson {
-  padding: 26px 28px 24px;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-}
-
-.lesson:focus {
-  outline: 2px solid var(--shu-line);
-  outline-offset: 4px;
-}
-
-.lesson-kicker {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 14px;
-  margin: 0;
-  color: var(--muted);
-  font: 600 12px/1.5 var(--sans);
-  letter-spacing: 0.16em;
-}
-
-.lesson-kicker span {
-  color: var(--ink-2);
-  font: 15px/1.5 var(--serif);
-  letter-spacing: 0.14em;
-}
-
-.lesson-title {
-  margin: 10px 0 0;
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 1.6;
-  letter-spacing: 0.04em;
-}
-
-.lesson-scene {
-  margin: 12px 0 0;
-  color: var(--ink-2);
-  font: 15px/1.95 var(--sans);
-}
-
-.lesson-question {
-  margin: 18px 0 0;
-  padding-top: 16px;
-  border-top: 1px dashed var(--line-2);
-  font-size: 16.5px;
-  line-height: 1.85;
-}
-
-.lesson-question .inline-label {
-  color: var(--shu);
 }
 
 /* ---- 篇の末尾 ---- */
@@ -1423,87 +1335,6 @@ a {
   letter-spacing: 0.06em;
 }
 
-.scenes {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  align-items: start;
-}
-
-.scene {
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  background: var(--card);
-}
-
-.scene summary {
-  display: grid;
-  gap: 4px;
-  padding: 16px 44px 16px 18px;
-  position: relative;
-  cursor: pointer;
-  list-style: none;
-}
-
-.scene summary::-webkit-details-marker {
-  display: none;
-}
-
-.scene summary::after {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  color: var(--shu);
-  font: 18px/1 var(--sans);
-  content: "＋";
-}
-
-.scene[open] summary::after {
-  content: "－";
-}
-
-.scene-name {
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-}
-
-.scene-note {
-  color: var(--muted);
-  font: 12.5px/1.6 var(--sans);
-}
-
-.scene-lessons {
-  margin: 0;
-  padding: 0 10px 12px;
-  list-style: none;
-}
-
-.scene-lessons a {
-  display: grid;
-  gap: 2px;
-  padding: 10px 8px;
-  border-top: 1px solid var(--line);
-  text-decoration: none;
-}
-
-.scene-lesson-source {
-  color: var(--shu);
-  font: 11.5px/1.5 var(--sans);
-  letter-spacing: 0.08em;
-}
-
-.scene-lesson-title {
-  font-size: 15px;
-  line-height: 1.6;
-}
-
-.scene-lessons a:hover .scene-lesson-title {
-  color: var(--shu);
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-
 .noscript {
   padding: 24px;
   text-align: center;
@@ -1643,20 +1474,6 @@ a {
     padding-left: 16px;
   }
 
-  .chapter-map {
-    margin-top: 32px;
-  }
-
-  .map-part {
-    grid-template-columns: 1.6em 1fr;
-    gap: 4px 6px;
-  }
-
-  .map-links {
-    grid-column: 1 / -1;
-    gap: 2px 14px;
-  }
-
   .part {
     padding-top: 56px;
   }
@@ -1765,10 +1582,6 @@ a {
     padding-left: 0;
   }
 
-  .lesson {
-    padding: 22px 18px 20px;
-  }
-
   .pager {
     grid-template-columns: minmax(0, 1fr);
     gap: 10px;
@@ -1794,8 +1607,7 @@ a {
     font-size: 24px;
   }
 
-  .legend,
-  .scenes {
+  .legend {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -1827,8 +1639,7 @@ a {
   .mobile-strip,
   .kundoku-switch,
   .tate-hint,
-  .pager,
-  .chapter-map {
+  .pager {
     display: none !important;
   }
 
