@@ -9,7 +9,7 @@
 ## 構成
 
 - フレームワークや依存パッケージのない静的サイト。編集対象は `src/`、`dist/` は `bun run build` の生成物なので直接編集しない。
-- データは `src/chapters.js`（篇と進言）、`src/full-texts.js`（原文・書き下し文）、`src/sayings.js`（名句）、`src/asides.js`（余話と、後世に引かれた例「こんなところにも」）に分かれている。
+- データは `src/chapters.js`（篇と進言）、`src/full-texts.js`（原文・書き下し文）、`src/sayings.js`（名句）、`src/asides.js`（余話と、後世に引かれた例「こんなところにも」）、`src/person.js`（附録「孫子という人」）に分かれている。画像は `src/images/` に置き、出典とライセンスをページに表示する。
 - 原文・書き下し文と名句には出典を表示する。主な全文の参照先は中国語版・日本語版 Wikisource。
 - `design/` は制作時の参考画像。
 

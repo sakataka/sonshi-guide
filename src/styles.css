@@ -30,7 +30,7 @@
   --strip-h: 0px;
   --sidebar-w: 256px;
   --gutter: clamp(20px, 5vw, 64px);
-  --measure: 40em;
+  --measure: 52em;
   color-scheme: light;
   color: var(--ink);
   background: var(--paper);
@@ -308,6 +308,10 @@ a {
   background: var(--paper-2);
 }
 
+.side-top--person {
+  margin-top: 2px;
+}
+
 .side-top[aria-current="page"] {
   background: var(--shu-wash);
 }
@@ -360,8 +364,7 @@ a {
   content: "";
 }
 
-.side-chapters,
-.side-layers {
+.side-chapters {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -410,41 +413,6 @@ a {
   content: "";
 }
 
-.side-layers {
-  margin: 4px 0 10px 22px;
-  padding-left: 12px;
-  border-left: 1px solid var(--line);
-}
-
-.side-layers a {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 5px 8px;
-  border-radius: 3px;
-  color: var(--muted);
-  font: 13px/1.3 var(--sans);
-  text-decoration: none;
-}
-
-.side-layers a:hover {
-  color: var(--ink);
-}
-
-.side-layers a[aria-current="true"] {
-  color: var(--ink);
-  font-weight: 600;
-  background: var(--paper-2);
-}
-
-.side-layers .glyph {
-  width: 20px;
-  height: 20px;
-  border-width: 1px;
-  border-radius: 2px;
-  font-size: 11.5px;
-}
-
 .mobile-strip {
   display: none;
 }
@@ -459,7 +427,7 @@ a {
 }
 
 .reading article {
-  max-width: 880px;
+  max-width: 1080px;
   margin: 0 auto;
 }
 
@@ -524,7 +492,7 @@ a {
 }
 
 .chapter-lead {
-  max-width: 34em;
+  max-width: 44em;
   margin: 26px 0 0;
   padding-left: 20px;
   border-left: 2px solid var(--shu);
@@ -570,7 +538,6 @@ a {
   letter-spacing: 0.3em;
 }
 
-
 .layer {
   margin-bottom: 72px;
 }
@@ -599,13 +566,6 @@ a {
   letter-spacing: 0.14em;
 }
 
-.layer-kind {
-  color: var(--shu);
-  font: 600 12px/1 var(--sans);
-  letter-spacing: 0.16em;
-}
-
-
 /* 壱　語る ---- 軍師の進言 */
 
 .counsel {
@@ -618,8 +578,6 @@ a {
   line-height: 2.05;
   letter-spacing: 0.02em;
 }
-
-
 
 .term-link {
   color: var(--shu);
@@ -1090,7 +1048,7 @@ a {
 }
 
 .overview-lead {
-  max-width: 34em;
+  max-width: 40em;
   margin: 0 0 1em;
   color: var(--ink-2);
   font-size: 16.5px;
@@ -1118,12 +1076,27 @@ a {
   text-decoration: none;
 }
 
-
 .action-primary:hover {
   border-color: var(--shu);
   background: var(--shu);
 }
 
+.action-secondary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 22px;
+  border: 1px solid var(--line-2);
+  border-radius: 3px;
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+}
+
+.action-secondary:hover {
+  border-color: var(--shu);
+  color: var(--shu);
+}
 
 .overview-scroll {
   display: flex;
@@ -1336,6 +1309,128 @@ a {
   letter-spacing: 0.06em;
 }
 
+/* ---- 附　孫子という人 ---- */
+
+.person-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 56px;
+  padding: 72px 0 40px;
+}
+
+.person-lead {
+  max-width: 40em;
+  margin: 22px 0 0;
+  color: var(--ink-2);
+  font-size: 16.5px;
+  line-height: 2;
+}
+
+.person-lead + .person-lead {
+  margin-top: 0.8em;
+}
+
+.person-portrait {
+  margin: 0;
+  padding: 18px 18px 14px;
+  border-top: 8px solid var(--sumi);
+  border-bottom: 8px solid var(--sumi);
+  background: var(--card);
+  box-shadow: inset 0 0 0 1px var(--line), 0 18px 40px -28px rgba(0, 0, 0, 0.5);
+}
+
+.person-portrait img {
+  display: block;
+  width: 220px;
+  height: auto;
+  aspect-ratio: 276 / 300;
+  filter: sepia(0.15);
+}
+
+.person-portrait figcaption,
+.person-figure figcaption {
+  max-width: 220px;
+  margin-top: 12px;
+  color: var(--muted);
+  font: 12px/1.7 var(--sans);
+}
+
+.person-section {
+  padding: 48px 0 8px;
+}
+
+.person-life {
+  max-width: var(--measure);
+  margin: 32px auto 0;
+}
+
+.person-link {
+  margin-left: 0.4em;
+  color: var(--shu);
+  text-decoration-color: var(--shu-line);
+  text-underline-offset: 4px;
+  white-space: nowrap;
+}
+
+.person-prose {
+  max-width: var(--measure);
+  margin: 28px auto 0;
+  font-size: 17px;
+  line-height: 2;
+}
+
+.person-prose p {
+  margin: 0 0 1.2em;
+}
+
+.person-figure {
+  margin: 12px auto 0;
+}
+
+.person-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 3px;
+  /* 写真を紙面の色調に馴染ませる */
+  filter: saturate(0.6) sepia(0.18);
+}
+
+.person-figure--wide {
+  max-width: var(--measure);
+}
+
+.person-figure--wide img {
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+
+.person-figure--wide figcaption {
+  max-width: none;
+}
+
+.person-statue-body {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  align-items: start;
+  gap: 40px;
+  max-width: var(--measure);
+  margin: 28px auto 0;
+}
+
+.person-statue-body .person-figure {
+  margin: 0;
+}
+
+.person-statue-body .person-prose {
+  margin: 0;
+}
+
+.person-figure--tall img {
+  aspect-ratio: 681 / 1024;
+}
+
 .noscript {
   padding: 24px;
   text-align: center;
@@ -1445,6 +1540,13 @@ a {
     border-radius: 0;
   }
 
+  .strip-link--end {
+    margin-left: 6px;
+    padding-left: 14px;
+    border-left: 1px solid var(--line);
+    border-radius: 0;
+  }
+
   .strip-link[aria-current="page"] {
     color: var(--shu-ink);
     background: var(--shu);
@@ -1520,7 +1622,6 @@ a {
     font-size: 17px;
     line-height: 2;
   }
-
 
   .tate {
     height: clamp(300px, 58vh, 520px);
@@ -1618,6 +1719,35 @@ a {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .person-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+    padding: 44px 0 24px;
+  }
+
+  .person-portrait {
+    justify-self: center;
+    order: -1;
+  }
+
+  .person-portrait img {
+    width: 180px;
+  }
+
+  .person-prose {
+    font-size: 16.5px;
+  }
+
+  .person-statue-body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .person-statue-body .person-figure {
+    justify-self: center;
+    width: min(100%, 260px);
+  }
+
   .volumes {
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr));
   }
@@ -1625,7 +1755,6 @@ a {
   .volume-name {
     font-size: 24px;
   }
-
 
 }
 

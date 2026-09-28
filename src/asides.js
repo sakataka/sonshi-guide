@@ -51,11 +51,16 @@ window.SONSHI_ASIDES = [
         where: "三国時代 郭嘉の献策",
         text: "曹操が遠く烏桓を討とうとしたとき、参謀の郭嘉は「兵は神速を貴ぶ」と説き、重い荷を残して軽装の兵で急がせるよう進言しました。作戦篇の「兵は勝つことを貴んで、久しきを貴ばず」と響き合う言葉です。進言を受けたのは、孫子に注を付けた曹操その人でした。",
       },
+      {
+        where: "後漢 光武帝と銅馬の降兵",
+        text: "のちの光武帝・劉秀は、銅馬の大軍を降すと、降った兵をそれぞれの陣に戻し、自ら軽装の騎兵だけで陣の間を見て回りました。降兵たちは、蕭王は赤心を人の腹中に置く、この人のためなら死ねる、と語り合ったといいます。作戦篇の「卒は善くして之を養う。是を敵に勝ちて強を益すと謂う」を、そのまま行った話です。",
+      },
     ],
     sources: [
       { label: "Web漢文大系「兵は拙速を尊ぶ」", url: "https://kanbun.info/koji/heiwasesso.html" },
       { label: "故事ことわざ辞典「巧遅は拙速に如かず」", url: "https://kotowaza-dictionary.jp/k0858/" },
       { label: "Wikipedia「郭嘉」", url: "https://ja.wikipedia.org/wiki/%E9%83%AD%E5%98%89" },
+      { label: "Wikisource『後漢書』光武帝紀（中国語）", url: "https://zh.wikisource.org/wiki/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B71%E4%B8%8A" },
     ],
   },
   {
@@ -172,11 +177,16 @@ window.SONSHI_ASIDES = [
         where: "江戸時代の浄瑠璃",
         text: "「虚々実々の駆け引き」と言うときの「虚々実々」は、虚実篇の虚と実を重ねた言葉です。『日本国語大辞典』が早い用例に挙げるのは、近松門左衛門の浄瑠璃『信州川中島合戦』（1721年）。謙信と信玄が秘術を尽くして斬り結ぶ場面で、信玄は孫子の心を練る、と語られます。",
       },
+      {
+        where: "唐『李衛公問対』",
+        text: "唐の太宗は、兵書は数あれど孫武を出るものはなく、十三篇は虚実を出るものはない、と語りました。李靖はこれに応じて、千章万句も「人を致して人に致されず」に尽きる、と答えています。虚実篇の一句が、十三篇の要として名指しされた場面です。",
+      },
     ],
     sources: [
       { label: "U.S. Marine Corps「MCDP 1」", url: "https://www.marines.mil/News/Publications/MCPEL/Electronic-Library-Display/Article/899837/mcdp-1/" },
       { label: "Marine Corps University「Warfighting Cliff Notes」", url: "https://www.usmcu.edu/Portals/218/mcdp1%20warfighting%20lab.pdf" },
       { label: "コトバンク「虚虚実実」", url: "https://kotobank.jp/word/%E8%99%9A%E8%99%9A%E5%AE%9F%E5%AE%9F-479281" },
+      { label: "Wikisource『唐李問對』巻中（中国語）", url: "https://zh.wikisource.org/wiki/%E5%94%90%E6%9D%8E%E5%95%8F%E5%B0%8D/%E5%8D%B7%E4%B8%AD" },
     ],
   },
   {
@@ -201,6 +211,10 @@ window.SONSHI_ASIDES = [
         where: "山梨県甲州市 雲峰寺",
         text: "信玄の軍旗と伝わる「孫子の旗」が、今もこの寺に残っています。金泥で大書された「疾如風 徐如林 侵掠如火 不動如山」の十四字。恵林寺の快川紹喜に書かせたと伝えられ、日本最古とされる日の丸の御旗とともに宝物殿に並んでいます。",
       },
+      {
+        where: "明末清初『三十六計』",
+        text: "軍争篇の「佚を以て労を待つ」は、四字の「以逸待労」として三十六計の第四計に数えられました。こちらから攻めずに、相手が疲れて来るのを整えた構えで待つ計です。",
+      },
     ],
     sources: [
       { label: "Wikipedia「風林火山」", url: "https://ja.wikipedia.org/wiki/%E9%A2%A8%E6%9E%97%E7%81%AB%E5%B1%B1" },
@@ -208,6 +222,7 @@ window.SONSHI_ASIDES = [
       { label: "ダイヤモンド・オンライン「孫の2乗の兵法」", url: "https://diamond.jp/articles/-/257022" },
       { label: "山梨市「孫子の旗」", url: "https://www.city.yamanashi.yamanashi.jp/site/cultural-assets/1658.html" },
       { label: "富士の国やまなし観光ネット「風林火山史跡巡り」", url: "https://www.yamanashi-kankou.jp/history/shingen/forest.html" },
+      { label: "Wikipedia「三十六計」", url: "https://ja.wikipedia.org/wiki/%E4%B8%89%E5%8D%81%E5%85%AD%E8%A8%88" },
     ],
   },
   {
@@ -251,8 +266,20 @@ window.SONSHI_ASIDES = [
       },
     ],
     takeaway: "伝承では、義家が雁の乱れを読めたのは、学んだ兵法があったからだとされています。",
+    mentions: [
+      {
+        where: "春秋時代 泓水の戦い",
+        text: "孫子より前の話です。宋の襄公は、楚の軍が泓水を渡っている最中に撃つべきだと進言されながら、渡り終えて陣を整えるのを待ち、大敗しました。無用の情けを「宋襄の仁」と呼ぶのはこの故事からです。行軍篇は逆に、川を渡ってくる敵は半ば渡らせてから撃て、と説きます。",
+      },
+      {
+        where: "383年 淝水の戦い",
+        text: "前秦の苻堅は、東晋の軍に川を渡らせて半ばで撃とうと、自軍を少し退かせました。ところが兵はそれを敗走と思い込み、大軍は崩れます。逃げる兵は風の音や鶴の声にも追っ手かと怯えたといい、「風声鶴唳」「草木皆兵」という言葉が残りました。",
+      },
+    ],
     sources: [
       { label: "Wikipedia「後三年の役」", url: "https://ja.wikipedia.org/wiki/%E5%BE%8C%E4%B8%89%E5%B9%B4%E3%81%AE%E5%BD%B9" },
+      { label: "Wikipedia「宋襄の仁」", url: "https://ja.wikipedia.org/wiki/%E5%AE%8B%E8%A5%84%E3%81%AE%E4%BB%81" },
+      { label: "Wikipedia「淝水の戦い」", url: "https://ja.wikipedia.org/wiki/%E6%B7%9D%E6%B0%B4%E3%81%AE%E6%88%A6%E3%81%84" },
     ],
   },
   {
@@ -272,9 +299,16 @@ window.SONSHI_ASIDES = [
       },
     ],
     takeaway: "将の情けを、母は恩としてではなく、息子を失う前触れとして受け取りました。",
+    mentions: [
+      {
+        where: "前漢 李広",
+        text: "匈奴に「飛将軍」と恐れられた李広は、水や食糧が尽きかけると、兵がみな飲み終えるまで水に近づかず、みな食べ終えるまで口をつけなかったと『史記』は伝えます。司馬遷は「桃李言わざれども、下自ずから蹊を成す」ということわざを引いて、その人柄を評しています。",
+      },
+    ],
     sources: [
       { label: "Wikisource『史記』孫子呉起列伝（中国語）", url: "https://zh.wikisource.org/wiki/%E5%8F%B2%E8%A8%98/%E5%8D%B7065" },
       { label: "Wikipedia「呉起」", url: "https://ja.wikipedia.org/wiki/%E5%91%89%E8%B5%B7" },
+      { label: "Wikisource『史記』李将軍列伝（中国語）", url: "https://zh.wikisource.org/wiki/%E5%8F%B2%E8%A8%98/%E5%8D%B7109" },
     ],
   },
   {
@@ -294,9 +328,16 @@ window.SONSHI_ASIDES = [
       },
     ],
     takeaway: "覚悟だけで勝ったのではありません。退路を断つ前に、勝ち筋を別に用意していたのです。",
+    mentions: [
+      {
+        where: "秦末 鉅鹿の戦い",
+        text: "項羽は黄河を渡ると、船を沈め、釜や甑を壊し、宿舎を焼いて、三日分の糧だけを持たせました。引き返す道はないと兵に示したのです。九地篇の「舟を焚き釜を破る」と重なる振る舞いで、ここから「破釜沈舟」の言葉が生まれました。",
+      },
+    ],
     sources: [
       { label: "Web漢文大系「背水の陣」", url: "https://kanbun.info/koji/haisui.html" },
       { label: "Wikipedia「吉備真備」", url: "https://ja.wikipedia.org/wiki/%E5%90%89%E5%82%99%E7%9C%9F%E5%82%99" },
+      { label: "Wikisource『史記』項羽本紀（中国語）", url: "https://zh.wikisource.org/wiki/%E5%8F%B2%E8%A8%98/%E5%8D%B7007" },
     ],
   },
   {
@@ -316,9 +357,21 @@ window.SONSHI_ASIDES = [
       },
     ],
     takeaway: "兵法を誰より深く読んだ者でも、火に敗れることがありました。",
+    mentions: [
+      {
+        where: "戦国時代の斉 火牛の計",
+        text: "即墨の田単は、千頭余りの牛に色鮮やかな衣を着せ、角に刃を結び、尾に脂を染ませた葦を束ねて火をつけ、夜に城壁の穴から燕の陣へ放ちました。五千の兵がその後に続き、燕軍は総崩れになったと『史記』は伝えます。",
+      },
+      {
+        where: "『源平盛衰記』倶利伽羅峠",
+        text: "木曾義仲が角に松明を結んだ牛を平家の陣へ追い入れた、という火牛の話は、『平家物語』には見えず『源平盛衰記』だけが語るものです。田単の故事をもとに作られた話と考えられています。",
+      },
+    ],
     sources: [
       { label: "Wikipedia「赤壁の戦い」", url: "https://ja.wikipedia.org/wiki/%E8%B5%A4%E5%A3%81%E3%81%AE%E6%88%A6%E3%81%84" },
       { label: "Wikipedia「夷陵の戦い」", url: "https://ja.wikipedia.org/wiki/%E5%A4%B7%E9%99%B5%E3%81%AE%E6%88%A6%E3%81%84" },
+      { label: "Wikisource『史記』田単列伝（中国語）", url: "https://zh.wikisource.org/wiki/%E5%8F%B2%E8%A8%98/%E5%8D%B7082" },
+      { label: "Wikipedia「倶利伽羅峠の戦い」", url: "https://ja.wikipedia.org/wiki/%E5%80%B6%E5%88%A9%E4%BC%BD%E7%BE%85%E5%B3%A0%E3%81%AE%E6%88%A6%E3%81%84" },
     ],
   },
   {
