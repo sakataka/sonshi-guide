@@ -25,7 +25,8 @@
   --grain-blend: multiply;
   --serif: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", "Noto Serif CJK JP", serif;
   --sans: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", "Yu Gothic", "Noto Sans JP", sans-serif;
-  --header-h: 68px;
+  /* Includes the top safe area so everything offset by the header clears the status bar. */
+  --header-h: calc(68px + env(safe-area-inset-top));
   --strip-h: 0px;
   --sidebar-w: 256px;
   --gutter: clamp(20px, 5vw, 64px);
@@ -93,6 +94,7 @@ body::before {
 a,
 button {
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 a {
@@ -178,7 +180,7 @@ a {
   justify-content: space-between;
   gap: 24px;
   height: var(--header-h);
-  padding: 0 28px;
+  padding: env(safe-area-inset-top) 28px 0;
   border-bottom: 1px solid var(--line);
   background: var(--header-bg);
   -webkit-backdrop-filter: blur(10px);
@@ -285,7 +287,6 @@ a {
   position: sticky;
   top: var(--header-h);
   align-self: start;
-  height: calc(100vh - var(--header-h));
   height: calc(100dvh - var(--header-h));
   padding: 24px 14px 40px;
   border-right: 1px solid var(--line);
@@ -1350,13 +1351,13 @@ a {
 
 @media (max-width: 860px) {
   :root {
-    --header-h: 58px;
+    --header-h: calc(58px + env(safe-area-inset-top));
     --strip-h: 50px;
     --gutter: 20px;
   }
 
   .site-header {
-    padding: 0 16px;
+    padding: env(safe-area-inset-top) 16px 0;
   }
 
   .seal {
@@ -1403,7 +1404,8 @@ a {
     align-items: center;
     gap: 2px;
     height: 100%;
-    padding: 0 10px;
+    /* Keeps the horizontal chapter scroll clear of the iOS back-swipe edge. */
+    padding: 0 10px 0 20px;
     overflow-x: auto;
     scrollbar-width: none;
   }
@@ -1453,7 +1455,12 @@ a {
   }
 
   .reading {
-    padding-bottom: 72px;
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  }
+
+  a:active,
+  button:active {
+    opacity: 0.6;
   }
 
   .chapter-hero {
@@ -1629,6 +1636,15 @@ a {
 
   .volumes {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .site-header,
+  .mobile-strip {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--paper);
   }
 }
 
