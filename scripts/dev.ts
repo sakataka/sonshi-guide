@@ -8,7 +8,12 @@ const valueAfter = (name: string) => {
 
 const root = resolve(import.meta.dir, "../src");
 const hostname = valueAfter("--host") ?? "127.0.0.1";
-const port = Number(valueAfter("--port") ?? "5173");
+// LocalWeb passes --port {devPort}. There is no fallback, so a standalone run never takes another app's port.
+const port = Number(valueAfter("--port"));
+if (!(port >= 0)) {
+  console.error("--port is required. Start it with `localweb dev sonshi-guide`.");
+  process.exit(1);
+}
 const contentTypes: Record<string, string> = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
