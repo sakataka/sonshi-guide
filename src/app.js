@@ -411,6 +411,12 @@
   };
 
   document.addEventListener("click", (event) => {
+    // 本文への移動では、篇を切り替えるためのハッシュを保つ。
+    if (event.target.closest("a.skip-link")) {
+      event.preventDefault();
+      jumpTo(document.querySelector("#reading"));
+      return;
+    }
     const jump = event.target.closest("a[data-jump]");
     if (jump) {
       event.preventDefault();
