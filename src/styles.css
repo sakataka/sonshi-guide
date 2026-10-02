@@ -1993,6 +1993,83 @@ body:has(.toc[open]) {
   }
 }
 
+/* サイドバーのある中間幅でも、表紙と附録の本文欄を細くしすぎない。 */
+@media (min-width: 861px) and (max-width: 1100px) {
+  .cover-scroll {
+    flex-direction: column;
+  }
+
+  .cover-kicker {
+    writing-mode: horizontal-tb;
+    line-height: 1.5;
+  }
+
+  .cover-title {
+    height: auto;
+    writing-mode: horizontal-tb;
+  }
+
+  .cover-seal {
+    writing-mode: vertical-rl;
+  }
+
+  .slips {
+    flex: none;
+  }
+
+  .cover-intro {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .person-hero {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .person-hero .chapter-hero-body {
+    display: contents;
+  }
+
+  .person-hero .daisen {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .person-hero .chapter-subtitle {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .person-portrait {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+  }
+
+  .person-hero .chapter-lead {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slip,
+  .slip-name,
+  .side-chapter,
+  .pager-next::after,
+  .pager-name {
+    transition: none;
+  }
+
+  .slip:hover,
+  .slip:focus-visible {
+    transform: none;
+  }
+
+  .toc[open] {
+    animation: none;
+  }
+}
+
 /* ---- 動き：開いた紙面が静かに立ち上がる。どれも一瞬で終える ---- */
 
 @media (prefers-reduced-motion: no-preference) {
