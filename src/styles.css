@@ -21,6 +21,12 @@
   --sumi-rule: rgba(235, 226, 207, 0.1);
   --paper-rule: rgba(75, 69, 60, 0.12);
   --header-bg: rgba(243, 238, 227, 0.92);
+  --slip: #e5d5ae;
+  --slip-edge: rgba(120, 84, 30, 0.16);
+  --slip-fiber: rgba(120, 84, 30, 0.05);
+  --slip-ink: #241c12;
+  --slip-ink-2: #5a4b36;
+  --cord: #5b4128;
   --grain-opacity: 0.45;
   --grain-blend: multiply;
   --serif: "Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", "Noto Serif CJK JP", serif;
@@ -62,6 +68,12 @@
     --sumi-rule: rgba(236, 227, 208, 0.08);
     --paper-rule: rgba(196, 186, 165, 0.1);
     --header-bg: rgba(20, 18, 14, 0.9);
+    --slip: #2a2418;
+    --slip-edge: rgba(0, 0, 0, 0.32);
+    --slip-fiber: rgba(255, 236, 196, 0.03);
+    --slip-ink: #ece2cc;
+    --slip-ink-2: #a89b80;
+    --cord: #8c6a45;
     --grain-opacity: 0.35;
     --grain-blend: screen;
     color-scheme: dark;
@@ -77,6 +89,35 @@ body {
   margin: 0;
   overflow-x: clip;
   background: var(--paper);
+  text-autospace: normal;
+}
+
+/* 見出しは字面に合わせて詰め、語の切れ目で折り返す */
+h1,
+h2,
+h3,
+h4,
+h5,
+.brand-title,
+.side-name,
+.side-chapter-name,
+.chapter-subtitle,
+.pager-name,
+.volume-name,
+.group-name {
+  font-feature-settings: "palt";
+}
+
+h1,
+h2,
+h3,
+h4,
+.chapter-subtitle,
+.pager-sub,
+.saying-kundoku,
+.aside-takeaway,
+.volume-sub {
+  word-break: auto-phrase;
 }
 
 /* 紙の肌理 */
@@ -220,16 +261,12 @@ a {
   text-decoration: none;
 }
 
-.side-top:hover {
-  background: var(--paper-2);
+.side-top:hover .side-name {
+  color: var(--shu);
 }
 
 .side-top--person {
   margin-top: 2px;
-}
-
-.side-top[aria-current="page"] {
-  background: var(--shu-wash);
 }
 
 .side-glyph {
@@ -293,16 +330,15 @@ a {
   align-items: center;
   min-height: 40px;
   padding: 6px 10px;
-  border-radius: 4px;
   color: var(--ink-2);
   font-size: 16px;
   letter-spacing: 0.1em;
   text-decoration: none;
+  transition: color 0.15s;
 }
 
 .side-chapter:hover {
-  color: var(--ink);
-  background: var(--paper-2);
+  color: var(--shu);
 }
 
 .side-number {
@@ -313,7 +349,7 @@ a {
 
 .side-chapter[aria-current="page"] {
   color: var(--shu);
-  background: var(--shu-wash);
+  font-weight: 600;
 }
 
 .side-chapter[aria-current="page"] .side-number {
@@ -322,9 +358,8 @@ a {
 
 .side-chapter[aria-current="page"]::before {
   position: absolute;
-  inset: 6px auto 6px 0;
-  width: 3px;
-  border-radius: 2px;
+  inset: 11px auto 11px 0;
+  width: 2px;
   background: var(--shu);
   content: "";
 }
@@ -353,44 +388,52 @@ a {
 /* ---- 篇の扉 ---- */
 
 .chapter-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 56px;
   padding: 80px 0 24px;
 }
 
-.chapter-number {
+/* 和本の表紙に貼る題簽のように、篇名を縦に掲げる */
+.daisen {
+  grid-row: 1;
+  grid-column: 2;
   display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0 0 14px;
+  gap: 14px;
+  margin: 0;
+  padding: 30px 22px 34px;
+  border: 1px solid var(--line-2);
+  background: var(--card);
+  box-shadow: inset 0 0 0 5px var(--card), inset 0 0 0 6px var(--line), 0 22px 40px -32px rgba(40, 24, 8, 0.55);
+  font-weight: 600;
+  line-height: 1;
+  writing-mode: vertical-rl;
+}
+
+.daisen-number {
   color: var(--shu);
-  font-size: 17px;
+  font-size: 15px;
   letter-spacing: 0.3em;
 }
 
-.seal-mini {
-  display: grid;
-  width: 26px;
-  height: 26px;
-  border-radius: 2px;
-  color: var(--shu-ink);
-  background: var(--shu);
-  font-size: 13px;
-  letter-spacing: 0;
-  place-items: center;
+.daisen-name {
+  font-size: clamp(56px, 6vw, 76px);
+  letter-spacing: 0.22em;
 }
 
-.chapter-title {
-  margin: 0;
-  font-size: clamp(46px, 7vw, 68px);
-  font-weight: 600;
-  line-height: 1.15;
-  letter-spacing: 0.28em;
+.chapter-hero-body {
+  grid-row: 1;
+  grid-column: 1;
 }
 
 .chapter-subtitle {
-  margin: 18px 0 0;
-  color: var(--ink-2);
-  font-size: clamp(19px, 2.4vw, 23px);
-  letter-spacing: 0.08em;
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(30px, 3.6vw, 46px);
+  font-weight: 600;
+  line-height: 1.45;
+  letter-spacing: 0.06em;
 }
 
 .chapter-lead {
@@ -401,6 +444,14 @@ a {
   color: var(--ink-2);
   font-size: 16px;
   line-height: 1.95;
+}
+
+.chapter-lead p {
+  margin: 0;
+}
+
+.chapter-lead p + p {
+  margin-top: 0.8em;
 }
 
 /* ---- 三つの部 ---- */
@@ -580,19 +631,22 @@ a {
 
 /* 名句 */
 
+/* どの名句も、掛け軸の欄の幅を揃えて本文の書き出しを合わせる */
 .sayings {
   display: grid;
-  gap: 28px;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 28px 40px;
 }
 
+/* 題簽と同じく、細い内枠を引いた紙に載せる */
 .saying {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 36px;
-  padding: 32px;
-  border: 1px solid var(--line);
-  border-radius: 4px;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
+  padding: 36px;
+  border: 1px solid var(--line-2);
   background: var(--card);
+  box-shadow: inset 0 0 0 6px var(--card), inset 0 0 0 7px var(--line);
 }
 
 .saying:focus {
@@ -604,6 +658,7 @@ a {
   display: flex;
   justify-content: center;
   align-self: start;
+  justify-self: center;
   min-width: 96px;
   padding: 26px 18px;
   border-top: 5px solid var(--shu);
@@ -892,80 +947,253 @@ a {
 
 .pager {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 40px;
+  gap: 28px;
+  margin-top: 88px;
 }
 
-.pager-link {
+.pager-next {
+  position: relative;
   display: grid;
-  gap: 6px;
-  padding: 22px 24px;
-  border: 1px solid var(--line-2);
-  border-radius: 4px;
+  gap: 12px;
+  padding: 40px 120px 44px 0;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--line-2);
   text-decoration: none;
 }
 
-.pager-link--next {
-  text-align: right;
+/* 細い線に斜めの返しを付けた、紙面の矢印 */
+.pager-next::after {
+  position: absolute;
+  right: 4px;
+  bottom: 50%;
+  width: 64px;
+  height: 10px;
+  border-right: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  content: "";
+  transform: skewX(50deg);
+  transform-origin: right bottom;
+  transition: width 0.2s ease-out, border-color 0.2s;
 }
 
-.pager-link:hover {
-  border-color: var(--shu);
-  background: var(--shu-wash);
+@media (hover: hover) {
+  .pager-next:hover::after {
+    width: 104px;
+    border-color: var(--shu);
+  }
+
+  .pager-next:hover .pager-name {
+    color: var(--shu);
+  }
 }
 
 .pager-direction {
   color: var(--shu);
   font: 600 12px/1 var(--sans);
-  letter-spacing: 0.2em;
+  letter-spacing: 0.24em;
 }
 
 .pager-name {
-  font-size: 20px;
+  font-size: clamp(36px, 5vw, 60px);
   font-weight: 600;
+  line-height: 1.25;
   letter-spacing: 0.14em;
+  transition: color 0.2s;
+}
+
+.pager-number {
+  margin-right: 0.8em;
+  font-size: 0.48em;
+  letter-spacing: 0.2em;
+  vertical-align: 0.3em;
 }
 
 .pager-sub {
+  color: var(--ink-2);
+  font-size: 17px;
+  line-height: 1.7;
+  letter-spacing: 0.06em;
+}
+
+.pager-other {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 14px;
+  justify-self: start;
+  padding: 6px 0;
+  color: var(--ink-2);
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+}
+
+.pager-other .pager-direction {
   color: var(--muted);
-  font: 13px/1.6 var(--sans);
+}
+
+.pager-other:hover {
+  color: var(--shu);
 }
 
 /* ---- 総覧 ---- */
 
-.overview-hero {
+/* 表紙：右に題、左へ十三本の竹簡 */
+
+.cover {
+  padding: 80px 0 16px;
+}
+
+/* 題の右肩に添える一行 */
+.cover-kicker {
+  flex: none;
+  margin: 0;
+  color: var(--shu);
+  font-size: 14px;
+  line-height: 1;
+  letter-spacing: 0.32em;
+  writing-mode: vertical-rl;
+}
+
+.cover-scroll {
+  --scroll-h: 480px;
+  display: flex;
+  flex-direction: row-reverse;
+  gap: clamp(24px, 3vw, 40px);
+}
+
+.cover-title {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.32em;
+  height: var(--scroll-h);
+  margin: 0;
+  font-size: clamp(60px, 6vw, 84px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  writing-mode: vertical-rl;
+}
+
+.cover-name,
+.cover-seal {
+  white-space: nowrap;
+}
+
+.cover-seal {
+  padding: 0.5em 0.22em 0.42em;
+  border-radius: 3px;
+  color: var(--shu-ink);
+  background: var(--shu);
+  box-shadow: inset 0 0 0 2px var(--shu), inset 0 0 0 3px var(--shu-ink);
+  font-size: 0.2em;
+  letter-spacing: 0.3em;
+}
+
+.slips {
+  --cord-inset: 40px;
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: row-reverse;
+  gap: clamp(3px, 0.7vw, 9px);
+  height: var(--scroll-h);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 二本の編紐。竹簡を持ち上げても紐は動かない */
+.slips::before,
+.slips::after {
+  position: absolute;
+  z-index: 1;
+  right: -10px;
+  left: -10px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--cord);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.18);
+  content: "";
+  pointer-events: none;
+}
+
+.slips::before {
+  top: var(--cord-inset);
+}
+
+.slips::after {
+  bottom: var(--cord-inset);
+}
+
+.slips li {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
+.slip {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 16px;
+  padding: calc(var(--cord-inset) + 22px) 0;
+  border-radius: 2px;
+  color: var(--slip-ink);
+  background:
+    linear-gradient(90deg, var(--slip-edge), transparent 22%, transparent 70%, var(--slip-edge)),
+    repeating-linear-gradient(90deg, transparent 0 3px, var(--slip-fiber) 3px 4px),
+    var(--slip);
+  box-shadow: 0 1px 0 var(--slip-edge), 0 14px 20px -18px rgba(40, 24, 8, 0.7);
+  text-decoration: none;
+  writing-mode: vertical-rl;
+  transition: transform 0.18s ease-out;
+}
+
+.slip:focus-visible {
+  transform: translateY(-8px);
+}
+
+.slip-number {
+  color: var(--shu);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+}
+
+.slip-name {
+  font-size: clamp(20px, 2vw, 27px);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  transition: color 0.18s;
+}
+
+@media (hover: hover) {
+  .slip:hover {
+    transform: translateY(-8px);
+  }
+
+  .slip:hover .slip-name {
+    color: var(--shu);
+  }
+}
+
+.slip-sub {
+  min-height: 0;
+  overflow: hidden;
+  color: var(--slip-ink-2);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+}
+
+.cover-intro {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 56px;
-  padding: 80px 0 56px;
+  align-items: end;
+  gap: 24px 56px;
+  margin-top: 64px;
 }
 
-.overview-kicker {
-  margin: 0 0 18px;
-  color: var(--shu);
-  font: 600 13px/1.5 var(--sans);
-  letter-spacing: 0.22em;
-}
-
-.overview-title {
-  margin: 0 0 28px;
-  font-size: clamp(48px, 7vw, 72px);
-  font-weight: 600;
-  line-height: 1.1;
-  letter-spacing: 0.2em;
-}
-
-.overview-title span {
-  display: block;
-  margin-top: 14px;
-  color: var(--shu);
-  font-size: 0.4em;
-  letter-spacing: 0.5em;
-}
-
-.overview-lead {
+.cover-lead p {
   max-width: 40em;
   margin: 0 0 1em;
   color: var(--ink-2);
@@ -973,11 +1201,14 @@ a {
   line-height: 2;
 }
 
+.cover-lead p:last-child {
+  margin-bottom: 0;
+}
+
 .overview-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 30px;
 }
 
 .action-primary {
@@ -1013,30 +1244,6 @@ a {
 
 .action-secondary:hover {
   border-color: var(--shu);
-  color: var(--shu);
-}
-
-.overview-scroll {
-  display: flex;
-  flex-direction: row-reverse;
-  gap: 0.5em;
-  padding: 34px 30px;
-  border-top: 8px solid var(--sumi);
-  border-bottom: 8px solid var(--sumi);
-  background: var(--card);
-  box-shadow: inset 0 0 0 1px var(--line), 0 18px 40px -28px rgba(0, 0, 0, 0.5);
-}
-
-.overview-scroll p {
-  margin: 0;
-  font-size: 30px;
-  font-weight: 600;
-  line-height: 1.4;
-  letter-spacing: 0.3em;
-  writing-mode: vertical-rl;
-}
-
-.overview-scroll p:first-child {
   color: var(--shu);
 }
 
@@ -1231,23 +1438,22 @@ a {
 /* ---- 附　孫子という人 ---- */
 
 .person-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 56px;
-  padding: 72px 0 40px;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 48px;
 }
 
-.person-lead {
-  max-width: 40em;
-  margin: 22px 0 0;
-  color: var(--ink-2);
-  font-size: 16.5px;
-  line-height: 2;
+.person-hero .daisen {
+  grid-column: 3;
 }
 
-.person-lead + .person-lead {
-  margin-top: 0.8em;
+.person-hero .daisen-name {
+  font-size: clamp(40px, 4.2vw, 54px);
+  letter-spacing: 0.16em;
+}
+
+.person-portrait {
+  grid-row: 1;
+  grid-column: 2;
 }
 
 .person-portrait {
@@ -1478,11 +1684,40 @@ body:has(.toc[open]) {
   }
 
   .chapter-hero {
-    padding: 44px 0 32px;
+    align-items: start;
+    gap: 22px;
+    padding: 40px 0 24px;
   }
 
-  .chapter-title {
-    letter-spacing: 0.2em;
+  .daisen {
+    gap: 10px;
+    padding: 20px 14px 24px;
+  }
+
+  .daisen-number {
+    font-size: 13px;
+  }
+
+  .daisen-name {
+    font-size: 46px;
+  }
+
+  .chapter-hero-body {
+    display: contents;
+  }
+
+  .chapter-hero .chapter-subtitle {
+    grid-row: 1;
+    grid-column: 1;
+    align-self: center;
+    font-size: 26px;
+    letter-spacing: 0.04em;
+  }
+
+  .chapter-hero .chapter-lead {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    margin-top: 6px;
   }
 
   .chapter-lead {
@@ -1542,10 +1777,13 @@ body:has(.toc[open]) {
     font-size: 17px;
   }
 
-  .saying {
+  .sayings {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .saying {
     gap: 22px;
-    padding: 22px 18px;
+    padding: 26px 22px;
   }
 
   .saying-scroll {
@@ -1596,28 +1834,87 @@ body:has(.toc[open]) {
   }
 
   .pager {
-    grid-template-columns: minmax(0, 1fr);
+    margin-top: 64px;
+  }
+
+  .pager-next {
+    padding: 28px 64px 32px 0;
+  }
+
+  .pager-next::after {
+    width: 40px;
+  }
+
+  .pager-sub {
+    font-size: 15.5px;
+  }
+
+  .cover {
+    padding: 40px 0 8px;
+  }
+
+  .cover-kicker {
+    font: 600 13px/1.5 var(--sans);
+    letter-spacing: 0.22em;
+    writing-mode: horizontal-tb;
+  }
+
+  .cover-scroll {
+    --scroll-h: 372px;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .cover-kicker + .cover-title {
+    margin: 0;
+  }
+
+  .cover-title {
+    height: auto;
+    font-size: 54px;
+    writing-mode: horizontal-tb;
+  }
+
+  .cover-seal {
+    padding: 0.42em 0.6em;
+    font-size: 0.3em;
+    writing-mode: vertical-rl;
+  }
+
+  .slips {
+    --cord-inset: 22px;
+    flex: none;
+  }
+
+  .slips::before,
+  .slips::after {
+    right: -6px;
+    left: -6px;
+  }
+
+  .slip {
     gap: 10px;
+    padding: calc(var(--cord-inset) + 14px) 0;
   }
 
-  .pager-link--next {
-    order: -1;
+  .slip-number {
+    font-size: 10px;
+    letter-spacing: 0.08em;
   }
 
-  .overview-hero {
+  .slip-name {
+    font-size: 17px;
+    letter-spacing: 0.08em;
+  }
+
+  .slip-sub {
+    font-size: 11.5px;
+    letter-spacing: 0.02em;
+  }
+
+  .cover-intro {
     grid-template-columns: minmax(0, 1fr);
-    gap: 36px;
-    padding: 48px 0 32px;
-  }
-
-  .overview-scroll {
-    justify-self: center;
-    order: -1;
-    padding: 24px 22px;
-  }
-
-  .overview-scroll p {
-    font-size: 24px;
+    margin-top: 40px;
   }
 
   .legend {
@@ -1632,18 +1929,39 @@ body:has(.toc[open]) {
   }
 
   .person-hero {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 32px;
-    padding: 44px 0 24px;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .person-hero .daisen {
+    grid-row: 1 / span 2;
+    grid-column: 2;
+  }
+
+  .person-hero .daisen-name {
+    font-size: 32px;
+  }
+
+  .person-hero .chapter-subtitle {
+    align-self: start;
   }
 
   .person-portrait {
-    justify-self: center;
-    order: -1;
+    grid-row: 2;
+    grid-column: 1;
+    justify-self: start;
+    padding: 14px 14px 10px;
+  }
+
+  .person-hero .chapter-lead {
+    grid-row: 3;
   }
 
   .person-portrait img {
-    width: 180px;
+    width: 168px;
+  }
+
+  .person-portrait figcaption {
+    max-width: 168px;
   }
 
   .person-prose {
@@ -1672,6 +1990,85 @@ body:has(.toc[open]) {
 
   .volume-name {
     font-size: 23px;
+  }
+}
+
+/* ---- 動き：開いた紙面が静かに立ち上がる。どれも一瞬で終える ---- */
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.16s;
+    animation-timing-function: ease-out;
+  }
+
+  .daisen,
+  .chapter-hero .chapter-subtitle,
+  .chapter-hero .chapter-lead,
+  .cover-kicker,
+  .cover-title,
+  .slips li,
+  .cover-intro,
+  .person-portrait {
+    animation: rise 0.36s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  .chapter-hero .chapter-subtitle {
+    animation-delay: 0.05s;
+  }
+
+  .chapter-hero .chapter-lead {
+    animation-delay: 0.1s;
+  }
+
+  .slips li {
+    animation-delay: calc(0.04s + var(--i) * 0.014s);
+  }
+
+  .cover-intro,
+  .person-portrait {
+    animation-delay: 0.16s;
+  }
+
+  /* 朱印を一度だけ押す */
+  .cover-seal {
+    animation: stamp 0.26s 0.34s cubic-bezier(0.3, 0, 0.2, 1) both;
+  }
+}
+
+@keyframes stamp {
+  from {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* 幅の狭い端末でも、十三本を一列に収める */
+@media (max-width: 400px) {
+  .slips {
+    gap: 2px;
+  }
+
+  .slip-number {
+    font-size: 9px;
+    letter-spacing: 0;
+  }
+
+  .slip-name {
+    font-size: 15px;
+    letter-spacing: 0.04em;
+  }
+
+  .slip-sub {
+    font-size: 10.5px;
+    letter-spacing: 0;
   }
 }
 

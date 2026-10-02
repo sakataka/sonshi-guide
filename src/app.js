@@ -145,31 +145,31 @@
       ${tatePanel(paragraphs, { className: "tate-frame--paper", label: "書き下し文", ku: true })}
     </div>`;
 
-  const personPagerLink = (direction) => `
-    <a class="pager-link pager-link--${direction}" href="#sonshi">
-      <span class="pager-direction">附</span>
-      <span class="pager-name">孫子という人</span>
-      <span class="pager-sub">十三篇を著した人の生涯</span>
-    </a>`;
+  // 先へは大きく、もう一つの行き先は控えめに置く
+  const overviewStop = { href: "#overview", direction: "はじめへ", name: "総覧", sub: "十三篇を見渡す" };
+  const personStop = { href: "#sonshi", direction: "附録", name: "孫子という人", sub: "十三篇を著した人の生涯" };
+  const chapterStop = (chapter, direction) => ({
+    href: `#chapter-${chapter.id}`,
+    direction,
+    number: `第${chapter.idKanji}篇`,
+    name: chapter.name,
+    sub: chapter.subtitle,
+  });
 
-  const pagerTemplate = (chapter) => {
+  const pagerTemplate = (next, other) => `
+    <nav class="pager" aria-label="移動">
+      <a class="pager-next" href="${next.href}">
+        <span class="pager-direction">${next.direction}</span>
+        <span class="pager-name">${next.number ? `<span class="pager-number">${next.number}</span>` : ""}${escapeHtml(next.name)}</span>
+        <span class="pager-sub">${escapeHtml(next.sub)}</span>
+      </a>
+      <a class="pager-other" href="${other.href}"><span class="pager-direction">${other.direction}</span>${other.number ? `${other.number}　` : ""}${escapeHtml(other.name)}</a>
+    </nav>`;
+
+  const chapterPager = (chapter) => {
     const prev = chapters[chapter.id - 2];
     const next = chapters[chapter.id];
-    const card = (target, direction) =>
-      target
-        ? `<a class="pager-link pager-link--${direction}" href="#chapter-${target.id}">
-            <span class="pager-direction">${direction === "prev" ? "前の篇" : "次の篇"}</span>
-            <span class="pager-name">第${target.idKanji}篇　${escapeHtml(target.name)}</span>
-            <span class="pager-sub">${escapeHtml(target.subtitle)}</span>
-          </a>`
-        : direction === "prev"
-          ? `<a class="pager-link pager-link--prev" href="#overview">
-              <span class="pager-direction">はじめに</span>
-              <span class="pager-name">総覧へ戻る</span>
-              <span class="pager-sub">十三篇を見渡す</span>
-            </a>`
-          : personPagerLink("next");
-    return `<nav class="pager" aria-label="篇の移動">${card(prev, "prev")}${card(next, "next")}</nav>`;
+    return pagerTemplate(next ? chapterStop(next, "次の篇") : personStop, prev ? chapterStop(prev, "前の篇") : overviewStop);
   };
 
   const renderChapter = (chapter) => {
@@ -186,10 +186,11 @@
     document.title = `第${chapter.id}篇 ${chapter.name}｜孫子兵法 十三篇`;
     content.innerHTML = `
       <header class="chapter-hero">
-        <p class="chapter-number"><span class="seal-mini" aria-hidden="true">篇</span>第${chapter.idKanji}篇</p>
-        <h1 class="chapter-title">${escapeHtml(chapter.name)}</h1>
-        <p class="chapter-subtitle">${escapeHtml(chapter.subtitle)}</p>
-        <p class="chapter-lead">${escapeHtml(chapter.lead)}</p>
+        <h1 class="daisen"><span class="daisen-number">第${chapter.idKanji}篇</span><span class="daisen-name">${escapeHtml(chapter.name)}</span></h1>
+        <div class="chapter-hero-body">
+          <p class="chapter-subtitle">${escapeHtml(chapter.subtitle)}</p>
+          <p class="chapter-lead">${escapeHtml(chapter.lead)}</p>
+        </div>
       </header>
 
       <section class="part part--kataru" aria-labelledby="part-kataru">
@@ -225,7 +226,7 @@
         参照：${sourceLinks(chapter.sources)}
       </aside>
 
-      ${pagerTemplate(chapter)}`;
+      ${chapterPager(chapter)}`;
   };
 
   const legendTemplate = () => `
@@ -258,22 +259,34 @@
       </li>`;
   };
 
+  // 十三篇を、編紐で綴じた十三本の竹簡として並べる。右の題から左へ読み進める
+  const slipTemplate = (chapter) => `
+    <li style="--i: ${chapter.id - 1}">
+      <a class="slip" href="#chapter-${chapter.id}">
+        <span class="slip-number">第${chapter.idKanji}篇</span>
+        <span class="slip-name">${escapeHtml(chapter.name)}</span>
+        <span class="slip-sub">${escapeHtml(chapter.subtitle)}</span>
+      </a>
+    </li>`;
+
   const renderOverview = () => {
     document.title = "孫子兵法 十三篇";
     content.innerHTML = `
-      <header class="overview-hero">
-        <div class="overview-intro">
-          <p class="overview-kicker">春秋の兵法書を、いくつもの層で読む</p>
-          <h1 class="overview-title">孫子兵法<span>十三篇</span></h1>
-          <p class="overview-lead">十三篇、およそ六千字。戦のための書として書かれ、二千年以上にわたって武将に、学者に、経営者に読み継がれてきました。読む人と時代が変われば、同じ一句から引き出されるものも変わります。</p>
-          <p class="overview-lead">ここでは各篇を「語る」「原典」「読み継ぐ」の三つの層に分けて並べています。どこから読んでも構いません。</p>
+      <header class="cover">
+        <div class="cover-scroll">
+          <p class="cover-kicker">春秋の兵法書を、いくつもの層で読む</p>
+          <h1 class="cover-title"><span class="cover-name">孫子兵法</span><span class="cover-seal">十三篇</span></h1>
+          <ol class="slips" aria-label="十三篇">${chapters.map(slipTemplate).join("")}</ol>
+        </div>
+        <div class="cover-intro">
+          <div class="cover-lead">
+            <p>十三篇、およそ六千字。戦のための書として書かれ、二千年以上にわたって武将に、学者に、経営者に読み継がれてきました。読む人と時代が変われば、同じ一句から引き出されるものも変わります。</p>
+            <p>ここでは各篇を「語る」「原典」「読み継ぐ」の三つの層に分けて並べています。どこから読んでも構いません。</p>
+          </div>
           <div class="overview-actions">
             <a class="action-primary" href="#chapter-1">第一篇 始計から読む</a>
             <a class="action-secondary" href="#sonshi">孫子という人</a>
           </div>
-        </div>
-        <div class="overview-scroll" lang="zh-Hant" aria-label="第一篇の書き出し（原文）">
-          <p>兵者國之大事</p><p>死生之地</p><p>存亡之道</p><p>不可不察也</p>
         </div>
       </header>
 
@@ -296,7 +309,9 @@
             )
             .join("")}
         </div>
-      </section>`;
+      </section>
+
+      ${pagerTemplate(chapterStop(chapters[0], "はじめの篇"), personStop)}`;
   };
 
   const figureTemplate = (figure, className) => `
@@ -309,12 +324,11 @@
     document.title = "孫子という人｜孫子兵法 十三篇";
     const last = chapters[chapters.length - 1];
     content.innerHTML = `
-      <header class="person-hero">
-        <div class="person-intro">
-          <p class="chapter-number"><span class="seal-mini" aria-hidden="true">附</span>附録</p>
-          <h1 class="chapter-title">孫子という人</h1>
+      <header class="chapter-hero person-hero">
+        <h1 class="daisen"><span class="daisen-number">附録</span><span class="daisen-name">孫子という人</span></h1>
+        <div class="chapter-hero-body">
           <p class="chapter-subtitle">孫武、春秋の兵法家</p>
-          ${person.lead.map((paragraph) => `<p class="person-lead">${escapeHtml(paragraph)}</p>`).join("")}
+          <div class="chapter-lead">${person.lead.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}</div>
         </div>
         ${figureTemplate(person.portrait, "person-portrait")}
       </header>
@@ -351,18 +365,7 @@
         参照：${sourceLinks(person.sources)}
       </aside>
 
-      <nav class="pager" aria-label="移動">
-        <a class="pager-link pager-link--prev" href="#chapter-${last.id}">
-          <span class="pager-direction">前の篇</span>
-          <span class="pager-name">第${last.idKanji}篇　${escapeHtml(last.name)}</span>
-          <span class="pager-sub">${escapeHtml(last.subtitle)}</span>
-        </a>
-        <a class="pager-link pager-link--next" href="#overview">
-          <span class="pager-direction">読み終えたら</span>
-          <span class="pager-name">総覧へ戻る</span>
-          <span class="pager-sub">十三篇を見渡す</span>
-        </a>
-      </nav>`;
+      ${pagerTemplate(overviewStop, chapterStop(last, "前の篇"))}`;
   };
 
   // ---- ナビゲーション ----
@@ -450,13 +453,23 @@
     { passive: false },
   );
 
+  const calm = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let shown = false;
+
   const show = (view, chapterId) => {
-    if (view === "chapter") renderChapter(chapters[chapterId - 1]);
-    else if (view === "person") renderPerson();
-    else renderOverview();
-    updateNav(view, chapterId);
-    window.scrollTo(0, 0);
-    document.querySelector("#reading").focus({ preventScroll: true });
+    const swap = () => {
+      if (view === "chapter") renderChapter(chapters[chapterId - 1]);
+      else if (view === "person") renderPerson();
+      else renderOverview();
+      updateNav(view, chapterId);
+      window.scrollTo(0, 0);
+      document.querySelector("#reading").focus({ preventScroll: true });
+    };
+    // 篇を移るときだけ、紙面をごく短く差し替える
+    // 画面が隠れているときなどは差し替えだけが行われ、ready は拒否される
+    if (shown && document.startViewTransition && !calm.matches) document.startViewTransition(swap).ready.catch(() => {});
+    else swap();
+    shown = true;
   };
 
   const route = () => {
