@@ -27,6 +27,7 @@
   --night-line: rgba(236, 227, 208, 0.12);
   --night-shu: #e0806a;
   --scroll-paper: #f0e8d6;
+  --cord-hang: rgba(236, 227, 208, 0.4);
   --scroll-ink: #1e1a15;
   --brocade: #5b2a1f;
   --brocade-2: #6e3526;
@@ -981,12 +982,13 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   position: absolute;
   bottom: calc(100% + 16px);
   left: 50%;
-  width: 22px;
-  height: 14px;
-  border: 1px solid rgba(236, 227, 208, 0.35);
-  border-bottom: 0;
+  width: 40px;
+  height: 18px;
+  background:
+    linear-gradient(to top right, transparent calc(50% - 0.6px), var(--cord-hang) calc(50% - 0.6px) calc(50% + 0.6px), transparent calc(50% + 0.6px)) left / 50% 100% no-repeat,
+    linear-gradient(to top left, transparent calc(50% - 0.6px), var(--cord-hang) calc(50% - 0.6px) calc(50% + 0.6px), transparent calc(50% + 0.6px)) right / 50% 100% no-repeat;
   content: "";
-  transform: translateX(-50%) perspective(20px) rotateX(20deg);
+  transform: translateX(-50%);
 }
 
 .saying-scroll::after {
@@ -1946,12 +1948,34 @@ body[data-view="overview"][data-cover-visible] .slipnav {
 .volume {
   position: relative;
   display: grid;
-  grid-template-columns: 5em 5.5em minmax(0, 1fr);
-  align-items: baseline;
-  gap: 4px 24px;
-  padding: 26px 20px;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 4px 32px;
+  padding: 28px 20px;
   text-decoration: none;
   transition: background-color 0.15s;
+}
+
+/* 見取り図の各篇にも、表紙と同じ竹簡を一本ずつ添える */
+.volume-slip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 46px;
+  min-height: 132px;
+  padding: 14px 0;
+  border-radius: 2px;
+  color: var(--slip-ink);
+  background:
+    linear-gradient(90deg, var(--slip-edge), transparent 25%, transparent 70%, var(--slip-edge)),
+    var(--slip);
+  box-shadow: 0 12px 16px -14px var(--shadow);
+  writing-mode: vertical-rl;
+  transition: transform 0.18s var(--ease);
+}
+
+.volume:hover .volume-slip {
+  transform: translateY(-4px);
 }
 
 .volumes li + li .volume {
@@ -1967,22 +1991,27 @@ body[data-view="overview"][data-cover-visible] .slipnav {
 }
 
 .volume-number {
-  color: var(--shu);
-  font-size: 13px;
-  letter-spacing: 0.24em;
+  flex: none;
+  color: var(--slip-shu);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
 }
 
 .volume-name {
-  font-size: 28px;
+  flex: none;
+  font-size: 22px;
   font-weight: 600;
   line-height: 1.2;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
   transition: color 0.15s;
 }
 
 .volume-body {
   display: grid;
   gap: 8px;
+  padding-top: 4px;
 }
 
 .volume-sub {
@@ -2362,6 +2391,12 @@ body:has(.toc[open]) {
   }
 
   .margin-note {
+    display: none;
+  }
+}
+
+@media (min-width: 861px) and (max-width: 1320px) {
+  .place-sections {
     display: none;
   }
 }
@@ -2917,17 +2952,17 @@ body:has(.toc[open]) {
   }
 
   .volume {
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 10px 14px;
+    gap: 10px 18px;
     padding: 22px 4px;
   }
 
-  .volume-body {
-    grid-column: 1 / -1;
+  .volume-slip {
+    width: 42px;
+    min-height: 120px;
   }
 
   .volume-name {
-    font-size: 24px;
+    font-size: 20px;
   }
 
   /* 附録 */

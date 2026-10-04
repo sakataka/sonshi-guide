@@ -269,8 +269,10 @@
     return `
       <li>
         <a class="volume" href="#chapter-${chapter.id}">
-          <span class="volume-number">第${chapter.idKanji}篇</span>
-          <span class="volume-name">${escapeHtml(chapter.name)}</span>
+          <span class="volume-slip">
+            <span class="volume-number">第${chapter.idKanji}篇</span>
+            <span class="volume-name">${escapeHtml(chapter.name)}</span>
+          </span>
           <span class="volume-body">
             <span class="volume-sub">${escapeHtml(chapter.subtitle)}</span>
             <span class="volume-lead">${escapeHtml(chapter.lead)}</span>
