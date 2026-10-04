@@ -2,7 +2,6 @@
 
 :root {
   --paper: #f2ede2;
-  --paper-2: #e9e2d3;
   --paper-3: #ded4c0;
   --card: #f8f4eb;
   --ink: #1c1915;
@@ -11,15 +10,12 @@
   --line: #d6ccb8;
   --line-2: #b9ab92;
   --shu: #a8321f;
-  --shu-soft: #c4523c;
   --shu-ink: #fbf3e8;
   --shu-wash: rgba(168, 50, 31, 0.07);
   --shu-line: rgba(168, 50, 31, 0.35);
-  --paper-rule: rgba(72, 66, 58, 0.12);
   --header-bg: rgba(242, 237, 226, 0.88);
   /* 原典の部は、墨を塗った壁に軸を掛けたような暗い帯にする */
   --night: #181612;
-  --night-2: #211e19;
   --night-3: #2b2720;
   --night-text: #ece3d0;
   --night-text-2: #c9bfab;
@@ -30,7 +26,6 @@
   --cord-hang: rgba(236, 227, 208, 0.4);
   --scroll-ink: #1e1a15;
   --brocade: #5b2a1f;
-  --brocade-2: #6e3526;
   --rod: #24170f;
   --slip: #e3d1a6;
   --slip-2: #d9c393;
@@ -66,7 +61,6 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --paper: #13110d;
-    --paper-2: #1a1712;
     --paper-3: #242017;
     --card: #1a1712;
     --ink: #e8dfcc;
@@ -75,14 +69,11 @@
     --line: #322d24;
     --line-2: #4b4434;
     --shu: #d8634d;
-    --shu-soft: #e0806a;
     --shu-ink: #1a0f0b;
     --shu-wash: rgba(216, 99, 77, 0.1);
     --shu-line: rgba(216, 99, 77, 0.45);
-    --paper-rule: rgba(196, 186, 165, 0.1);
     --header-bg: rgba(19, 17, 13, 0.86);
     --night: #0b0a08;
-    --night-2: #12110d;
     --night-3: #1a1813;
     --scroll-paper: #e6dcc6;
     --slip: #2c2619;
@@ -706,17 +697,22 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   margin-bottom: 32px;
 }
 
-.layer-title {
+.layer-title,
+.aside-mentions-title {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin: 0;
   font-size: 19px;
   font-weight: 600;
   letter-spacing: 0.2em;
 }
 
-.layer-title::before {
+.layer-title {
+  margin: 0;
+}
+
+.layer-title::before,
+.aside-mentions-title::before {
   width: 28px;
   height: 1px;
   background: var(--shu);
@@ -814,7 +810,6 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   --shu: var(--night-shu);
   --shu-line: rgba(224, 128, 106, 0.4);
   --shu-wash: rgba(224, 128, 106, 0.1);
-  --paper-rule: rgba(236, 227, 208, 0.07);
   color: var(--ink);
   background:
     radial-gradient(ellipse 70% 50% at 50% 0%, var(--night-3), transparent 70%),
@@ -1293,20 +1288,7 @@ body[data-view="overview"][data-cover-visible] .slipnav {
 }
 
 .aside-mentions-title {
-  display: flex;
-  align-items: center;
-  gap: 16px;
   margin: 0 0 8px;
-  font-size: 19px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-}
-
-.aside-mentions-title::before {
-  width: 28px;
-  height: 1px;
-  background: var(--shu);
-  content: "";
 }
 
 .aside-mentions ul {
@@ -2690,11 +2672,6 @@ body:has(.toc[open]) {
     font-size: 18px;
   }
 
-  .counsel p {
-    font-size: 18px;
-    line-height: 2;
-  }
-
   .counsel p:first-child::before {
     position: static;
     margin: 0;
@@ -2739,7 +2716,6 @@ body:has(.toc[open]) {
   }
 
   .kundoku-switch button {
-    min-height: 44px;
     padding: 0 18px;
   }
 
@@ -2869,6 +2845,7 @@ body:has(.toc[open]) {
     flex: none;
     width: 880px;
     gap: 8px;
+    direction: ltr;
   }
 
   .slips-frame {
@@ -2889,10 +2866,6 @@ body:has(.toc[open]) {
 
   .slips-frame::-webkit-scrollbar {
     display: none;
-  }
-
-  .slips {
-    direction: ltr;
   }
 
   .slips-hint {

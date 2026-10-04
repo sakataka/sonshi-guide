@@ -1,5 +1,5 @@
 import { existsSync, statSync } from "node:fs";
-import { extname, join, normalize, resolve } from "node:path";
+import { extname, normalize, resolve } from "node:path";
 
 const valueAfter = (name: string) => {
   const index = Bun.argv.indexOf(name);

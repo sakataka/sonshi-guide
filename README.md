@@ -14,13 +14,14 @@
 
 狭い画面では「目次」から十三本の竹簡を二段に並べた目次を開き、開いている篇の「語る」「原典」「読み継ぐ」へも移れます。表紙の竹簡は横に繰って選べます。原文と縦書きの書き下し文には「左へ読む」「右へ戻る」を添えています。
 
-データは `src/chapters.js`（篇と進言）、`src/full-texts.js`（原文・書き下し文）、`src/sayings.js`（名句と進言中の該当箇所）、`src/asides.js`（余話）、`src/person.js`（附録）にあります。表紙の山水 `src/images/ink-landscape.webp` は、画像生成AIで制作した水墨画から墨の濃淡だけを取り出したもので、CSS のマスクとして使い、ライト／ダークどちらでも墨色で描きます。
+データは `src/chapters.js`（篇と進言）、`src/full-texts.js`（原文・書き下し文）、`src/sayings.js`（名句と進言中の該当箇所）、`src/asides.js`（余話）、`src/person.js`（附録）にあります。`src/templates.js` がデータからHTMLを生成し、`src/app.js` が画面の切り替え・ナビゲーション・本文の操作を受け持ちます。表紙の山水 `src/images/ink-landscape.webp` は、画像生成AIで制作した水墨画から墨の濃淡だけを取り出したもので、CSS のマスクとして使い、ライト／ダークどちらでも墨色で描きます。
 
 ## 開発
 
 基準ランタイムは Bun 1.4.2 です。
 
 ```bash
+bun run test
 bun run build
 localweb dev sonshi-guide
 ```
@@ -28,6 +29,8 @@ localweb dev sonshi-guide
 ポート番号は LocalWeb が割り当て、`--port` で渡します（`http://sonshi-guide-dev.localhost/`）。
 
 編集対象は `src/`、生成先は `dist/` です。`design/` には制作時のデスクトップ／モバイル参考画像を残しています。
+
+`bun run test` は、全篇の原文・書き下し文、名句と進言のリンク、見出しの参照、前後の篇への移動、HTMLのエスケープを検証します。追加のパッケージは不要です。表示・操作は別途実ブラウザで確認します。
 
 ## LocalWeb
 
