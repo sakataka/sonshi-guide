@@ -16,7 +16,7 @@
 
   // 一つの篇を、性格の異なる三つの部に分けて読む
   const parts = [
-    { key: "kataru", numeral: "壱", name: "語る", layers: ["軍師の進言"], note: "孫子が王に語りかける形で、各篇の原文を順に今の日本語へ移した本文です。" },
+    { key: "kataru", numeral: "壱", name: "語る", layers: ["軍師の進言"], note: "各篇の原文を順に読み、今の日本語へ移しました。軍師が王に語りかける形に再構成した本文です。" },
     { key: "genten", numeral: "弐", name: "原典", layers: ["現代に残る言葉", "原文", "書き下し文"], note: "二千年以上書き写されてきた漢文と、それを日本語の語順で読み下した文です。" },
     { key: "yomitsugu", numeral: "参", name: "読み継ぐ", layers: ["余話", "こんなところにも"], note: "後の時代にどう読まれ、どこで引かれてきたか。どれも数ある読みの一つです。" },
   ];
@@ -179,7 +179,7 @@
 
   // 先へは大きく、もう一つの行き先は控えめに置く
   const overviewStop = { href: "#overview", direction: "はじめへ", name: "総覧", sub: "十三篇を見渡す" };
-  const personStop = { href: "#sonshi", direction: "附録", name: "孫子という人", sub: "十三篇を著した人の生涯" };
+  const personStop = { href: "#sonshi", direction: "附録", name: "孫子という人", sub: "十三篇の著者として伝わる人" };
   const chapterStop = (chapter, direction) => ({
     href: `#chapter-${chapter.id}`,
     direction,
@@ -249,7 +249,8 @@
       ${partSection(parts[2], asideTemplate(asides[chapter.id - 1]), parts[2].layers[0])}
 
       <aside class="source-note">
-        原文は『孫子兵法』通行本を参照し、原文表示から現代的な句読点を除いています。書き下し文は1935年刊『武経七書』所収本文によります。篇や伝本によって異字があります。<br />
+        原文は中国語版Wikisourceの通行本から、句読点と校異注を除いています。書き下し文は1935年刊『武経七書』所収本文によります。明らかな誤植・転記の誤りは補正しました。名句は各出典の本文・訓読によります。底本によって異字や読みの違いがあります。<br />
+        ${fullText.corrections ? `書き下し文の補正：${escapeHtml(fullText.corrections)}<br />` : ""}
         全文：<a href="https://zh.wikisource.org/zh-hant/%E5%AD%AB%E5%AD%90%E5%85%B5%E6%B3%95" target="_blank" rel="noreferrer">中国語版Wikisource『孫子兵法』</a> ／ <a href="https://ja.wikisource.org/wiki/%E5%AD%AB%E5%AD%90_(%E6%AD%A6%E7%B6%93%E4%B8%83%E6%9B%B8)" target="_blank" rel="noreferrer">日本語版Wikisource『孫子（武経七書）』</a><br />
         参照：${sourceLinks(chapter.sources)}
       </aside>
@@ -306,7 +307,7 @@
         <div class="cover-art" aria-hidden="true"></div>
         <div class="cover-scroll">
           <h1 class="cover-title"><span class="cover-name">孫子兵法</span><span class="cover-seal">十三篇</span></h1>
-          <p class="cover-kicker">春秋の兵法書を、いくつもの層で読む</p>
+          <p class="cover-kicker">古代中国の兵法書を、いくつもの層で読む</p>
           <div class="slips-frame" tabindex="0" role="region" aria-label="十三篇の竹簡。右の始計から左の用間へ">
             <ol class="slips" aria-label="十三篇">${chapters.map(slipTemplate).join("")}</ol>
           </div>
@@ -449,7 +450,7 @@
     </ol>
     <div class="toc-ends">
       <a class="toc-end" href="#overview" data-view="overview"><span class="toc-end-glyph" aria-hidden="true">覧</span><span><span class="toc-end-name">総覧</span><span class="toc-end-sub">十三篇を見渡す</span></span></a>
-      <a class="toc-end" href="#sonshi" data-view="person"><span class="toc-end-glyph" aria-hidden="true">人</span><span><span class="toc-end-name">孫子という人</span><span class="toc-end-sub">十三篇を著した人</span></span></a>
+      <a class="toc-end" href="#sonshi" data-view="person"><span class="toc-end-glyph" aria-hidden="true">人</span><span><span class="toc-end-name">孫子という人</span><span class="toc-end-sub">十三篇とその著者</span></span></a>
     </div>`;
 
   const updateNav = (view, chapterId) => {
