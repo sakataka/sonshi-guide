@@ -165,7 +165,14 @@
   const kundokuTemplate = (paragraphs) => `
     <div class="kundoku" data-writing="yoko">
       <ol class="kundoku-yoko">
-        ${paragraphs.map((paragraph, index) => `<li><span class="dan" aria-hidden="true">${"一二三四五六七八九"[index]}</span><p>${kuHtml(paragraph)}</p></li>`).join("")}
+        ${paragraphs
+          .map((paragraph, index) =>
+            // 巻末の「孫子終」は段ではないので、番号を付けずに結びとして置く
+            paragraph === "孫子終"
+              ? `<li class="kundoku-end"><p>${escapeHtml(paragraph)}</p></li>`
+              : `<li><span class="dan" aria-hidden="true">${"一二三四五六七八九"[index]}</span><p>${kuHtml(paragraph)}</p></li>`,
+          )
+          .join("")}
       </ol>
       ${tatePanel(paragraphs, { className: "tate-frame--paper", label: "書き下し文", ku: true })}
     </div>`;

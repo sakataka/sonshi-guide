@@ -1146,6 +1146,12 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   letter-spacing: 0.05em;
 }
 
+.kundoku-yoko .kundoku-end p {
+  color: var(--muted);
+  letter-spacing: 0.3em;
+  text-align: right;
+}
+
 .ku {
   display: block;
 }
