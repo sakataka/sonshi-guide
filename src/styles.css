@@ -524,8 +524,8 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
   gap: 72px;
-  min-height: min(calc(84svh - var(--header-h)), 740px);
-  padding: 64px 0 72px;
+  min-height: min(calc(76svh - var(--header-h)), 680px);
+  padding: 56px 0 64px;
 }
 
 /* 篇の書き出しを、裏から透けた墨のように淡く敷く */
@@ -621,7 +621,7 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   position: relative;
   padding: var(--part-pad) 0 var(--part-end, var(--part-pad));
   /* 部へ移ったときは、部の名が上端のすぐ下に来るようにする */
-  scroll-margin-top: calc(var(--header-h) + 24px - var(--part-pad));
+  scroll-margin-top: calc(var(--header-h) + 40px - var(--part-pad));
 }
 
 .part-grid {
@@ -2026,20 +2026,21 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   font: 13.5px/1.9 var(--sans);
 }
 
+/* この篇の名句を、枠を付けずに傍記として添える */
 .volume-sayings {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 4px;
+  gap: 2px 0;
+  margin-top: 2px;
+  color: var(--shu);
+  font-size: 13px;
+  letter-spacing: 0.06em;
 }
 
-.volume-sayings span {
-  padding: 3px 9px;
-  border: 1px solid var(--shu-line);
-  border-radius: 2px;
-  color: var(--shu);
-  font-size: 12.5px;
-  letter-spacing: 0.06em;
+.volume-sayings span + span::before {
+  margin: 0 0.6em;
+  color: var(--shu-line);
+  content: "／";
 }
 
 .part + .source-note {
@@ -2675,6 +2676,11 @@ body:has(.toc[open]) {
     font-size: 21px;
   }
 
+  .kundoku-switch button {
+    min-height: 44px;
+    padding: 0 18px;
+  }
+
   .kundoku-yoko li {
     padding-left: 36px;
   }
@@ -2765,7 +2771,7 @@ body:has(.toc[open]) {
   }
 
   .cover-scroll {
-    --scroll-h: 340px;
+    --scroll-h: 360px;
     flex-direction: column;
     align-items: stretch;
     gap: 16px;
@@ -2794,7 +2800,7 @@ body:has(.toc[open]) {
   .slips {
     --cord-inset: 26px;
     flex: none;
-    width: 760px;
+    width: 880px;
     gap: 8px;
   }
 
@@ -2863,7 +2869,8 @@ body:has(.toc[open]) {
   }
 
   .slip-sub {
-    font-size: 11.5px;
+    font-size: 12.5px;
+    line-height: 1.5;
   }
 
   .cover-intro {
