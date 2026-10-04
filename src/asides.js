@@ -3,7 +3,7 @@ window.SONSHI_ASIDES = [
     title: "注を付けた武将、経営に持ち込んだ起業家",
     layers: [
       {
-        era: "三国時代",
+        era: "後漢末",
         text: "曹操は十三篇に注を付けました。その注は、後の注釈を集めた『十一家注孫子』にも収められています。乱世を戦い抜いた武将が、始計の五事や七計をどう読んだかも、そこに残されています。",
       },
       {
@@ -49,11 +49,11 @@ window.SONSHI_ASIDES = [
     takeaway: "「拙速」の二字は、何と比べるかによって、褒め言葉にもけなし言葉にもなります。",
     mentions: [
       {
-        where: "三国時代 郭嘉の献策",
+        where: "後漢末 郭嘉の献策",
         text: "曹操が遠く烏桓を討とうとしたとき、参謀の郭嘉は「兵は神速を貴ぶ」と説き、重い荷を残して軽装の兵で急がせるよう進言しました。作戦篇の「兵は勝つことを貴んで、久しきを貴ばず」と響き合う言葉です。進言を受けたのは、孫子に注を付けた曹操その人でした。",
       },
       {
-        where: "後漢 光武帝と銅馬の降兵",
+        where: "後漢を開く劉秀と銅馬の降兵",
         text: "『後漢書』によれば、のちの光武帝・劉秀は銅馬の軍を降すと、降兵をそれぞれの陣に戻し、自ら少数の騎兵で見て回りました。降兵たちは、蕭王は真心を自分たちの腹に置いてくれた、この人のためなら命を投げ出せる、と語り合ったといいます。捕虜をよく扱い、勝つたびに強くなるという作戦篇の一節と、並べて読める話です。",
       },
     ],
@@ -120,8 +120,8 @@ window.SONSHI_ASIDES = [
       { label: "熊征「『孫子』形篇の攻守観について」（北海道大学）", url: "https://eprints.lib.hokudai.ac.jp/dspace/bitstream/2115/79796/1/09_rjgshhs_19_p157-188_l.pdf" },
       { label: "Wikipedia「銀雀山漢簡」", url: "https://ja.wikipedia.org/wiki/%E9%8A%80%E9%9B%80%E5%B1%B1%E6%BC%A2%E7%B0%A1" },
       { label: "U.S. Marine Corps「MCDP 1」", url: "https://www.marines.mil/News/Publications/MCPEL/Electronic-Library-Display/Article/899837/mcdp-1/" },
-      { label: "Marine Corps University『MCDP 1 Warfighting』（本文PDF）", url: "https://www.usmcu.edu/Portals/218/LLI/MLD/Toolkits/0001_MCLDW_MCDP1Warfighting.pdf?ver=2018-09-26-102627-107" },
-      { label: "Script-O-Rama『Wall Street』台詞の採録（英語）", url: "https://www.script-o-rama.com/movie_scripts/wall-street-transcript.html" },
+      { label: "米政府出版局 GovInfo『MCDP 1 Warfighting』（本文PDF）", url: "https://www.govinfo.gov/content/pkg/GOVPUB-D214-PURL-LPS24757/pdf/GOVPUB-D214-PURL-LPS24757.pdf" },
+      { label: "ボーンマス大学 CEMP『Wall Street』脚本（英語）", url: "https://cemp.ac.uk/scriptzone/script.php?id=594&type=download" },
     ],
   },
   {
@@ -187,7 +187,7 @@ window.SONSHI_ASIDES = [
     ],
     sources: [
       { label: "U.S. Marine Corps「MCDP 1」", url: "https://www.marines.mil/News/Publications/MCPEL/Electronic-Library-Display/Article/899837/mcdp-1/" },
-      { label: "Marine Corps University『MCDP 1 Warfighting』（本文PDF）", url: "https://www.usmcu.edu/Portals/218/LLI/MLD/Toolkits/0001_MCLDW_MCDP1Warfighting.pdf?ver=2018-09-26-102627-107" },
+      { label: "米政府出版局 GovInfo『MCDP 1 Warfighting』（本文PDF）", url: "https://www.govinfo.gov/content/pkg/GOVPUB-D214-PURL-LPS24757/pdf/GOVPUB-D214-PURL-LPS24757.pdf" },
       { label: "コトバンク「虚虚実実」", url: "https://kotobank.jp/word/%E8%99%9A%E8%99%9A%E5%AE%9F%E5%AE%9F-479281" },
       { label: "Wikisource『唐李問對』巻中（中国語）", url: "https://zh.wikisource.org/wiki/%E5%94%90%E6%9D%8E%E5%95%8F%E5%B0%8D/%E5%8D%B7%E4%B8%AD" },
     ],
@@ -339,7 +339,7 @@ window.SONSHI_ASIDES = [
     ],
     sources: [
       { label: "Web漢文大系「背水の陣」", url: "https://kanbun.info/koji/haisui.html" },
-      { label: "張菁「山鹿素行の『孫子』受容について」（『続日本紀』の記事を引用）", url: "https://eprints.lib.hokudai.ac.jp/repo/huscap/all/51972/015_ZHANG%20J.pdf" },
+      { label: "張菁「山鹿素行の『孫子諺義』について」（『続日本紀』の記事を引用）", url: "https://eprints.lib.hokudai.ac.jp/repo/huscap/all/51972/015_ZHANG%20J.pdf" },
       { label: "Wikisource『史記』淮陰侯列伝（中国語）", url: "https://zh.wikisource.org/wiki/%E5%8F%B2%E8%A8%98/%E5%8D%B7092" },
       { label: "Wikisource『史記』項羽本紀（中国語）", url: "https://zh.wikisource.org/wiki/%E5%8F%B2%E8%A8%98/%E5%8D%B7007" },
     ],

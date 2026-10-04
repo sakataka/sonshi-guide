@@ -25,7 +25,7 @@ bun run build
 localweb dev sonshi-guide
 ```
 
-port は LocalWeb が割り当て、`--port` で渡します（`http://sonshi-guide-dev.localhost/`）。
+ポート番号は LocalWeb が割り当て、`--port` で渡します（`http://sonshi-guide-dev.localhost/`）。
 
 編集対象は `src/`、生成先は `dist/` です。`design/` には制作時のデスクトップ／モバイル参考画像を残しています。
 
