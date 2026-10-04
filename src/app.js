@@ -73,13 +73,13 @@
   // 縦組みの本文。右から左へ読み進める
   const tatePanel = (paragraphs, { className = "", label, lang = "", ku = false }) => `
     <div class="tate-frame ${className}">
-      <div class="tate"${lang ? ` lang="${lang}"` : ""} tabindex="0" role="region" aria-label="${escapeHtml(label)}（縦書き・横にスクロール）">
+      <div id="${ku ? "kundoku-tate" : "original-tate"}" class="tate"${lang ? ` lang="${lang}"` : ""} tabindex="0" role="region" aria-label="${escapeHtml(label)}（縦書き・横にスクロール）">
         ${paragraphs.map((paragraph) => `<p>${ku ? kuHtml(paragraph) : escapeHtml(paragraph)}</p>`).join("")}
       </div>
       <div class="tate-controls" role="group" aria-label="${escapeHtml(label)}の移動">
-        <button type="button" data-tate-move="forward">左へ読む</button>
+        <button type="button" data-tate-move="forward" aria-controls="${ku ? "kundoku-tate" : "original-tate"}">左へ読む</button>
         <span class="tate-hint">右から左へ</span>
-        <button type="button" data-tate-move="back" disabled>右へ戻る</button>
+        <button type="button" data-tate-move="back" aria-controls="${ku ? "kundoku-tate" : "original-tate"}" disabled>右へ戻る</button>
       </div>
     </div>`;
 
@@ -158,12 +158,12 @@
 
   const kundokuSwitch = `
     <div class="kundoku-switch" role="group" aria-label="書き下し文の組み方">
-      <button type="button" data-writing="yoko" aria-pressed="true">横書き</button>
-      <button type="button" data-writing="tate" aria-pressed="false">縦書き</button>
+      <button type="button" data-writing="yoko" aria-controls="kundoku-content" aria-pressed="true">横書き</button>
+      <button type="button" data-writing="tate" aria-controls="kundoku-content" aria-pressed="false">縦書き</button>
     </div>`;
 
   const kundokuTemplate = (paragraphs) => `
-    <div class="kundoku" data-writing="yoko">
+    <div id="kundoku-content" class="kundoku" data-writing="yoko">
       <ol class="kundoku-yoko">
         ${paragraphs
           .map((paragraph, index) =>
@@ -504,8 +504,10 @@
     const move = event.target.closest("[data-tate-move]");
     if (move) {
       const panel = move.closest(".tate-frame").querySelector(".tate");
-      panel.scrollBy({
-        left: panel.clientWidth * (move.dataset.tateMove === "forward" ? -0.8 : 0.8),
+      const extent = panel.scrollWidth - panel.clientWidth;
+      const step = panel.clientWidth * (move.dataset.tateMove === "forward" ? 0.8 : -0.8);
+      panel.scrollTo({
+        left: -Math.max(0, Math.min(extent, Math.abs(panel.scrollLeft) + step)),
         behavior: calm.matches ? "instant" : "smooth",
       });
       return;
@@ -603,6 +605,7 @@
   let shown = false;
 
   const show = (view, chapterId) => {
+    const moveFocus = shown;
     const swap = () => {
       if (view === "chapter") renderChapter(chapters[chapterId - 1]);
       else if (view === "person") renderPerson();
@@ -614,7 +617,7 @@
       lastY = 0;
       document.body.removeAttribute("data-header-away");
       document.body.removeAttribute("data-scrolled");
-      document.querySelector("#reading").focus({ preventScroll: true });
+      if (moveFocus) document.querySelector("#reading").focus({ preventScroll: true });
     };
     // 篇を移るときだけ、紙面をごく短く差し替える
     // 画面が隠れているときなどは差し替えだけが行われ、ready は拒否される
@@ -634,10 +637,15 @@
   // 狭い画面では、目次を必要なときだけ開く
   document.querySelector("#toc-open").addEventListener("click", () => {
     toc.showModal();
+    toc.scrollTop = 0;
+    document.querySelector("#toc-open").setAttribute("aria-expanded", "true");
+  });
+  toc.addEventListener("close", () => {
+    document.querySelector("#toc-open").setAttribute("aria-expanded", "false");
   });
   document.querySelector("#toc-close").addEventListener("click", () => toc.close());
   toc.addEventListener("click", (event) => {
-    if (event.target === toc || event.target.closest("a")) toc.close();
+    if (event.target.closest("a")) toc.close();
   });
   window.matchMedia("(min-width: 861px)").addEventListener("change", (event) => {
     if (event.matches) toc.close();

@@ -179,6 +179,20 @@ a {
   color: inherit;
 }
 
+button {
+  font-synthesis: none;
+}
+
+.chapter-lead,
+.counsel p,
+.cover-lead p,
+.aside-text,
+.person-prose,
+.volume-lead,
+.saying-story {
+  text-wrap: pretty;
+}
+
 :focus-visible {
   outline: 2px solid var(--shu);
   outline-offset: 3px;
@@ -254,6 +268,7 @@ body[data-header-away] .site-header:not(:focus-within) {
   flex: none;
   align-items: center;
   gap: 14px;
+  min-height: 44px;
   color: var(--ink);
   text-decoration: none;
 }
@@ -330,7 +345,10 @@ body[data-view="overview"] .place-name {
 .toc-sections a {
   position: relative;
   color: var(--muted);
-  font: 12.5px/1 var(--sans);
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font: 13px/1 var(--sans);
   letter-spacing: 0.14em;
   text-decoration: none;
   white-space: nowrap;
@@ -349,7 +367,7 @@ body[data-view="overview"] .place-name {
 .place-sections a[aria-current]::after {
   position: absolute;
   right: 0;
-  bottom: -8px;
+  bottom: 7px;
   left: 0;
   height: 1px;
   background: var(--shu);
@@ -598,7 +616,7 @@ body[data-view="overview"][data-cover-visible] .slipnav {
 
 .chapter-lead {
   max-width: 34em;
-  margin: 40px 0 0;
+  margin: 32px 0 0;
   padding-left: 22px;
   border-left: 2px solid var(--shu);
   color: var(--ink-2);
@@ -713,7 +731,7 @@ body[data-view="overview"][data-cover-visible] .slipnav {
 }
 
 .counsel p {
-  margin: 0 0 1.25em;
+  margin: 0 0 1.5em;
   font-size: 18px;
   line-height: 2;
   letter-spacing: 0.02em;
@@ -880,6 +898,11 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   box-shadow: 0 30px 50px -30px rgba(0, 0, 0, 0.7);
   font-size: 19px;
   letter-spacing: 0.08em;
+  scrollbar-color: var(--scroll-ink) transparent;
+}
+
+.tate-frame--paper .tate:focus-visible {
+  outline-color: var(--scroll-ink);
 }
 
 .tate-controls {
@@ -893,7 +916,7 @@ body[data-view="overview"][data-cover-visible] .slipnav {
 .tate-controls button {
   min-height: 44px;
   padding: 0 14px;
-  border: 1px solid var(--line-2);
+  border: 1px solid color-mix(in srgb, var(--night-text-2) 55%, var(--night));
   border-radius: 2px;
   color: var(--ink-2);
   background: transparent;
@@ -904,7 +927,7 @@ body[data-view="overview"][data-cover-visible] .slipnav {
 }
 
 .tate-controls button:disabled {
-  opacity: 0.35;
+  opacity: 0.5;
   cursor: default;
 }
 
@@ -974,7 +997,7 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   box-shadow:
     inset 0 0 0 5px var(--scroll-paper),
     inset 0 0 0 6px rgba(91, 42, 31, 0.28),
-    0 34px 50px -26px rgba(0, 0, 0, 0.85);
+    0 24px 36px -24px rgba(0, 0, 0, 0.65);
 }
 
 /* 掛け緒と軸 */
@@ -1038,7 +1061,7 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   padding-top: 22px;
   border-top: 1px solid var(--line);
   color: var(--ink-2);
-  font: 14.5px/2 var(--sans);
+  font: 15px/2 var(--sans);
 }
 
 .saying-story .inline-label {
@@ -1048,11 +1071,17 @@ body[data-view="overview"][data-cover-visible] .slipnav {
 .saying-foot {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  gap: 6px 20px;
+  gap: 4px 20px;
   margin: 14px 0 0;
-  font: 12px/1.6 var(--sans);
+  font: 13px/1.7 var(--sans);
+}
+
+.saying-foot a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 
 .saying-back {
@@ -1085,12 +1114,12 @@ body[data-view="overview"][data-cover-visible] .slipnav {
 .kundoku-switch {
   display: inline-flex;
   padding: 3px;
-  border: 1px solid var(--line-2);
+  border: 1px solid color-mix(in srgb, var(--night-text-2) 55%, var(--night));
   border-radius: 999px;
 }
 
 .kundoku-switch button {
-  min-height: 32px;
+  min-height: 44px;
   padding: 0 16px;
   border: 0;
   border-radius: 999px;
@@ -1099,6 +1128,14 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   font: 13px/1 var(--sans);
   letter-spacing: 0.1em;
   cursor: pointer;
+  transition: color 0.15s, background-color 0.15s;
+}
+
+@media (hover: hover) {
+  .kundoku-switch button:not([aria-pressed="true"]):hover {
+    background: var(--night-3);
+    color: var(--night-text);
+  }
 }
 
 .kundoku-switch button[aria-pressed="true"] {
@@ -1225,7 +1262,7 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   margin: 0;
   padding-left: 14px;
   color: var(--ink-2);
-  font: 15px/2 var(--sans);
+  font: 16px/2 var(--sans);
 }
 
 /* 余話の結びは、一行の言葉として大きく置く */
@@ -1304,7 +1341,7 @@ body[data-view="overview"][data-cover-visible] .slipnav {
 .fine-sources {
   margin: 20px 0 0;
   color: var(--muted);
-  font: 12px/1.8 var(--sans);
+  font: 13px/1.9 var(--sans);
 }
 
 /* ---- 篇の末尾 ---- */
@@ -1315,7 +1352,8 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   padding-top: 20px;
   border-top: 1px solid var(--line);
   color: var(--muted);
-  font: 12.5px/1.9 var(--sans);
+  font: 13px/1.9 var(--sans);
+  overflow-wrap: anywhere;
 }
 
 .pager {
@@ -1416,10 +1454,11 @@ body[data-view="overview"][data-cover-visible] .slipnav {
 
 .pager-other {
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
   gap: 14px;
   justify-self: start;
   padding: 6px 0;
+  min-height: 44px;
   color: var(--ink-2);
   font-size: 15px;
   letter-spacing: 0.12em;
@@ -1898,12 +1937,13 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   font-weight: 600;
   line-height: 1.7;
   letter-spacing: 0.08em;
+  text-wrap: balance;
 }
 
 .legend-note {
   margin: 14px 0 0;
   color: var(--muted);
-  font: 13.5px/1.9 var(--sans);
+  font: 14px/1.9 var(--sans);
 }
 
 /* 十三篇の見取り図 */
@@ -2029,7 +2069,7 @@ body[data-view="overview"][data-cover-visible] .slipnav {
 
 .volume-lead {
   color: var(--muted);
-  font: 13.5px/1.9 var(--sans);
+  font: 14px/1.9 var(--sans);
 }
 
 /* この篇の名句を、枠を付けずに傍記として添える */
@@ -2108,7 +2148,7 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   max-width: 228px;
   margin-top: 12px;
   color: var(--muted);
-  font: 12px/1.7 var(--sans);
+  font: 13px/1.8 var(--sans);
 }
 
 .person-section {
@@ -2194,7 +2234,7 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   height: 100%;
   max-height: none;
   margin: 0;
-  padding: 0 20px calc(env(safe-area-inset-bottom) + 40px);
+  padding: 0 24px calc(env(safe-area-inset-bottom) + 24px);
   border: 0;
   color: var(--ink);
   background: var(--paper);
@@ -2223,9 +2263,9 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: calc(56px + env(safe-area-inset-top));
-  margin: 0 -20px 24px;
-  padding: env(safe-area-inset-top) 12px 0 24px;
+  height: calc(64px + env(safe-area-inset-top));
+  margin: 0 -24px 24px;
+  padding: env(safe-area-inset-top) 16px 0 24px;
   border-bottom: 1px solid var(--line);
   background: var(--paper);
 }
@@ -2241,6 +2281,16 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   font: 13px/1 var(--sans);
   letter-spacing: 0.14em;
   cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+}
+
+@media (hover: hover) {
+  .toc-close:hover,
+  .toc-open:hover {
+    border-color: var(--shu);
+    color: var(--shu);
+    background: var(--shu-wash);
+  }
 }
 
 .toc-sections {
@@ -2268,11 +2318,17 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   border-left: 1px solid var(--line-2);
 }
 
+.toc-sections a[aria-current="location"] {
+  color: var(--shu);
+  background: var(--shu-wash);
+  box-shadow: inset 0 -2px var(--shu);
+}
+
 /* 右上の始計から左へ、七本と六本の二段に並べる */
 .toc-slips {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 22px 6px;
+  gap: 16px 6px;
   margin: 0;
   padding: 0;
   direction: rtl;
@@ -2289,7 +2345,7 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   flex: 1;
   align-items: center;
   gap: 8px;
-  height: 256px;
+  height: 260px;
   padding: 14px 0;
   overflow: hidden;
   border-radius: 2px;
@@ -2315,7 +2371,7 @@ body[data-view="overview"][data-cover-visible] .slipnav {
 
 .toc-slip-number {
   color: var(--slip-shu);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.04em;
 }
 
@@ -2329,15 +2385,15 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   min-height: 0;
   overflow: hidden;
   color: var(--slip-ink-2);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.3;
   letter-spacing: 0.04em;
 }
 
 .toc-ends {
   display: grid;
-  gap: 4px;
-  margin-top: 32px;
+  gap: 0;
+  margin-top: 24px;
   border-top: 1px solid var(--line);
 }
 
@@ -2345,7 +2401,7 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 16px 4px;
+  padding: 14px 4px;
   border-bottom: 1px solid var(--line);
   text-decoration: none;
 }
@@ -2378,7 +2434,7 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   display: block;
   margin-top: 4px;
   color: var(--muted);
-  font: 12px/1.4 var(--sans);
+  font: 13px/1.5 var(--sans);
 }
 
 body:has(.toc[open]) {
@@ -2489,13 +2545,13 @@ body:has(.toc[open]) {
 
 @media (max-width: 860px) {
   :root {
-    --header-h: calc(54px + env(safe-area-inset-top));
-    --gutter: 20px;
+    --header-h: calc(64px + env(safe-area-inset-top));
+    --gutter: 24px;
   }
 
   .site-header {
     gap: 12px;
-    padding: env(safe-area-inset-top) 12px 0 16px;
+    padding: env(safe-area-inset-top) 16px 0 20px;
     border-color: var(--line);
     background: var(--header-bg);
     -webkit-backdrop-filter: blur(12px);
@@ -2545,7 +2601,7 @@ body:has(.toc[open]) {
     align-items: start;
     gap: 28px 20px;
     min-height: 0;
-    padding: 44px 0 16px;
+    padding: 40px 0 24px;
   }
 
   .opening-ghost {
@@ -2586,7 +2642,7 @@ body:has(.toc[open]) {
     grid-column: 1 / -1;
     margin-top: 4px;
     padding-left: 16px;
-    font-size: 16px;
+    font-size: 17px;
   }
 
   .part {
@@ -2606,7 +2662,7 @@ body:has(.toc[open]) {
     position: static;
     align-items: center;
     gap: 16px;
-    margin-bottom: 40px;
+    margin-bottom: 32px;
     writing-mode: horizontal-tb;
   }
 
@@ -2635,8 +2691,8 @@ body:has(.toc[open]) {
   }
 
   .counsel p {
-    font-size: 17px;
-    line-height: 2.05;
+    font-size: 18px;
+    line-height: 2;
   }
 
   .counsel p:first-child::before {
@@ -2647,7 +2703,7 @@ body:has(.toc[open]) {
   }
 
   .tate {
-    height: clamp(320px, 60vh, 540px);
+    height: clamp(320px, 56svh, 520px);
     padding: 28px 22px;
   }
 
@@ -2657,7 +2713,7 @@ body:has(.toc[open]) {
   }
 
   .tate-frame--paper .tate {
-    font-size: 17px;
+    font-size: 18px;
   }
 
   .sayings {
@@ -2665,7 +2721,7 @@ body:has(.toc[open]) {
   }
 
   .saying {
-    gap: 12px;
+    gap: 20px;
     padding: 44px 0;
   }
 
@@ -2688,12 +2744,12 @@ body:has(.toc[open]) {
   }
 
   .kundoku-yoko li {
-    padding-left: 36px;
+    padding-left: 32px;
   }
 
   .kundoku-yoko p {
-    font-size: 17.5px;
-    line-height: 2.1;
+    font-size: 18px;
+    line-height: 2;
   }
 
   .aside-title {
@@ -2729,6 +2785,11 @@ body:has(.toc[open]) {
   .aside-takeaway {
     padding: 28px 0 28px 40px;
     font-size: 20px;
+  }
+
+  .fine-sources,
+  .source-note {
+    line-height: 2;
   }
 
   .aside-takeaway::before {
@@ -2793,7 +2854,7 @@ body:has(.toc[open]) {
 
   .cover-title {
     height: auto;
-    font-size: 52px;
+    font-size: clamp(42px, 12.4vw, 64px);
     writing-mode: horizontal-tb;
   }
 
@@ -2812,12 +2873,12 @@ body:has(.toc[open]) {
 
   .slips-frame {
     flex: none;
-    margin: -8px -20px;
-    padding: 14px 20px 18px;
+    margin: -8px calc(-1 * var(--gutter));
+    padding: 14px var(--gutter) 18px;
     direction: rtl;
     overflow-x: auto;
     overscroll-behavior-x: contain;
-    scroll-padding-inline: 20px;
+    scroll-padding-inline: var(--gutter);
     scroll-snap-type: x proximity;
     scrollbar-width: none;
   }
@@ -2899,7 +2960,7 @@ body:has(.toc[open]) {
   }
 
   .cover-lead p {
-    font-size: 16.5px;
+    font-size: 17px;
   }
 
   .cover-lead p:first-child {
@@ -2917,6 +2978,7 @@ body:has(.toc[open]) {
     justify-content: center;
     padding-inline: 12px;
     font-size: 14px;
+    letter-spacing: 0.08em;
   }
 
   .action-primary::after {
@@ -3022,7 +3084,7 @@ body:has(.toc[open]) {
   }
 
   .person-prose {
-    font-size: 16.5px;
+    font-size: 18px;
   }
 
   .person-statue-body {
@@ -3066,6 +3128,15 @@ body:has(.toc[open]) {
   .slip-name,
   .mini-slip,
   .mini-tip,
+  .kundoku-switch button,
+  .toc-open,
+  .toc-close,
+  .volume,
+  .volume-slip,
+  .volume-name,
+  .action-primary,
+  .action-primary::after,
+  .action-secondary,
   .pager-next::after,
   .pager-name,
   .pager-ghost {
@@ -3073,7 +3144,10 @@ body:has(.toc[open]) {
   }
 
   .slip:hover,
-  .slip:focus-visible {
+  .slip:focus-visible,
+  .slips li:has(+ li .slip:hover) .slip,
+  .slips li:has(.slip:hover) + li .slip,
+  .volume:hover .volume-slip {
     transform: translateY(var(--drop, 0)) rotate(var(--tilt, 0deg));
   }
 
