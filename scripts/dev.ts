@@ -20,6 +20,7 @@ const contentTypes: Record<string, string> = {
   ".js": "text/javascript; charset=utf-8",
   ".jpg": "image/jpeg",
   ".png": "image/png",
+  ".webp": "image/webp",
 };
 
 const server = Bun.serve({

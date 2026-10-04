@@ -8,16 +8,17 @@
   const highlights = window.SONSHI_HIGHLIGHTS;
   const person = window.SONSHI_PERSON;
   const content = document.querySelector("#chapter-content");
-  const sidebarNav = document.querySelector("#sidebar-nav");
+  const slipnav = document.querySelector("#slipnav");
   const tocNav = document.querySelector("#toc-nav");
   const toc = document.querySelector("#toc");
   const headerPlace = document.querySelector("#header-place");
+  const calm = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   // 一つの篇を、性格の異なる三つの部に分けて読む
   const parts = [
-    { numeral: "壱", name: "語る", layers: ["軍師の進言"], note: "孫子が王に語りかける形で、各篇の原文を順に今の日本語へ移した本文です。" },
-    { numeral: "弐", name: "原典", layers: ["現代に残る言葉", "原文", "書き下し文"], note: "二千年以上書き写されてきた漢文と、それを日本語の語順で読み下した文です。" },
-    { numeral: "参", name: "読み継ぐ", layers: ["余話", "こんなところにも"], note: "後の時代にどう読まれ、どこで引かれてきたか。どれも数ある読みの一つです。" },
+    { key: "kataru", numeral: "壱", name: "語る", layers: ["軍師の進言"], note: "孫子が王に語りかける形で、各篇の原文を順に今の日本語へ移した本文です。" },
+    { key: "genten", numeral: "弐", name: "原典", layers: ["現代に残る言葉", "原文", "書き下し文"], note: "二千年以上書き写されてきた漢文と、それを日本語の語順で読み下した文です。" },
+    { key: "yomitsugu", numeral: "参", name: "読み継ぐ", layers: ["余話", "こんなところにも"], note: "後の時代にどう読まれ、どこで引かれてきたか。どれも数ある読みの一つです。" },
   ];
   const groups = [
     { name: "計る", note: "戦う前に量り、損なわずに勝つ", ids: [1, 2, 3] },
@@ -26,6 +27,8 @@
     { name: "地", note: "地を読み、置かれた場の人の心を読む", ids: [10, 11] },
     { name: "火と間", note: "強い手段の自制と、先に知ること", ids: [12, 13] },
   ];
+  const groupStarts = new Set(groups.map((group) => group.ids[0]));
+
   const escapeHtml = (value) =>
     String(value)
       .replaceAll("&", "&amp;")
@@ -42,12 +45,23 @@
       .map((source) => `<a href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">${escapeHtml(source.label)}</a>`)
       .join(" ／ ");
 
-  // 部の見出し。層が一つだけの部は、その層の名を添えて見出しを一段にまとめる
-  const partHead = (part, id, sub = "") => `
-    <header class="part-head">
+  // 扉や行き先の背後に、その篇の書き出しを薄墨で透かす
+  const ghostText = (chapterId, length) => escapeHtml(fullTexts[chapterId - 1].original.join("").slice(0, length));
+
+  // 部の見出し。広い画面では余白に縦に掲げ、読み進めるあいだ留まる
+  const partMark = (part, sub = "") => `
+    <header class="part-mark">
       <span class="part-numeral" aria-hidden="true">${part.numeral}</span>
-      <h2 id="${id}" class="part-title">${escapeHtml(part.name)}${sub ? `<span class="part-sub">${escapeHtml(sub)}</span>` : ""}</h2>
+      <h2 id="part-${part.key}-title" class="part-title">${escapeHtml(part.name)}${sub ? `<span class="part-sub">${escapeHtml(sub)}</span>` : ""}</h2>
     </header>`;
+
+  const partSection = (part, body, sub) => `
+    <section id="part-${part.key}" class="part part--${part.key}" data-part="${part.key}" aria-labelledby="part-${part.key}-title">
+      <div class="part-grid">
+        ${partMark(part, sub)}
+        <div class="part-body">${body}</div>
+      </div>
+    </section>`;
 
   // 書き下し文は句点ごとに行を改め、一文ずつ読めるようにする
   const kuHtml = (paragraph) =>
@@ -69,11 +83,14 @@
       </div>
     </div>`;
 
+  // 名句を含む段には、余白に名句の名を傍注のように添える
   const counselTemplate = (chapter) => {
     const marks = highlights[chapter.id - 1];
+    const chapterSayings = sayings[chapter.id - 1];
     return chapter.counsel
       .map((paragraph) => {
         let html = escapeHtml(paragraph);
+        const notes = [];
         marks.forEach((mark) => {
           if (!paragraph.includes(mark.phrase)) return;
           const phrase = escapeHtml(mark.phrase);
@@ -81,8 +98,12 @@
             phrase,
             `<a id="mark-${chapter.id}-${mark.quoteIndex + 1}" class="term-link" href="#quote-${chapter.id}-${mark.quoteIndex + 1}" data-jump>${phrase}</a>`,
           );
+          notes.push(chapterSayings[mark.quoteIndex].name);
         });
-        return `<p>${html}</p>`;
+        const note = notes.length
+          ? `<span class="margin-note" aria-hidden="true">${notes.map((name) => `<span>${escapeHtml(name)}</span>`).join("")}</span>`
+          : "";
+        return `<p${notes.length ? ' class="has-note"' : ""}>${note}${html}</p>`;
       })
       .join("");
   };
@@ -115,7 +136,7 @@
 
   const asideTemplate = (aside) => `
     <div class="aside">
-      <h4 class="aside-title">${escapeHtml(aside.title)}</h4>
+      <h3 class="aside-title">${escapeHtml(aside.title)}</h3>
       <ol class="aside-layers">
         ${aside.layers
           .map((layer) => `<li><p class="aside-era">${escapeHtml(layer.era)}</p><p class="aside-text">${escapeHtml(layer.text)}</p></li>`)
@@ -124,8 +145,8 @@
       <p class="aside-takeaway">${escapeHtml(aside.takeaway)}</p>
       ${
         aside.mentions?.length
-          ? `<section class="aside-mentions" aria-label="こんなところにも">
-              <h5 class="aside-mentions-title">こんなところにも</h5>
+          ? `<section class="aside-mentions" aria-labelledby="mentions-title">
+              <h4 id="mentions-title" class="aside-mentions-title">こんなところにも</h4>
               <ul>${aside.mentions
                 .map((mention) => `<li><p class="aside-where">${escapeHtml(mention.where)}</p><p class="aside-text">${escapeHtml(mention.text)}</p></li>`)
                 .join("")}</ul>
@@ -158,11 +179,13 @@
     number: `第${chapter.idKanji}篇`,
     name: chapter.name,
     sub: chapter.subtitle,
+    ghost: ghostText(chapter.id, 64).slice(3),
   });
 
   const pagerTemplate = (next, other) => `
     <nav class="pager" aria-label="移動">
       <a class="pager-next" href="${next.href}">
+        ${next.ghost ? `<span class="pager-ghost" lang="zh-Hant" aria-hidden="true">${next.ghost}</span>` : ""}
         <span class="pager-direction">${next.direction}</span>
         <span class="pager-name">${next.number ? `<span class="pager-number">${next.number}</span>` : ""}${escapeHtml(next.name)}</span>
         <span class="pager-sub">${escapeHtml(next.sub)}</span>
@@ -176,53 +199,47 @@
     return pagerTemplate(next ? chapterStop(next, "次の篇") : personStop, prev ? chapterStop(prev, "前の篇") : overviewStop);
   };
 
+  const layer = (key, name, body, extra = "") => `
+    <section id="sec-${key}" class="layer layer--${key}" aria-labelledby="sec-${key}-title">
+      <header class="layer-head">
+        <h3 id="sec-${key}-title" class="layer-title">${name}</h3>${extra}
+      </header>
+      ${body}
+    </section>`;
+
   const renderChapter = (chapter) => {
     const fullText = fullTexts[chapter.id - 1];
     const chapterSayings = sayings[chapter.id - 1];
-    const layer = (key, name, body, extra = "") => `
-      <section id="sec-${key}" class="layer layer--${key}" aria-labelledby="sec-${key}-title">
-        <header class="layer-head">
-          <h3 id="sec-${key}-title" class="layer-title">${name}</h3>${extra}
-        </header>
-        ${body}
-      </section>`;
 
     document.title = `第${chapter.id}篇 ${chapter.name}｜孫子兵法 十三篇`;
     content.innerHTML = `
-      <header class="chapter-hero">
+      <header class="opening">
+        <p class="opening-ghost" lang="zh-Hant" aria-hidden="true">${ghostText(chapter.id, 160)}</p>
         <h1 class="daisen"><span class="daisen-number">第${chapter.idKanji}篇</span><span class="daisen-name">${escapeHtml(chapter.name)}</span></h1>
-        <div class="chapter-hero-body">
+        <div class="opening-body">
           <p class="chapter-subtitle">${escapeHtml(chapter.subtitle)}</p>
           <p class="chapter-lead">${escapeHtml(chapter.lead)}</p>
         </div>
       </header>
 
-      <section class="part part--kataru" aria-labelledby="part-kataru">
-        ${partHead(parts[0], "part-kataru", parts[0].layers[0])}
-        <div class="counsel">${counselTemplate(chapter)}</div>
-      </section>
+      ${partSection(parts[0], `<div class="counsel">${counselTemplate(chapter)}</div>`, parts[0].layers[0])}
 
-      <section class="part part--genten" aria-labelledby="part-genten">
-        <div class="part-inner">
-          ${partHead(parts[1], "part-genten")}
-          ${
-            chapterSayings.length
-              ? layer(
-                  "sayings",
-                  "現代に残る言葉",
-                  `<div class="sayings">${chapterSayings.map((saying, index) => sayingTemplate(saying, index, chapter.id)).join("")}</div>`,
-                )
-              : ""
-          }
-          ${layer("original", "原文", tatePanel(fullText.original, { className: "tate-frame--sumi", label: "原文", lang: "zh-Hant" }))}
-          ${layer("kundoku", "書き下し文", kundokuTemplate(fullText.kundoku), kundokuSwitch)}
-        </div>
-      </section>
+      ${partSection(
+        parts[1],
+        `${
+          chapterSayings.length
+            ? layer(
+                "sayings",
+                "現代に残る言葉",
+                `<div class="sayings">${chapterSayings.map((saying, index) => sayingTemplate(saying, index, chapter.id)).join("")}</div>`,
+              )
+            : ""
+        }
+        ${layer("original", "原文", tatePanel(fullText.original, { className: "tate-frame--sumi", label: "原文", lang: "zh-Hant" }))}
+        ${layer("kundoku", "書き下し文", kundokuTemplate(fullText.kundoku), kundokuSwitch)}`,
+      )}
 
-      <section class="part part--yomitsugu" aria-labelledby="part-yomitsugu">
-        ${partHead(parts[2], "part-yomitsugu", parts[2].layers[0])}
-        ${asideTemplate(asides[chapter.id - 1])}
-      </section>
+      ${partSection(parts[2], asideTemplate(asides[chapter.id - 1]), parts[2].layers[0])}
 
       <aside class="source-note">
         原文は『孫子兵法』通行本を参照し、原文表示から現代的な句読点を除いています。書き下し文は1935年刊『武経七書』所収本文によります。篇や伝本によって異字があります。<br />
@@ -238,7 +255,7 @@
       ${parts
         .map(
           (part) => `
-        <li class="legend-part">
+        <li class="legend-part legend-part--${part.key}">
           <p class="legend-head"><span class="legend-numeral" aria-hidden="true">${part.numeral}</span><strong class="legend-title">${part.name}</strong></p>
           <p class="legend-layers">${part.layers.join("・")}</p>
           <p class="legend-note">${escapeHtml(part.note)}</p>
@@ -264,8 +281,8 @@
   };
 
   // 十三篇を、編紐で綴じた十三本の竹簡として並べる。右の題から左へ読み進める
-  const slipTemplate = (chapter) => `
-    <li>
+  const slipTemplate = (chapter, index) => `
+    <li style="--i: ${index}">
       <a class="slip" href="#chapter-${chapter.id}">
         <span class="slip-number">第${chapter.idKanji}篇</span>
         <span class="slip-name">${escapeHtml(chapter.name)}</span>
@@ -277,25 +294,28 @@
     document.title = "孫子兵法 十三篇";
     content.innerHTML = `
       <header class="cover">
+        <div class="cover-art" aria-hidden="true"></div>
         <div class="cover-scroll">
-          <p class="cover-kicker">春秋の兵法書を、いくつもの層で読む</p>
           <h1 class="cover-title"><span class="cover-name">孫子兵法</span><span class="cover-seal">十三篇</span></h1>
+          <p class="cover-kicker">春秋の兵法書を、いくつもの層で読む</p>
           <div class="slips-frame" tabindex="0" role="region" aria-label="十三篇の竹簡。右の始計から左の用間へ">
             <ol class="slips" aria-label="十三篇">${chapters.map(slipTemplate).join("")}</ol>
           </div>
         </div>
         <p class="slips-hint">右の始計から、左の用間へ<span>横に繰る</span></p>
-        <div class="cover-intro">
-          <div class="cover-lead">
-            <p>十三篇、およそ六千字。戦のための書として書かれ、二千年以上にわたって武将に、学者に、経営者に読み継がれてきました。読む人と時代が変われば、同じ一句から引き出されるものも変わります。</p>
-            <p>ここでは各篇を「語る」「原典」「読み継ぐ」の三つの層に分けて並べています。どこから読んでも構いません。</p>
-          </div>
+      </header>
+
+      <section class="cover-intro" aria-label="はじめに">
+        <p class="cover-motto" lang="zh-Hant" aria-hidden="true">兵者國之大事</p>
+        <div class="cover-lead">
+          <p>十三篇、およそ六千字。戦のための書として書かれ、二千年以上にわたって武将に、学者に、経営者に読み継がれてきました。読む人と時代が変われば、同じ一句から引き出されるものも変わります。</p>
+          <p>ここでは各篇を「語る」「原典」「読み継ぐ」の三つの層に分けて並べています。どこから読んでも構いません。</p>
           <div class="overview-actions">
             <a class="action-primary" href="#chapter-1">第一篇 始計から読む</a>
             <a class="action-secondary" href="#sonshi">孫子という人</a>
           </div>
         </div>
-      </header>
+      </section>
 
       <section class="overview-section" aria-labelledby="legend-title">
         <h2 id="legend-title" class="overview-heading"><span>一篇の読み方</span></h2>
@@ -318,6 +338,8 @@
         </div>
       </section>
 
+      <aside class="source-note">表紙の山水：画像生成AIで制作した水墨画をもとに、墨の濃淡だけを取り出して用いています。</aside>
+
       ${pagerTemplate(chapterStop(chapters[0], "はじめの篇"), personStop)}`;
   };
 
@@ -331,9 +353,10 @@
     document.title = "孫子という人｜孫子兵法 十三篇";
     const last = chapters[chapters.length - 1];
     content.innerHTML = `
-      <header class="chapter-hero person-hero">
+      <header class="opening opening--person">
+        <p class="opening-ghost" lang="zh-Hant" aria-hidden="true">${escapeHtml(person.ghost)}</p>
         <h1 class="daisen"><span class="daisen-number">附録</span><span class="daisen-name">孫子という人</span></h1>
-        <div class="chapter-hero-body">
+        <div class="opening-body">
           <p class="chapter-subtitle">孫武、春秋の兵法家</p>
           <div class="chapter-lead">${person.lead.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}</div>
         </div>
@@ -353,7 +376,7 @@
         </ol>
       </section>
 
-      <section class="person-section" aria-labelledby="person-real-title">
+      <section class="person-section person-real" aria-labelledby="person-real-title">
         <h2 id="person-real-title" class="overview-heading"><span>${escapeHtml(person.real.title)}</span></h2>
         <div class="person-prose">${person.real.paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}</div>
         ${figureTemplate(person.real.figure, "person-figure person-figure--wide")}
@@ -377,53 +400,78 @@
 
   // ---- ナビゲーション ----
 
-  const sidebarTemplate = () => `
-    <a class="side-top" href="#overview" data-view="overview"><span class="side-glyph" aria-hidden="true">覧</span><span><span class="side-name">総覧</span><span class="side-sub">十三篇を見渡す</span></span></a>
-    ${groups
-      .map(
-        (group) => `
-      <p class="side-group">${group.name}</p>
-      <ul class="side-chapters">
-        ${group.ids
-          .map((id) => {
-            const chapter = chapters[id - 1];
-            return `<li>
-              <a class="side-chapter" href="#chapter-${id}" data-chapter="${id}"><span class="side-number">${chapter.idKanji}</span><span class="side-chapter-name">${escapeHtml(chapter.name)}</span></a>
-              <div class="side-sections" data-sections="${id}" hidden>
-                <a href="#part-kataru" data-jump>語る</a>
-                <a href="#part-genten" data-jump>原典</a>
-                <a href="#part-yomitsugu" data-jump>読み継ぐ</a>
-              </div>
-            </li>`;
-          })
-          .join("")}
-      </ul>`,
-      )
-      .join("")}
-    <p class="side-group">附</p>
-    <a class="side-top side-top--person" href="#sonshi" data-view="person"><span class="side-glyph" aria-hidden="true">人</span><span><span class="side-name">孫子という人</span><span class="side-sub">十三篇を著した人</span></span></a>`;
+  // 上端の小さな竹簡。表紙と同じく、右の始計から左の用間へ並べる
+  const slipnavTemplate = () => `
+    <a class="mini-end" href="#overview" data-view="overview">総覧</a>
+    <ol class="mini-slips">
+      ${chapters
+        .map(
+          (chapter) => `<li${groupStarts.has(chapter.id) && chapter.id > 1 ? ' class="group-start"' : ""}>
+            <a class="mini-slip" href="#chapter-${chapter.id}" data-chapter="${chapter.id}" aria-label="第${chapter.idKanji}篇 ${escapeHtml(chapter.name)}">
+              <span class="mini-name" aria-hidden="true">${escapeHtml(chapter.name)}</span>
+              <span class="mini-tip" aria-hidden="true"><b>第${chapter.idKanji}篇</b>${escapeHtml(chapter.subtitle)}</span>
+            </a>
+          </li>`,
+        )
+        .join("")}
+    </ol>
+    <a class="mini-end" href="#sonshi" data-view="person">附録</a>`;
+
+  const sectionLinks = (className) => `
+    <span class="${className}" data-sections hidden>
+      ${parts.map((part) => `<a href="#part-${part.key}" data-jump data-part-link="${part.key}">${part.name}</a>`).join("")}
+    </span>`;
+
+  // 狭い画面の目次。十三本の竹簡を、右上から左へ二段に並べる
+  const tocTemplate = () => `
+    ${sectionLinks("toc-sections")}
+    <ol class="toc-slips">
+      ${chapters
+        .map(
+          (chapter) => `<li>
+            <a class="toc-slip" href="#chapter-${chapter.id}" data-chapter="${chapter.id}">
+              <span class="toc-slip-number">第${chapter.idKanji}篇</span>
+              <span class="toc-slip-name">${escapeHtml(chapter.name)}</span>
+              <span class="toc-slip-sub">${escapeHtml(chapter.subtitle)}</span>
+            </a>
+          </li>`,
+        )
+        .join("")}
+    </ol>
+    <div class="toc-ends">
+      <a class="toc-end" href="#overview" data-view="overview"><span class="toc-end-glyph" aria-hidden="true">覧</span><span><span class="toc-end-name">総覧</span><span class="toc-end-sub">十三篇を見渡す</span></span></a>
+      <a class="toc-end" href="#sonshi" data-view="person"><span class="toc-end-glyph" aria-hidden="true">人</span><span><span class="toc-end-name">孫子という人</span><span class="toc-end-sub">十三篇を著した人</span></span></a>
+    </div>`;
 
   const updateNav = (view, chapterId) => {
+    document.body.dataset.view = view;
     document.querySelectorAll("[data-sections]").forEach((section) => {
-      section.hidden = view !== "chapter" || Number(section.dataset.sections) !== chapterId;
+      section.hidden = view !== "chapter";
     });
     document.querySelectorAll("[data-chapter]").forEach((link) => {
       const selected = view === "chapter" && Number(link.dataset.chapter) === chapterId;
       if (selected) link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");
     });
-    document.querySelectorAll("[data-view]").forEach((link) => {
+    document.querySelectorAll("[data-view]:not(body)").forEach((link) => {
       if (link.dataset.view === view) link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");
     });
     const chapter = chapters[chapterId - 1];
-    headerPlace.textContent =
-      view === "chapter" ? `第${chapter.idKanji}篇　${chapter.name}` : view === "person" ? "孫子という人" : "孫子兵法 十三篇";
+    headerPlace.innerHTML =
+      view === "chapter"
+        ? `<span class="place-title">第${chapter.idKanji}篇<span>${escapeHtml(chapter.name)}</span></span>${sectionLinks("place-sections")}`
+        : `<span class="place-title">${view === "person" ? "孫子という人" : "孫子兵法 十三篇"}</span>`;
+    headerPlace.querySelector("[data-sections]")?.removeAttribute("hidden");
   };
 
   // 名句へは頭から、進言の一句へは前後の文と一緒に見えるように送る
+  // ページ内を移ったあとも上端は出したままにして、目次へすぐ戻れるようにする
+  let holdHeaderUntil = 0;
   const jumpTo = (target) => {
     if (!target) return;
+    holdHeaderUntil = performance.now() + 400;
+    document.body.removeAttribute("data-header-away");
     if (!target.matches("a[href], button, [tabindex]")) target.setAttribute("tabindex", "-1");
     target.scrollIntoView({ block: target.classList.contains("term-link") ? "center" : "start" });
     target.focus({ preventScroll: true });
@@ -439,6 +487,7 @@
     const jump = event.target.closest("a[data-jump]");
     if (jump) {
       event.preventDefault();
+      if (toc.open) toc.close();
       jumpTo(content.querySelector(jump.getAttribute("href")));
       return;
     }
@@ -479,7 +528,6 @@
     { passive: false },
   );
 
-  const calm = window.matchMedia("(prefers-reduced-motion: reduce)");
   const updateTateControls = () => {
     content.querySelectorAll(".tate").forEach((panel) => {
       const controls = panel.nextElementSibling;
@@ -493,6 +541,55 @@
     if (event.target.matches(".tate")) updateTateControls();
   }, true);
   window.addEventListener("resize", updateTateControls);
+
+  // いま読んでいる部を、上端の見出しと目次に示す
+  const partObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const key = entry.target.dataset.part;
+        document.querySelectorAll("[data-part-link]").forEach((link) => {
+          if (link.dataset.partLink === key) link.setAttribute("aria-current", "location");
+          else link.removeAttribute("aria-current");
+        });
+      });
+    },
+    { rootMargin: "-45% 0px -50% 0px" },
+  );
+
+  // 表紙の竹簡が見えているあいだは、上端の竹簡をしまっておく
+  const coverObserver = new IntersectionObserver(([entry]) => {
+    document.body.toggleAttribute("data-cover-visible", entry.isIntersecting);
+  });
+
+  // 読み進めるときは上端を退け、戻ろうとしたら出す
+  let lastY = window.scrollY;
+  window.addEventListener(
+    "scroll",
+    () => {
+      const y = window.scrollY;
+      if (performance.now() < holdHeaderUntil) {
+        lastY = y;
+        document.body.toggleAttribute("data-scrolled", y > 8);
+        return;
+      }
+      if (Math.abs(y - lastY) < 6) return;
+      document.body.toggleAttribute("data-header-away", y > lastY && y > 160);
+      document.body.toggleAttribute("data-scrolled", y > 8);
+      lastY = y;
+    },
+    { passive: true },
+  );
+
+  const observe = () => {
+    partObserver.disconnect();
+    coverObserver.disconnect();
+    content.querySelectorAll("[data-part]").forEach((section) => partObserver.observe(section));
+    const slips = content.querySelector(".slips-frame");
+    if (slips) coverObserver.observe(slips);
+    else document.body.removeAttribute("data-cover-visible");
+  };
+
   let shown = false;
 
   const show = (view, chapterId) => {
@@ -502,7 +599,11 @@
       else renderOverview();
       updateNav(view, chapterId);
       updateTateControls();
+      observe();
       window.scrollTo(0, 0);
+      lastY = 0;
+      document.body.removeAttribute("data-header-away");
+      document.body.removeAttribute("data-scrolled");
       document.querySelector("#reading").focus({ preventScroll: true });
     };
     // 篇を移るときだけ、紙面をごく短く差し替える
@@ -523,7 +624,6 @@
   // 狭い画面では、目次を必要なときだけ開く
   document.querySelector("#toc-open").addEventListener("click", () => {
     toc.showModal();
-    toc.querySelector('[aria-current="page"]')?.scrollIntoView({ block: "center" });
   });
   document.querySelector("#toc-close").addEventListener("click", () => toc.close());
   toc.addEventListener("click", (event) => {
@@ -533,8 +633,8 @@
     if (event.matches) toc.close();
   });
 
-  sidebarNav.innerHTML = sidebarTemplate();
-  tocNav.innerHTML = sidebarTemplate();
+  slipnav.innerHTML = slipnavTemplate();
+  tocNav.innerHTML = tocTemplate();
   window.addEventListener("hashchange", route);
   route();
 })();

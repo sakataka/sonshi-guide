@@ -7,49 +7,55 @@
       name="description"
       content="孫子兵法の十三篇を、軍師の進言、原文と書き下し文、名句、後世の読まれ方で読む。"
     />
-    <meta name="theme-color" content="#f3eee3" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#14120e" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f2ede2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#13110d" media="(prefers-color-scheme: dark)" />
     <title>孫子兵法 十三篇</title>
     <link rel="icon" href="./card.png" type="image/png" />
     <link rel="apple-touch-icon" href="./card.png" />
-    <link rel="stylesheet" href="./styles.css?v=20261004-1" />
+    <link rel="stylesheet" href="./styles.css?v=20261004-2" />
     <script src="./chapters.js?v=20260925-1" defer></script>
     <script src="./full-texts.js?v=20260925-1" defer></script>
     <script src="./asides.js?v=20260928-1" defer></script>
     <script src="./sayings.js?v=20260925-1" defer></script>
     <script src="./person.js?v=20260928-1" defer></script>
-    <script src="./app.js?v=20261004-1" defer></script>
+    <script src="./app.js?v=20261004-2" defer></script>
   </head>
   <body>
+    <!-- 朱印の縁を、押したときのように少し荒らす -->
+    <svg class="defs" aria-hidden="true" focusable="false">
+      <filter id="seal-rough" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed="7" />
+        <feDisplacementMap in="SourceGraphic" scale="2.4" />
+      </filter>
+    </svg>
+
     <a class="skip-link" href="#reading">本文へ移動</a>
+
     <header class="site-header">
-      <a class="seal-link" href="#overview" aria-label="孫子兵法 十三篇、総覧へ">
+      <a class="brand" href="#overview" aria-label="孫子兵法 十三篇、総覧へ">
         <span class="seal" aria-hidden="true"><span>孫子</span><span>兵法</span></span>
+        <span class="brand-title">孫子兵法<span>十三篇</span></span>
       </a>
       <span id="header-place" class="place-name"></span>
+      <nav id="slipnav" class="slipnav" aria-label="十三篇"></nav>
       <button id="toc-open" class="toc-open" type="button" aria-haspopup="dialog" aria-controls="toc">目次</button>
     </header>
 
-    <div class="app-shell">
-      <aside class="sidebar" aria-label="目次">
-        <a class="brand" href="#overview" aria-label="孫子兵法 十三篇、総覧へ">
-          <span class="seal" aria-hidden="true"><span>孫子</span><span>兵法</span></span>
-          <span class="brand-title">孫子兵法<span>十三篇</span></span>
-        </a>
-        <nav id="sidebar-nav" class="sidebar-nav" aria-label="十三篇"></nav>
-      </aside>
+    <main id="reading" class="reading" tabindex="-1">
+      <article id="chapter-content"></article>
+    </main>
 
-      <main id="reading" class="reading" tabindex="-1">
-        <article id="chapter-content"></article>
-      </main>
-    </div>
+    <footer class="colophon">
+      <span class="seal" aria-hidden="true"><span>孫子</span><span>兵法</span></span>
+      <p>孫子兵法 十三篇</p>
+    </footer>
 
     <dialog id="toc" class="toc" aria-label="目次">
       <div class="toc-head">
         <span class="brand-title">孫子兵法<span>十三篇</span></span>
         <button id="toc-close" class="toc-close" type="button">閉じる</button>
       </div>
-      <nav id="toc-nav" class="sidebar-nav" aria-label="十三篇"></nav>
+      <nav id="toc-nav" class="toc-nav" aria-label="十三篇"></nav>
     </dialog>
 
     <noscript>
