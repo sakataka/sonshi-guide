@@ -62,7 +62,11 @@
       <div class="tate"${lang ? ` lang="${lang}"` : ""} tabindex="0" role="region" aria-label="${escapeHtml(label)}（縦書き・横にスクロール）">
         ${paragraphs.map((paragraph) => `<p>${ku ? kuHtml(paragraph) : escapeHtml(paragraph)}</p>`).join("")}
       </div>
-      <p class="tate-hint" aria-hidden="true"><span>右から左へ</span></p>
+      <div class="tate-controls" role="group" aria-label="${escapeHtml(label)}の移動">
+        <button type="button" data-tate-move="forward">左へ読む</button>
+        <span class="tate-hint">右から左へ</span>
+        <button type="button" data-tate-move="back" disabled>右へ戻る</button>
+      </div>
     </div>`;
 
   const counselTemplate = (chapter) => {
@@ -261,7 +265,7 @@
 
   // 十三篇を、編紐で綴じた十三本の竹簡として並べる。右の題から左へ読み進める
   const slipTemplate = (chapter) => `
-    <li style="--i: ${chapter.id - 1}">
+    <li>
       <a class="slip" href="#chapter-${chapter.id}">
         <span class="slip-number">第${chapter.idKanji}篇</span>
         <span class="slip-name">${escapeHtml(chapter.name)}</span>
@@ -276,8 +280,11 @@
         <div class="cover-scroll">
           <p class="cover-kicker">春秋の兵法書を、いくつもの層で読む</p>
           <h1 class="cover-title"><span class="cover-name">孫子兵法</span><span class="cover-seal">十三篇</span></h1>
-          <ol class="slips" aria-label="十三篇">${chapters.map(slipTemplate).join("")}</ol>
+          <div class="slips-frame" tabindex="0" role="region" aria-label="十三篇の竹簡。右の始計から左の用間へ">
+            <ol class="slips" aria-label="十三篇">${chapters.map(slipTemplate).join("")}</ol>
+          </div>
         </div>
+        <p class="slips-hint">右の始計から、左の用間へ<span>横に繰る</span></p>
         <div class="cover-intro">
           <div class="cover-lead">
             <p>十三篇、およそ六千字。戦のための書として書かれ、二千年以上にわたって武将に、学者に、経営者に読み継がれてきました。読む人と時代が変われば、同じ一句から引き出されるものも変わります。</p>
@@ -382,6 +389,11 @@
             const chapter = chapters[id - 1];
             return `<li>
               <a class="side-chapter" href="#chapter-${id}" data-chapter="${id}"><span class="side-number">${chapter.idKanji}</span><span class="side-chapter-name">${escapeHtml(chapter.name)}</span></a>
+              <div class="side-sections" data-sections="${id}" hidden>
+                <a href="#part-kataru" data-jump>語る</a>
+                <a href="#part-genten" data-jump>原典</a>
+                <a href="#part-yomitsugu" data-jump>読み継ぐ</a>
+              </div>
             </li>`;
           })
           .join("")}
@@ -392,6 +404,9 @@
     <a class="side-top side-top--person" href="#sonshi" data-view="person"><span class="side-glyph" aria-hidden="true">人</span><span><span class="side-name">孫子という人</span><span class="side-sub">十三篇を著した人</span></span></a>`;
 
   const updateNav = (view, chapterId) => {
+    document.querySelectorAll("[data-sections]").forEach((section) => {
+      section.hidden = view !== "chapter" || Number(section.dataset.sections) !== chapterId;
+    });
     document.querySelectorAll("[data-chapter]").forEach((link) => {
       const selected = view === "chapter" && Number(link.dataset.chapter) === chapterId;
       if (selected) link.setAttribute("aria-current", "page");
@@ -409,6 +424,7 @@
   // 名句へは頭から、進言の一句へは前後の文と一緒に見えるように送る
   const jumpTo = (target) => {
     if (!target) return;
+    if (!target.matches("a[href], button, [tabindex]")) target.setAttribute("tabindex", "-1");
     target.scrollIntoView({ block: target.classList.contains("term-link") ? "center" : "start" });
     target.focus({ preventScroll: true });
   };
@@ -426,6 +442,15 @@
       jumpTo(content.querySelector(jump.getAttribute("href")));
       return;
     }
+    const move = event.target.closest("[data-tate-move]");
+    if (move) {
+      const panel = move.closest(".tate-frame").querySelector(".tate");
+      panel.scrollBy({
+        left: panel.clientWidth * (move.dataset.tateMove === "forward" ? -0.8 : 0.8),
+        behavior: calm.matches ? "instant" : "smooth",
+      });
+      return;
+    }
     const writing = event.target.closest("[data-writing]");
     if (writing && writing.tagName === "BUTTON") {
       const container = writing.closest(".layer").querySelector(".kundoku");
@@ -433,6 +458,7 @@
       writing.parentElement.querySelectorAll("button").forEach((button) => {
         button.setAttribute("aria-pressed", String(button === writing));
       });
+      updateTateControls();
     }
   });
 
@@ -454,6 +480,19 @@
   );
 
   const calm = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const updateTateControls = () => {
+    content.querySelectorAll(".tate").forEach((panel) => {
+      const controls = panel.nextElementSibling;
+      const extent = panel.scrollWidth - panel.clientWidth;
+      const position = Math.abs(panel.scrollLeft);
+      controls.querySelector('[data-tate-move="forward"]').disabled = position >= extent - 1;
+      controls.querySelector('[data-tate-move="back"]').disabled = position <= 1;
+    });
+  };
+  content.addEventListener("scroll", (event) => {
+    if (event.target.matches(".tate")) updateTateControls();
+  }, true);
+  window.addEventListener("resize", updateTateControls);
   let shown = false;
 
   const show = (view, chapterId) => {
@@ -462,6 +501,7 @@
       else if (view === "person") renderPerson();
       else renderOverview();
       updateNav(view, chapterId);
+      updateTateControls();
       window.scrollTo(0, 0);
       document.querySelector("#reading").focus({ preventScroll: true });
     };
