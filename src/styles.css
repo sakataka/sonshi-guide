@@ -1197,6 +1197,11 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   position: static;
 }
 
+/* 書き下し文に合わせて送っているあいだは、原文の送りの操作を出さない */
+.texts[data-writing="yoko"] .texts-original .tate-controls {
+  display: none;
+}
+
 /* 縦組み */
 .tate-frame {
   position: relative;
@@ -2572,6 +2577,10 @@ body:has(.toc[open]) {
   .texts-original {
     position: static;
     order: -1;
+  }
+
+  .texts[data-writing="yoko"] .texts-original .tate-controls {
+    display: flex;
   }
 
   .tate-frame--sumi .tate,

@@ -17,11 +17,28 @@
   const choNames = { kataru: "語る", genten: "原典", yomitsugu: "読み継ぐ" };
 
   // 帖をめくって戻ったときは、めくる前に読んでいた位置へ戻す。履歴の項目に持たせるだけで、保存はしない
-  // 押したリンクも覚えておき、戻ったときにキーボードの位置もそこへ返す
+  // 押したリンク、書き下し文の組み方と縦書きの欄の位置も同じ項目に持たせ、戻ったときにそろえて返す
   history.scrollRestoration = "manual";
-  const rememberScroll = (link) =>
-    history.replaceState({ ...history.state, y: window.scrollY, focus: link?.id || history.state?.focus || "" }, "");
+  const rememberScroll = (link) => {
+    const texts = content.querySelector(".texts");
+    const kundoku = texts?.querySelector("#kundoku-tate");
+    history.replaceState(
+      {
+        ...history.state,
+        y: window.scrollY,
+        focus: link === undefined ? (history.state?.focus ?? "") : link.id,
+        writing: texts?.dataset.writing ?? "",
+        kundokuLeft: kundoku ? kundoku.scrollLeft : 0,
+      },
+      "",
+    );
+  };
+  // 戻る・進むで離れても読んでいた位置に帰れるよう、間引いて覚えておく
   let rememberTimer = 0;
+  const rememberLater = () => {
+    clearTimeout(rememberTimer);
+    rememberTimer = setTimeout(() => rememberScroll(), 200);
+  };
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
@@ -116,14 +133,19 @@
     });
   };
 
-  const setWriting = (button) => {
+  const applyWriting = (button) => {
     const texts = button.closest(".texts");
     texts.dataset.writing = button.dataset.writing;
     button.parentElement.querySelectorAll("button").forEach((option) => {
       option.setAttribute("aria-pressed", String(option === button));
     });
+  };
+
+  const setWriting = (button) => {
+    applyWriting(button);
     syncOriginal();
     updateTateControls();
+    rememberScroll();
   };
 
   // ---- 帖の中の行き先 ----
@@ -151,11 +173,14 @@
     window.location.hash = href;
   };
 
+  // 新しいタブで開くなど、修飾キー付きのクリックはブラウザに任せる
+  const isModified = (event) => event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
+
   document.addEventListener(
     "click",
     (event) => {
       const link = event.target.closest('a[href^="#"]');
-      if (link && !link.matches(".skip-link") && !event.defaultPrevented) rememberScroll(link);
+      if (link && !link.matches(".skip-link") && !event.defaultPrevented && !isModified(event)) rememberScroll(link);
     },
     true,
   );
@@ -168,7 +193,7 @@
       return;
     }
     const target = event.target.closest("a[data-target]");
-    if (target) {
+    if (target && !isModified(event)) {
       event.preventDefault();
       if (toc.open) toc.close();
       openTarget(target.getAttribute("href"), target.dataset.target);
@@ -207,8 +232,10 @@
     "scroll",
     (event) => {
       if (!event.target.matches?.(".tate")) return;
-      if (event.target.id === "kundoku-tate") requestSync();
-      else updateTateControls();
+      if (event.target.id === "kundoku-tate") {
+        requestSync();
+        rememberLater();
+      } else updateTateControls();
     },
     true,
   );
@@ -225,9 +252,7 @@
     "scroll",
     () => {
       requestSync();
-      // 戻る・進むで離れても読んでいた位置に帰れるよう、間引いて覚えておく
-      clearTimeout(rememberTimer);
-      rememberTimer = setTimeout(() => rememberScroll(), 200);
+      rememberLater();
       const y = window.scrollY;
       if (performance.now() < holdHeaderUntil) {
         lastScrollY = y;
@@ -259,6 +284,8 @@
     const moveFocus = hasRendered;
     const restoreY = history.state?.y;
     const restoreFocus = history.state?.focus;
+    const restoreWriting = history.state?.writing;
+    const restoreKundokuLeft = history.state?.kundokuLeft ?? 0;
     const swap = () => {
       if (view === "chapter") {
         const chapter = chapters[chapterId - 1];
@@ -273,6 +300,11 @@
       }
       updateNav(view, chapterId, cho);
       observeCover();
+      const writing = restoreWriting && content.querySelector(`.kundoku-switch [data-writing="${restoreWriting}"]`);
+      if (writing && restoreWriting !== "yoko") {
+        applyWriting(writing);
+        content.querySelector("#kundoku-tate").scrollLeft = restoreKundokuLeft;
+      }
       window.scrollTo(0, restoreY ?? 0);
       lastScrollY = window.scrollY;
       document.body.removeAttribute("data-header-away");

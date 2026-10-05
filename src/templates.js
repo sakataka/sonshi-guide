@@ -56,8 +56,8 @@
     <nav class="cho-nav" aria-label="第${chapter.idKanji}篇の帖">
       ${chos
         .map(
-          // 語るへ戻るときは、扉を飛ばして本文の頭へ送る
-          (cho) => `<a class="cho-tab cho-tab--${cho.key}" href="${choHref(chapter.id, cho.key)}"${cho.key === "kataru" ? ' data-target="cho"' : ""}${cho.key === current ? ' aria-current="page"' : ""}>
+          // どの帖へも帖の頭へ送る。語るでは扉を飛ばして進言の頭に着く
+          (cho) => `<a id="cho-tab-${cho.key}" class="cho-tab cho-tab--${cho.key}" href="${choHref(chapter.id, cho.key)}" data-target="cho"${cho.key === current ? ' aria-current="page"' : ""}>
             <span class="cho-tab-numeral" aria-hidden="true">${cho.numeral}</span><span class="cho-tab-name">${cho.name}</span>
           </a>`,
         )
@@ -132,7 +132,7 @@
         <p class="saying-story"><span class="inline-label">来歴</span>${escapeHtml(saying.story)}</p>
         <p class="saying-foot">
           <span class="saying-source">${sourceLink(saying.source)}</span>
-          ${marked ? `<a class="saying-back" href="${choHref(chapterId)}" data-target="mark-${chapterId}-${index + 1}">進言の中で読む</a>` : ""}
+          ${marked ? `<a id="back-${chapterId}-${index + 1}" class="saying-back" href="${choHref(chapterId)}" data-target="mark-${chapterId}-${index + 1}">進言の中で読む</a>` : ""}
         </p>
       </div>
     </article>`;
@@ -219,13 +219,13 @@
 
   const pagerTemplate = (next, other) => `
     <nav class="pager" aria-label="移動">
-      <a class="pager-next${next.cho ? ` pager-next--${next.cho}` : ""}" href="${next.href}">
+      <a id="pager-next" class="pager-next${next.cho ? ` pager-next--${next.cho}` : ""}" href="${next.href}">
         ${next.ghost ? `<span class="pager-ghost" lang="zh-Hant" aria-hidden="true">${next.ghost}</span>` : ""}
         <span class="pager-direction">${next.direction}</span>
         <span class="pager-name">${next.number ? `<span class="pager-number">${next.number}</span>` : ""}${escapeHtml(next.name)}</span>
         <span class="pager-sub">${escapeHtml(next.sub)}</span>
       </a>
-      <a class="pager-other" href="${other.href}"><span class="pager-direction">${other.direction}</span>${other.number ? `${other.number}　` : ""}${escapeHtml(other.name)}</a>
+      <a id="pager-other" class="pager-other" href="${other.href}"><span class="pager-direction">${other.direction}</span>${other.number ? `${other.number}　` : ""}${escapeHtml(other.name)}</a>
     </nav>`;
 
   const chapterPager = (chapter, key) => {
@@ -297,7 +297,7 @@
         .map(
           (cho) => `
         <li>
-          <a class="legend-part legend-part--${cho.key}" href="${choHref(1, cho.key)}">
+          <a id="legend-${cho.key}" class="legend-part legend-part--${cho.key}" href="${choHref(1, cho.key)}">
             <span class="legend-head"><span class="legend-numeral" aria-hidden="true">${cho.numeral}</span><strong class="legend-title">${cho.name}</strong></span>
             <span class="legend-layers">${cho.layers.join("・")}</span>
             <span class="legend-note">${escapeHtml(cho.note)}</span>
@@ -314,7 +314,7 @@
     const group = groups.find((item) => item.ids[0] === chapter.id);
     return `
     <li style="--i: ${index}"${group && index > 0 ? ' class="group-start"' : ""}>
-      <a class="slip" href="${choHref(chapter.id)}">
+      <a id="slip-${chapter.id}" class="slip" href="${choHref(chapter.id)}">
         <span class="slip-number">第${chapter.idKanji}篇</span>
         <span class="slip-name">${escapeHtml(chapter.name)}</span>
         <span class="slip-sub">${escapeHtml(chapter.subtitle)}</span>
@@ -421,7 +421,7 @@
       ${chapters
         .map(
           (chapter) => `<li${groupStarts.has(chapter.id) && chapter.id > 1 ? ' class="group-start"' : ""}>
-            <a class="mini-slip" href="${choHref(chapter.id)}" data-chapter="${chapter.id}" aria-label="第${chapter.idKanji}篇 ${escapeHtml(chapter.name)}">
+            <a id="mini-slip-${chapter.id}" class="mini-slip" href="${choHref(chapter.id)}" data-chapter="${chapter.id}" aria-label="第${chapter.idKanji}篇 ${escapeHtml(chapter.name)}">
               <span class="mini-name" aria-hidden="true">${escapeHtml(chapter.name)}</span>
               <span class="mini-tip" aria-hidden="true"><b>第${chapter.idKanji}篇</b>${escapeHtml(chapter.subtitle)}</span>
             </a>
