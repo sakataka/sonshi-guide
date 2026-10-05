@@ -17,8 +17,11 @@
   const choNames = { kataru: "語る", genten: "原典", yomitsugu: "読み継ぐ" };
 
   // 帖をめくって戻ったときは、めくる前に読んでいた位置へ戻す。履歴の項目に持たせるだけで、保存はしない
+  // 押したリンクも覚えておき、戻ったときにキーボードの位置もそこへ返す
   history.scrollRestoration = "manual";
-  const rememberScroll = () => history.replaceState({ ...history.state, y: window.scrollY }, "");
+  const rememberScroll = (link) =>
+    history.replaceState({ ...history.state, y: window.scrollY, focus: link?.id || history.state?.focus || "" }, "");
+  let rememberTimer = 0;
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
@@ -77,6 +80,11 @@
     });
   };
 
+  const isOriginalSynced = () => {
+    const texts = content.querySelector(".texts");
+    return Boolean(texts) && texts.dataset.writing === "yoko" && getComputedStyle(texts.querySelector(".texts-original")).position === "sticky";
+  };
+
   // 書き下し文を読み進めると、脇に掛けた原文も同じあたりまで送る。
   // 横書きでは紙面のスクロールに、縦書きでは書き下し文の欄のスクロールに合わせる
   const syncOriginal = () => {
@@ -91,7 +99,7 @@
       original.scrollLeft = -extent * (kundoku.position / kundoku.extent);
       return;
     }
-    if (getComputedStyle(texts.querySelector(".texts-original")).position !== "sticky") return;
+    if (!isOriginalSynced()) return;
     const list = texts.querySelector(".kundoku-yoko").getBoundingClientRect();
     const progress = clamp((window.innerHeight * 0.4 - list.top) / list.height, 0, 1);
     const visible = original.clientWidth;
@@ -147,7 +155,7 @@
     "click",
     (event) => {
       const link = event.target.closest('a[href^="#"]');
-      if (link && !link.matches(".skip-link") && !event.defaultPrevented) rememberScroll();
+      if (link && !link.matches(".skip-link") && !event.defaultPrevented) rememberScroll(link);
     },
     true,
   );
@@ -183,6 +191,8 @@
     (event) => {
       const panel = event.target.closest(".tate");
       if (!panel || Math.abs(event.deltaX) >= Math.abs(event.deltaY)) return;
+      // 書き下し文に合わせて送っている原文の上では、ページをそのまま進める
+      if (panel.id === "original-tate" && isOriginalSynced()) return;
       const { extent, position } = tatePosition(panel);
       if (extent <= 0) return;
       const forward = event.deltaY > 0;
@@ -215,6 +225,9 @@
     "scroll",
     () => {
       requestSync();
+      // 戻る・進むで離れても読んでいた位置に帰れるよう、間引いて覚えておく
+      clearTimeout(rememberTimer);
+      rememberTimer = setTimeout(() => rememberScroll(), 200);
       const y = window.scrollY;
       if (performance.now() < holdHeaderUntil) {
         lastScrollY = y;
@@ -245,6 +258,7 @@
   const showView = (view, chapterId, cho) => {
     const moveFocus = hasRendered;
     const restoreY = history.state?.y;
+    const restoreFocus = history.state?.focus;
     const swap = () => {
       if (view === "chapter") {
         const chapter = chapters[chapterId - 1];
@@ -267,7 +281,9 @@
       updateTateControls();
       const target = pendingTarget && document.getElementById(pendingTarget);
       pendingTarget = "";
+      const returned = restoreY !== undefined && restoreFocus && document.getElementById(restoreFocus);
       if (target) jumpTo(target);
+      else if (returned) returned.focus({ preventScroll: true });
       else if (moveFocus) reading.focus({ preventScroll: true });
     };
     // 篇や帖を移るときだけ、紙面をごく短く差し替える
@@ -278,6 +294,7 @@
   };
 
   const renderRoute = () => {
+    clearTimeout(rememberTimer);
     const match = window.location.hash.match(/^#chapter-(\d{1,2})(?:\/([a-z]+))?$/);
     const chapterId = match ? Number(match[1]) : 0;
     const cho = match?.[2] ?? "kataru";

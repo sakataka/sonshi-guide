@@ -103,6 +103,8 @@ test("総覧と附録の参照・画像・行き先", async () => {
     .toEqual(data.SONSHI_CHAPTERS.map((chapter) => `#chapter-${chapter.id}`));
   expect(overview.elements.filter((element) => element.class === "slip-group").map((element) => element.style))
     .toEqual(["--span: 3", "--span: 3", "--span: 3", "--span: 2", "--span: 2"]);
+  expect(overview.elements.filter((element) => element.class?.startsWith("legend-part ")).map((element) => element.href))
+    .toEqual(choKeys.map((key) => choHref(1, key)));
   expect(person.elements.filter((element) => element.src).map((element) => element.src))
     .toEqual([data.SONSHI_PERSON.portrait.src, data.SONSHI_PERSON.real.figure.src, data.SONSHI_PERSON.statue.figure.src]);
   for (const link of person.elements.filter((element) => element.class === "person-link")) {

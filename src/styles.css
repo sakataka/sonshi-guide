@@ -149,9 +149,10 @@
     --ai-wash: rgba(147, 172, 208, 0.1);
     --ai-line: rgba(147, 172, 208, 0.45);
     --header-bg: rgba(19, 17, 13, 0.86);
-    --night: #0b0a08;
-    --night-3: #1a1813;
-    --night-card: #15130f;
+    /* 暗い表示では、原典の帖を青みの墨に寄せて他の帖と見分ける */
+    --night: #0c1115;
+    --night-3: #18212a;
+    --night-card: #121a21;
     --scroll-paper: #e6dcc6;
     --slip: #2c2619;
     --slip-2: #262014;
@@ -705,8 +706,8 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
   gap: 72px;
-  min-height: min(calc(76svh - var(--header-h)), 680px);
-  padding: 56px 0 var(--sp-8);
+  min-height: min(calc(66svh - var(--header-h)), 600px);
+  padding: var(--sp-7) 0 var(--sp-7);
 }
 
 /* 篇の書き出しを、裏から透けた墨のように淡く敷く */
@@ -2126,12 +2127,20 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   --tab: var(--cho-kataru);
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: auto auto 1fr auto;
   column-gap: 28px;
-  padding: 36px var(--sp-6) 40px;
+  height: 100%;
+  padding: 36px var(--sp-6) var(--sp-6);
   border: 1px solid var(--line);
   border-top: 3px solid var(--tab);
+  color: inherit;
   background: color-mix(in srgb, var(--card) 70%, transparent);
+  text-decoration: none;
+  transition: border-color var(--dur-1), box-shadow var(--dur-2), transform var(--dur-2) var(--ease);
+}
+
+.legend li {
+  display: flex;
 }
 
 .legend-part--genten {
@@ -2145,6 +2154,17 @@ body[data-view="overview"][data-cover-visible] .slipnav {
 
 .legend-part--yomitsugu {
   --tab: var(--cho-yomitsugu);
+}
+
+@media (hover: hover) {
+  .legend-part:hover {
+    box-shadow: var(--shadow-lift);
+    transform: translateY(-3px);
+  }
+
+  .legend-part:hover .legend-open::after {
+    width: 30px;
+  }
 }
 
 .legend-head {
@@ -2181,6 +2201,29 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   margin: 14px 0 0;
   color: var(--muted);
   font: var(--fs-ui) / 1.9 var(--sans);
+}
+
+/* 第一篇のその帖へ。紙面の矢印と同じ返しを付ける */
+.legend-open {
+  grid-row: 4;
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-5);
+  color: var(--tab);
+  font: 600 var(--fs-caption) / 1 var(--sans);
+  letter-spacing: var(--ls-ui);
+}
+
+.legend-open::after {
+  width: 18px;
+  height: 5px;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  content: "";
+  transform: skewX(50deg) translateY(-2px);
+  transition: width var(--dur-2) var(--ease);
 }
 
 .reading .overview-section + .source-note {
@@ -3262,7 +3305,8 @@ body:has(.toc[open]) {
     transform: translateY(var(--drop, 0)) rotate(var(--tilt, 0deg));
   }
 
-  .cho-tab:hover {
+  .cho-tab:hover,
+  .legend-part:hover {
     transform: none;
   }
 

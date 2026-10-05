@@ -56,7 +56,8 @@
     <nav class="cho-nav" aria-label="第${chapter.idKanji}篇の帖">
       ${chos
         .map(
-          (cho) => `<a class="cho-tab cho-tab--${cho.key}" href="${choHref(chapter.id, cho.key)}"${cho.key === current ? ' aria-current="page"' : ""}>
+          // 語るへ戻るときは、扉を飛ばして本文の頭へ送る
+          (cho) => `<a class="cho-tab cho-tab--${cho.key}" href="${choHref(chapter.id, cho.key)}"${cho.key === "kataru" ? ' data-target="cho"' : ""}${cho.key === current ? ' aria-current="page"' : ""}>
             <span class="cho-tab-numeral" aria-hidden="true">${cho.numeral}</span><span class="cho-tab-name">${cho.name}</span>
           </a>`,
         )
@@ -279,7 +280,7 @@
 
   const chapterTemplate = (chapter, key = "kataru") => `
       ${key === "kataru" ? chapterOpening(chapter) : ""}
-      <div class="cho cho--${key}" data-cho="${key}">
+      <div id="cho" class="cho cho--${key}" data-cho="${key}">
         ${choNav(chapter, key)}
         <div class="cho-body">
           ${key === "kataru" ? "" : choHead(chapter, key)}
@@ -289,15 +290,19 @@
       ${key === "genten" ? sourceNote(chapter, fullTexts[chapter.id - 1]) : ""}
       ${chapterPager(chapter, key)}`;
 
+  // 三つの帖の説明から、第一篇のその帖をそのまま開ける
   const legendTemplate = () => `
     <ol class="legend">
       ${chos
         .map(
           (cho) => `
-        <li class="legend-part legend-part--${cho.key}">
-          <p class="legend-head"><span class="legend-numeral" aria-hidden="true">${cho.numeral}</span><strong class="legend-title">${cho.name}</strong></p>
-          <p class="legend-layers">${cho.layers.join("・")}</p>
-          <p class="legend-note">${escapeHtml(cho.note)}</p>
+        <li>
+          <a class="legend-part legend-part--${cho.key}" href="${choHref(1, cho.key)}">
+            <span class="legend-head"><span class="legend-numeral" aria-hidden="true">${cho.numeral}</span><strong class="legend-title">${cho.name}</strong></span>
+            <span class="legend-layers">${cho.layers.join("・")}</span>
+            <span class="legend-note">${escapeHtml(cho.note)}</span>
+            <span class="legend-open">第一篇 始計で開く</span>
+          </a>
         </li>`,
         )
         .join("")}
