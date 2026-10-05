@@ -1203,6 +1203,11 @@ body[data-view="overview"][data-cover-visible] .slipnav {
   display: none;
 }
 
+/* 送られている原文は、手で横に動かして書き下し文とずらさない */
+.texts[data-synced] #original-tate {
+  overflow-x: hidden;
+}
+
 /* 縦組み */
 .tate-frame {
   position: relative;
@@ -2588,7 +2593,6 @@ body:has(.toc[open]) {
     position: static;
     order: -1;
   }
-
 
   .tate-frame--sumi .tate,
   .tate-frame--paper .tate {

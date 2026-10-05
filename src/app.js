@@ -238,10 +238,13 @@
   content.addEventListener(
     "wheel",
     (event) => {
-      const panel = event.target.closest(".tate");
+      let panel = event.target.closest(".tate");
       if (!panel || Math.abs(event.deltaX) >= Math.abs(event.deltaY)) return;
-      // 書き下し文に合わせて送っている原文の上では、ページをそのまま進める
-      if (panel.id === "original-tate" && isOriginalSynced()) return;
+      // 送られている原文の上では、送る側を進める。横書きならページ、縦書きなら書き下し文の欄
+      if (panel.id === "original-tate" && isOriginalSynced()) {
+        if (panel.closest(".texts").dataset.writing === "yoko") return;
+        panel = content.querySelector("#kundoku-tate");
+      }
       const { extent, position } = tatePosition(panel);
       if (extent <= 0) return;
       const forward = event.deltaY > 0;
