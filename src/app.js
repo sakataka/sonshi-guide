@@ -101,17 +101,26 @@
   const isSideBySide = (texts) => getComputedStyle(texts).gridTemplateColumns.trim().split(/\s+/).length > 1;
   const isOriginalSynced = () => {
     const texts = content.querySelector(".texts");
-    return Boolean(texts) && texts.dataset.writing === "yoko" && getComputedStyle(texts.querySelector(".texts-original")).position === "sticky";
+    if (!texts) return false;
+    if (texts.dataset.writing === "tate") return isSideBySide(texts);
+    return getComputedStyle(texts.querySelector(".texts-original")).position === "sticky";
   };
 
-  // 送られているあいだの原文は、キーボードで送る欄にしない
+  // 送られているあいだの原文は、送りの操作を出さず、キーボードの止まり先にもしない
   const updateOriginalPanel = () => {
-    const original = content.querySelector("#original-tate");
-    if (!original) return;
+    const texts = content.querySelector(".texts");
+    if (!texts) return;
     const synced = isOriginalSynced();
-    if (synced) original.removeAttribute("tabindex");
-    else original.setAttribute("tabindex", "0");
+    const original = texts.querySelector("#original-tate");
+    texts.toggleAttribute("data-synced", synced);
+    original.setAttribute("tabindex", synced ? "-1" : "0");
     original.setAttribute("aria-label", synced ? "原文（縦書き・書き下し文に合わせて送られる）" : "原文（縦書き・横にスクロール）");
+  };
+
+  // 表紙の竹簡は、横に繰れる幅のときだけキーボードで止まる欄にする
+  const updateSlipsFrame = () => {
+    const frame = content.querySelector(".slips-frame");
+    if (frame) frame.setAttribute("tabindex", getComputedStyle(frame).overflowX === "auto" ? "0" : "-1");
   };
 
   // 書き下し文を読み進めると、脇に掛けた原文も同じあたりまで送る。
@@ -122,14 +131,13 @@
     const original = texts.querySelector("#original-tate");
     const { extent } = tatePosition(original);
     if (extent <= 0) return;
+    if (!isOriginalSynced()) return;
     if (texts.dataset.writing === "tate") {
-      if (!isSideBySide(texts)) return;
       const kundoku = tatePosition(texts.querySelector("#kundoku-tate"));
       if (kundoku.extent <= 0) return;
       original.scrollLeft = -extent * (kundoku.position / kundoku.extent);
       return;
     }
-    if (!isOriginalSynced()) return;
     const list = texts.querySelector(".kundoku-yoko").getBoundingClientRect();
     const progress = clamp((window.innerHeight * 0.4 - list.top) / list.height, 0, 1);
     const visible = original.clientWidth;
@@ -174,6 +182,8 @@
     if (!target.matches("a[href], button, [tabindex]")) target.setAttribute("tabindex", "-1");
     target.scrollIntoView({ block: target.classList.contains("term-link") ? "center" : "start" });
     target.focus({ preventScroll: true });
+    // 進むで同じ項目へ戻ったときも、ここへフォーカスを返す
+    history.replaceState({ ...history.state, focus: target.id }, "");
   };
 
   // 別の帖にある名句や進言の一句へは、帖をめくってから送る
@@ -255,6 +265,7 @@
   );
   window.addEventListener("resize", () => {
     updateOriginalPanel();
+    updateSlipsFrame();
     requestSync();
   });
 
@@ -323,6 +334,7 @@
         content.querySelector("#kundoku-tate").scrollLeft = restoreKundokuLeft;
       }
       updateOriginalPanel();
+      updateSlipsFrame();
       window.scrollTo(0, restoreY ?? 0);
       lastScrollY = window.scrollY;
       document.body.removeAttribute("data-header-away");

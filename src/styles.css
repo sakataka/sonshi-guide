@@ -466,7 +466,8 @@ body[data-scrolled] .site-header {
   backdrop-filter: blur(12px) saturate(1.1);
 }
 
-body[data-header-away] .site-header:not(:focus-within) {
+/* キーボードで上端を操作しているあいだは退かない */
+body[data-header-away] .site-header:not(:has(:focus-visible)) {
   transform: translateY(-100%);
 }
 
@@ -1198,7 +1199,7 @@ body[data-view="overview"][data-cover-visible] .slipnav {
 }
 
 /* 書き下し文に合わせて送っているあいだは、原文の送りの操作を出さない */
-.texts[data-writing="yoko"] .texts-original .tate-controls {
+.texts[data-synced] .texts-original .tate-controls {
   display: none;
 }
 
@@ -2588,9 +2589,6 @@ body:has(.toc[open]) {
     order: -1;
   }
 
-  .texts[data-writing="yoko"] .texts-original .tate-controls {
-    display: flex;
-  }
 
   .tate-frame--sumi .tate,
   .tate-frame--paper .tate {
@@ -2796,7 +2794,7 @@ body:has(.toc[open]) {
     transition: transform 0.22s var(--ease);
   }
 
-  body[data-header-away] .cho-nav:not(:focus-within) {
+  body[data-header-away] .cho-nav:not(:has(:focus-visible)) {
     transform: translateY(100%);
   }
 
@@ -2817,6 +2815,10 @@ body:has(.toc[open]) {
 
   .cho-tab-numeral {
     font-size: var(--fs-lead);
+  }
+
+  .cho-tab:focus-visible {
+    outline-offset: -3px;
   }
 
   .cho-tab[aria-current="page"] {
