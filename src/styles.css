@@ -1608,6 +1608,15 @@ body[data-view="overview"][data-cover-visible] .slipnav {
     color: var(--accent);
   }
 
+  /* 次の帖へは、行き先の帖の色で応える */
+  .pager-next--genten:hover .pager-name {
+    color: var(--cho-genten);
+  }
+
+  .pager-next--yomitsugu:hover .pager-name {
+    color: var(--cho-yomitsugu);
+  }
+
   .pager-next:hover .pager-ghost {
     opacity: 0.08;
     transform: translate(-3%, -50%);

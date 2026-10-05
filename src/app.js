@@ -97,9 +97,21 @@
     });
   };
 
+  // 原文と書き下し文が左右に並ぶ幅でだけ、原文を書き下し文に合わせて送る
+  const isSideBySide = (texts) => getComputedStyle(texts).gridTemplateColumns.trim().split(/\s+/).length > 1;
   const isOriginalSynced = () => {
     const texts = content.querySelector(".texts");
     return Boolean(texts) && texts.dataset.writing === "yoko" && getComputedStyle(texts.querySelector(".texts-original")).position === "sticky";
+  };
+
+  // 送られているあいだの原文は、キーボードで送る欄にしない
+  const updateOriginalPanel = () => {
+    const original = content.querySelector("#original-tate");
+    if (!original) return;
+    const synced = isOriginalSynced();
+    if (synced) original.removeAttribute("tabindex");
+    else original.setAttribute("tabindex", "0");
+    original.setAttribute("aria-label", synced ? "原文（縦書き・書き下し文に合わせて送られる）" : "原文（縦書き・横にスクロール）");
   };
 
   // 書き下し文を読み進めると、脇に掛けた原文も同じあたりまで送る。
@@ -111,6 +123,7 @@
     const { extent } = tatePosition(original);
     if (extent <= 0) return;
     if (texts.dataset.writing === "tate") {
+      if (!isSideBySide(texts)) return;
       const kundoku = tatePosition(texts.querySelector("#kundoku-tate"));
       if (kundoku.extent <= 0) return;
       original.scrollLeft = -extent * (kundoku.position / kundoku.extent);
@@ -143,6 +156,7 @@
 
   const setWriting = (button) => {
     applyWriting(button);
+    updateOriginalPanel();
     syncOriginal();
     updateTateControls();
     rememberScroll();
@@ -239,7 +253,10 @@
     },
     true,
   );
-  window.addEventListener("resize", requestSync);
+  window.addEventListener("resize", () => {
+    updateOriginalPanel();
+    requestSync();
+  });
 
   // 表紙の竹簡が見えているあいだは、上端の竹簡をしまっておく
   const coverObserver = new IntersectionObserver(([entry]) => {
@@ -305,6 +322,7 @@
         applyWriting(writing);
         content.querySelector("#kundoku-tate").scrollLeft = restoreKundokuLeft;
       }
+      updateOriginalPanel();
       window.scrollTo(0, restoreY ?? 0);
       lastScrollY = window.scrollY;
       document.body.removeAttribute("data-header-away");
@@ -313,7 +331,8 @@
       updateTateControls();
       const target = pendingTarget && document.getElementById(pendingTarget);
       pendingTarget = "";
-      const returned = restoreY !== undefined && restoreFocus && document.getElementById(restoreFocus);
+      // 再読み込みのときは位置だけを戻し、フォーカスの枠は出さない
+      const returned = moveFocus && restoreY !== undefined && restoreFocus && document.getElementById(restoreFocus);
       if (target) jumpTo(target);
       else if (returned) returned.focus({ preventScroll: true });
       else if (moveFocus) reading.focus({ preventScroll: true });
